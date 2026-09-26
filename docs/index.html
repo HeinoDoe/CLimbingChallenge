@@ -318,7 +318,7 @@ function renderStandings() {
       <td class="pos">${g == null ? '' : k + 1}</td>
       <td><div class="pl">${p.profileIconId != null ? `<img src="${iconImg(p.profileIconId)}" alt="" style="border-color:${colorOf(i)}" onerror="this.style.visibility='hidden'">` : `<span class="sw" style="background:${colorOf(i)}"></span>`}
         <div><b>${esc(nameOf(p))}</b><span>${esc(p.riotId)}</span>${p.error ? `<div class="err">${esc(p.error)}</div>` : ''}</div></div></td>
-      <td class="rk">${base == null ? '<span style="color:var(--muted)">–</span>' : esc(scoreText(base))}</td>
+      <td class="rk">${base == null ? '<span style="color:var(--muted)">–</span>' : esc(p.start?.[q] ? rankText(p.start[q]) : scoreText(base))}</td>
       <td class="arrow">→</td>
       <td class="rk">${esc(rankText(p.ranks?.[q]))}</td>
       <td><span class="delta ${g > 0 ? 'up' : g < 0 ? 'down' : 'flat'}">${g == null ? '–' : signed(g)}</span></td>
