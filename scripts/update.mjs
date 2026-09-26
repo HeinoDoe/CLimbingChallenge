@@ -163,11 +163,11 @@ async function updatePlayer(entry) {
   p.error = null;
 
   try {
-    if (!p.puuid) {
-      const acc = await riot(`https://${REGION}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`);
-      if (!acc) { p.error = `Riot ID not found. Check the spelling and tag in squad.config.json.`; return p; }
-      p.puuid = acc.puuid;
-    }
+    // Look the PUUID up every run: Riot encrypts it per API key's app, so a
+    // stored one stops working when you switch keys (e.g. dev -> personal).
+    const acc = await riot(`https://${REGION}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`);
+    if (!acc) { p.error = `Riot ID not found. Check the spelling and tag in squad.config.json.`; return p; }
+    p.puuid = acc.puuid;
 
     const sum = await riot(`https://${PLATFORM}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${p.puuid}`);
     if (sum) { p.profileIconId = sum.profileIconId; p.summonerLevel = sum.summonerLevel; }
