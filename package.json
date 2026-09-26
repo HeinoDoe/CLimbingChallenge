@@ -1,0 +1,12 @@
+{
+  "name": "climbing-challenge",
+  "private": true,
+  "type": "module",
+  "description": "Tracks the squad's ranked LP gains in League of Legends from a chosen starting point.",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "update": "node scripts/update.mjs",
+    "start-now": "node scripts/update.mjs --start-now"
+  }
+}

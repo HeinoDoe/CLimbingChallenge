@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Climbing Challenge</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧗</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #E6ECEF;
+    --panel: #F5F7F8;
+    --ink: #14222C;
+    --muted: #566873;
+    --line: #C6D0D6;
+    --up: #17804F;
+    --down: #B3392C;
+    --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --body: "Barlow", "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131C23; --panel: #1A252E; --ink: #E3EAEE; --muted: #93A4AF;
+      --line: #2B3944; --up: #4CC28A; --down: #E6735F;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid #4C6FD6; outline-offset: 2px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 20px 64px; }
+
+  header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; margin-bottom: 28px; }
+  h1 { font: 700 clamp(48px, 9vw, 96px)/.88 var(--display); letter-spacing: -.01em; margin: 0; }
+  .meta { color: var(--muted); font-size: 15px; max-width: 46ch; }
+  .meta strong { color: var(--ink); font-weight: 600; }
+
+  h2 { font: 700 34px/1 var(--display); margin: 0 0 6px; }
+  .lede { color: var(--muted); margin: 0 0 18px; max-width: 70ch; }
+  section { margin-top: 56px; }
+
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--panel); }
+  .seg button { font: 600 15px var(--body); color: var(--muted); background: none; border: 0; border-radius: 999px; padding: 6px 16px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+  /* The wall */
+  .wall-grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 28px; align-items: start; }
+  .wall-scroll { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+  #wall { display: block; width: 100%; height: auto; }
+  #wall .band { font: 600 15px var(--display); }
+  #wall .div { stroke: var(--line); stroke-dasharray: 3 5; }
+  #wall .tierline { stroke: var(--line); }
+  #wall .rope { stroke: var(--ink); stroke-opacity: .12; stroke-width: 1.5; }
+  #wall .pin { font: 700 15px var(--display); fill: var(--ink); }
+  #wall .who { font: 700 16px var(--display); fill: var(--ink); }
+  #wall .role, #wall .unranked { font: 500 13px var(--body); fill: var(--muted); }
+  #wall .dot { stroke: var(--panel); stroke-width: 3; }
+  .week h3 { font: 700 22px/1.1 var(--display); margin: 4px 0 12px; }
+  .week ol { list-style: none; margin: 0; padding: 0; }
+  .week li { display: grid; grid-template-columns: 10px 1fr auto; gap: 10px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .week .sw { width: 10px; height: 10px; border-radius: 50%; align-self: center; }
+  .week .name { font-weight: 600; }
+  .week .sub { display: block; color: var(--muted); font-size: 13px; }
+  .delta { font: 700 20px var(--display); white-space: nowrap; }
+  .delta.up { color: var(--up); } .delta.down { color: var(--down); } .delta.flat { color: var(--muted); }
+  .footnote { color: var(--muted); font-size: 13px; margin-top: 10px; }
+
+  .chart-box { position: relative; height: 380px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px; }
+
+  /* Standings since start */
+  .standings { min-width: 640px; }
+  .standings td.pos { font: 700 22px var(--display); color: var(--muted); width: 36px; }
+  .standings tr.first td.pos { color: #C9A13B; }
+  .standings .pl b { font-size: 20px; }
+  .standings .delta { font-size: 26px; }
+  .standings .arrow { color: var(--muted); padding: 0 6px; }
+  .standings .sw { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+
+  /* Challenges */
+  .boards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 28px 32px; }
+  .board { border-top: 4px solid var(--line); padding-top: 12px; }
+  .board h3 { font: 700 24px/1.05 var(--display); margin: 0; }
+  .board p { color: var(--muted); font-size: 14px; margin: 2px 0 10px; }
+  .board ol { margin: 0; padding: 0; list-style: none; counter-reset: pos; }
+  .board li { counter-increment: pos; display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; padding: 4px 0; font-size: 15px; }
+  .board li::before { content: counter(pos); color: var(--muted); font: 600 15px var(--display); }
+  .board li.lead { font-weight: 600; }
+  .board li .v { font: 600 17px var(--display); font-variant-numeric: tabular-nums; }
+  .board li.none { color: var(--muted); }
+
+  /* Players table */
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 860px; font-size: 15px; }
+  th { text-align: left; font: 600 14px var(--body); color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line); }
+  td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  td.num { font-variant-numeric: tabular-nums; }
+  .pl { display: flex; align-items: center; gap: 10px; }
+  .pl img { width: 36px; height: 36px; border-radius: 50%; border: 3px solid var(--line); }
+  .pl b { display: block; font: 700 18px/1.1 var(--display); }
+  .pl span { color: var(--muted); font-size: 13px; }
+  .rk { font-weight: 600; }
+  .rk small { display: block; color: var(--muted); font-weight: 400; font-size: 13px; }
+  .champs { display: flex; gap: 4px; }
+  .champs img { width: 30px; height: 30px; border-radius: 4px; }
+  .err { color: var(--down); font-size: 13px; }
+
+  /* Feed */
+  .feed { list-style: none; margin: 0; padding: 0; }
+  .feed li { display: grid; grid-template-columns: 5px 40px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .feed .bar { align-self: stretch; border-radius: 3px; }
+  .feed img { width: 40px; height: 40px; border-radius: 6px; }
+  .feed .line1 { font-weight: 600; }
+  .feed .line2 { color: var(--muted); font-size: 14px; }
+  .feed .when { color: var(--muted); font-size: 14px; white-space: nowrap; }
+  .tag { display: inline-block; font: 700 13px var(--display); background: #C9A13B; color: #14222C; padding: 1px 7px; border-radius: 3px; margin-left: 6px; }
+
+  .empty { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 28px; max-width: 640px; }
+  .empty h2 { margin-bottom: 10px; }
+  .empty ol { padding-left: 20px; }
+  .banner { background: #C9A13B; color: #14222C; padding: 8px 14px; border-radius: 4px; font-weight: 600; margin-bottom: 20px; display: inline-block; }
+  footer { margin-top: 64px; color: var(--muted); font-size: 13px; max-width: 80ch; }
+
+  @media (max-width: 860px) { .wall-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <p class="meta">Loading squad data…</p>
+</div>
+
+<script>
+// ---------- Settings you may want to change ----------
+const MIN_GAMES_FOR_RATES = 10;           // win rate / KDA boards need at least this many tracked games
+const PLAYER_COLORS = ['#2B59C3', '#1E8C6E', '#8E3BB5', '#C0392B', '#C08A0E', '#3D7A96', '#D0587E', '#5B8C2A', '#7A5230', '#5E6AD2'];
+
+// Each board ranks every player by value(p). Return null to leave a player unranked.
+// Add, remove or reorder boards here.
+const CHALLENGES = [
+  { title: 'Biggest climber', desc: 'Most solo queue LP gained since the start', value: p => startGain(p, 'solo'), fmt: v => signed(v) + ' LP' },
+  { title: 'Pentakill hunter', desc: 'Most pentakills', value: p => p.stats.pentaKills, fmt: v => v, tie: p => p.stats.quadraKills },
+  { title: 'Quadra collector', desc: 'Most quadrakills', value: p => p.stats.quadraKills, fmt: v => v, tie: p => p.stats.tripleKills },
+  { title: 'Climber of the week', desc: 'Most solo queue LP gained in the last 7 days', value: p => weekGain(p, 'solo'), fmt: v => signed(v) + ' LP' },
+  { title: 'Win rate', desc: `Best win rate, at least ${MIN_GAMES_FOR_RATES} games`, value: p => p.stats.games >= MIN_GAMES_FOR_RATES ? p.stats.wins / p.stats.games : null, fmt: v => pct(v) },
+  { title: 'KDA', desc: `(Kills + assists) per death, at least ${MIN_GAMES_FOR_RATES} games`, value: p => p.stats.games >= MIN_GAMES_FOR_RATES ? (p.stats.kills + p.stats.assists) / Math.max(1, p.stats.deaths) : null, fmt: v => v.toFixed(2) },
+  { title: 'Hot hand', desc: 'Longest win streak', value: p => p.stats.bestWinStreak, fmt: v => v + ' wins' },
+  { title: 'Biggest game', desc: 'Most kills in a single game', value: p => p.stats.maxKills, fmt: (v, p) => `${v} (${champName(p.stats.maxKillsChamp)})` },
+  { title: 'First blood', desc: 'Most first bloods', value: p => p.stats.firstBloods, fmt: v => v },
+  { title: 'Duelist', desc: 'Most solo kills', value: p => p.stats.soloKills, fmt: v => v },
+  { title: 'Eyes everywhere', desc: 'Vision score per minute', value: p => p.stats.timePlayed ? p.stats.visionScore / (p.stats.timePlayed / 60) : null, fmt: v => v.toFixed(2) },
+  { title: 'Grinder', desc: 'Most ranked games played', value: p => p.stats.games, fmt: v => v },
+  { title: 'Riot challenges', desc: 'Official challenge points', value: p => p.challengePoints?.current ?? null, fmt: (v, p) => `${v.toLocaleString()} (${cap(p.challengePoints.level)})` },
+];
+
+// ---------- Rank maths (mirrors scripts/update.mjs) ----------
+const TIERS = ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'EMERALD', 'DIAMOND'];
+const SHORT = { IRON: 'Iron', BRONZE: 'Bronze', SILVER: 'Silver', GOLD: 'Gold', PLATINUM: 'Plat', EMERALD: 'Emerald', DIAMOND: 'Diamond' };
+const TIER_COLORS = { IRON: '#6E6A68', BRONZE: '#8C5A3C', SILVER: '#7F8E99', GOLD: '#B98F2A', PLATINUM: '#2F8F8C', EMERALD: '#23915A', DIAMOND: '#4C6FD6', MASTER: '#9B4DCA', GRANDMASTER: '#C8323C', CHALLENGER: '#C99A1E' };
+const QUEUE_NAMES = { 420: 'Solo/Duo', 440: 'Flex' };
+const DAY = 86_400_000;
+
+let data, players, ddVersion = '16.18.1', state = { queue: 'solo', period: 'start' }, chart;
+
+const cap = s => s ? s[0] + s.slice(1).toLowerCase() : '';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pct = v => Math.round(v * 100) + '%';
+const signed = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
+const nameOf = p => p.name || p.riotId.split('#')[0];
+const colorOf = i => PLAYER_COLORS[i % PLAYER_COLORS.length];
+const champName = c => ({ MonkeyKing: 'Wukong', Belveth: "Bel'Veth", Khazix: "Kha'Zix", ChoGath: "Cho'Gath", Chogath: "Cho'Gath", JarvanIV: 'Jarvan IV', KSante: "K'Sante", Kaisa: "Kai'Sa", Velkoz: "Vel'Koz", RekSai: "Rek'Sai", KogMaw: "Kog'Maw", MissFortune: 'Miss Fortune', MasterYi: 'Master Yi', TwistedFate: 'Twisted Fate', LeeSin: 'Lee Sin', XinZhao: 'Xin Zhao', DrMundo: 'Dr. Mundo', TahmKench: 'Tahm Kench', AurelionSol: 'Aurelion Sol', Leblanc: 'LeBlanc', Nunu: 'Nunu & Willump', Renata: 'Renata Glasc' }[c] || c || '');
+const champImg = c => `https://ddragon.leagueoflegends.com/cdn/${ddVersion}/img/champion/${c}.png`;
+const iconImg = id => `https://ddragon.leagueoflegends.com/cdn/${ddVersion}/img/profileicon/${id}.png`;
+
+function scoreText(v, short) {
+  if (v == null) return 'Unranked';
+  if (v >= 2800) return short ? `Master+ ${v - 2800}` : `Master+ ${v - 2800} LP`;
+  const t = TIERS[Math.floor(v / 400)], d = 4 - Math.floor((v % 400) / 100);
+  return short ? `${SHORT[t]} ${d}` : `${cap(t)} ${d}, ${v % 100} LP`;
+}
+function rankText(r) {
+  if (!r) return 'Unranked';
+  return TIERS.includes(r.tier) ? `${cap(r.tier)} ${r.rank}, ${r.lp} LP` : `${cap(r.tier)}, ${r.lp} LP`;
+}
+function pinText(r) {
+  if (!r) return '';
+  return TIERS.includes(r.tier) ? `${SHORT[r.tier]} ${r.rank} ${r.lp}` : `${cap(r.tier)} ${r.lp}`;
+}
+function scoreAt(p, q, time) {
+  const h = (p.history || []).filter(x => x[q] != null);
+  if (!h.length) return null;
+  let v = h[0][q];
+  for (const x of h) { if (Date.parse(x.t) <= time) v = x[q]; else break; }
+  return v;
+}
+function weekGain(p, q) {
+  const cur = p.ranks?.[q]?.score ?? null;
+  const past = scoreAt(p, q, Date.now() - 7 * DAY);
+  return cur == null || past == null ? null : cur - past;
+}
+// ---------- Starting point ----------
+// The script stores each player's rank at the first update after startAt in p.start.
+// Older data (and the demo) has no p.start, so fall back to the rank history.
+const startIso = () => data.startAt || data.trackSince;
+const startMs = () => Date.parse(startIso());
+const started = () => Date.now() >= startMs();
+function startScore(p, q) {
+  if (!started()) return null;
+  return p.start?.[q]?.score ?? scoreAt(p, q, startMs());
+}
+function startGain(p, q) {
+  const cur = p.ranks?.[q]?.score ?? null, base = startScore(p, q);
+  return cur == null || base == null ? null : cur - base;
+}
+function startGames(p, q) {
+  const r = p.ranks?.[q], b = p.start?.[q];
+  if (!r || !b) return null;
+  return { wins: r.wins - b.wins, losses: r.losses - b.losses };
+}
+const pastScore = (p, q) => state.period === 'start' ? startScore(p, q) : scoreAt(p, q, Date.now() - 7 * DAY);
+const periodGain = (p, q) => state.period === 'start' ? startGain(p, q) : weekGain(p, q);
+const fmtDateTime = iso => new Date(iso).toLocaleString(undefined, { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+function timeAgo(ms) {
+  const s = (Date.now() - ms) / 1000;
+  if (s < 90) return 'just now';
+  if (s < 3600) return Math.round(s / 60) + ' min ago';
+  if (s < 86400) return Math.round(s / 3600) + ' h ago';
+  return Math.round(s / 86400) + ' days ago';
+}
+const fmtDate = iso => new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
+
+// ---------- Rendering ----------
+function renderShell() {
+  const demo = new URLSearchParams(location.search).has('demo');
+  const tracked = players.reduce((n, p) => n + (p.stats?.games || 0), 0);
+  const pending = players.reduce((n, p) => n + (p.pendingMatches || 0), 0);
+  document.getElementById('app').innerHTML = `
+    ${demo ? '<div class="banner">Sample data preview. Remove ?demo=1 from the address to see your real data.</div>' : ''}
+    <header class="top">
+      <h1>${esc(data.squadName || 'Squad ladder')}</h1>
+      <p class="meta">Updated <strong>${timeAgo(Date.parse(data.updatedAt))}</strong>.
+        ${started() ? `Challenge started <strong>${fmtDateTime(startIso())}</strong>: ${tracked} ranked games so far${pending ? `, ${pending} older games still being loaded` : ''}.`
+          : `Challenge starts <strong>${fmtDateTime(startIso())}</strong>.`}</p>
+    </header>
+
+    <section style="margin-top:0">
+      <div style="display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div><h2>Since the start</h2><p class="lede" style="margin:0">LP gained or lost since the challenge started, highest first.</p></div>
+        <div class="seg" role="group" aria-label="Ranked queue">
+          <button type="button" data-q="solo" aria-pressed="true">Solo/Duo</button>
+          <button type="button" data-q="flex" aria-pressed="false">Flex</button>
+        </div>
+      </div>
+      <div class="table-scroll"><table class="standings" id="standings"></table></div>
+      <p class="footnote">The starting rank is recorded on the first update after the start time. Players who were unranked then get their starting rank once they finish placements.</p>
+    </section>
+
+    <section>
+      <div style="display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div><h2>The wall</h2><p class="lede" style="margin:0">Where everyone stands right now. The faded line shows how far each player moved <span id="periodtext"></span>.</p></div>
+        <div class="seg" role="group" aria-label="Compare with">
+          <button type="button" data-p="start" aria-pressed="true">Since start</button>
+          <button type="button" data-p="week" aria-pressed="false">Last 7 days</button>
+        </div>
+      </div>
+      <div class="wall-grid">
+        <div class="wall-scroll"><svg id="wall" role="img" aria-label="Current rank of every player"></svg></div>
+        <aside class="week"><h3 id="weektitle">Since start</h3><ol id="week"></ol>
+          <p class="footnote">LP is counted on one scale: 100 per division, so promotions carry over. Master and above share one scale.</p></aside>
+      </div>
+    </section>
+
+    <section>
+      <h2>Climb over time</h2>
+      <p class="lede">Rank history starts on the day the tracker was switched on. Riot doesn't provide older LP.</p>
+      <div class="chart-box"><canvas id="chart" aria-label="Rank over time"></canvas></div>
+    </section>
+
+    <section>
+      <h2>Challenges</h2>
+      <p class="lede">Ranked Solo/Duo and Flex games since ${fmtDate(startIso())}. Remakes don't count.</p>
+      <div class="boards" id="boards"></div>
+    </section>
+
+    <section>
+      <h2>Players</h2>
+      <div class="table-scroll"><table id="players"></table></div>
+    </section>
+
+    <section>
+      <h2>Latest games</h2>
+      <ul class="feed" id="feed"></ul>
+    </section>
+
+    <footer>${esc(data.squadName || 'Squad ladder')} isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.</footer>`;
+
+  document.querySelectorAll('.seg button[data-q]').forEach(b => b.addEventListener('click', () => {
+    state.queue = b.dataset.q;
+    document.querySelectorAll('.seg button[data-q]').forEach(x => x.setAttribute('aria-pressed', x.dataset.q === b.dataset.q));
+    renderStandings(); renderWall(); renderWeek(); renderChart();
+  }));
+  document.querySelectorAll('.seg button[data-p]').forEach(b => b.addEventListener('click', () => {
+    state.period = b.dataset.p;
+    document.querySelectorAll('.seg button[data-p]').forEach(x => x.setAttribute('aria-pressed', x === b));
+    renderWall(); renderWeek();
+  }));
+}
+
+function renderStandings() {
+  const q = state.queue;
+  const rows = players.map((p, i) => ({ p, i, g: startGain(p, q), base: startScore(p, q), games: startGames(p, q) }))
+    .sort((a, b) => (b.g ?? -1e9) - (a.g ?? -1e9));
+  const head = `<thead><tr><th></th><th>Player</th><th>Start</th><th></th><th>Now</th><th>LP</th><th>Games since start</th></tr></thead>`;
+  const body = rows.map(({ p, i, g, base, games }, k) => `<tr class="${k === 0 && g > 0 ? 'first' : ''}">
+      <td class="pos">${g == null ? '' : k + 1}</td>
+      <td><div class="pl">${p.profileIconId != null ? `<img src="${iconImg(p.profileIconId)}" alt="" style="border-color:${colorOf(i)}" onerror="this.style.visibility='hidden'">` : `<span class="sw" style="background:${colorOf(i)}"></span>`}
+        <div><b>${esc(nameOf(p))}</b><span>${esc(p.riotId)}</span>${p.error ? `<div class="err">${esc(p.error)}</div>` : ''}</div></div></td>
+      <td class="rk">${base == null ? '<span style="color:var(--muted)">–</span>' : esc(scoreText(base))}</td>
+      <td class="arrow">→</td>
+      <td class="rk">${esc(rankText(p.ranks?.[q]))}</td>
+      <td><span class="delta ${g > 0 ? 'up' : g < 0 ? 'down' : 'flat'}">${g == null ? '–' : signed(g)}</span></td>
+      <td class="num">${games ? `${games.wins + games.losses} (${games.wins}W ${games.losses}L)` : '–'}</td></tr>`).join('');
+  document.getElementById('standings').innerHTML = head + '<tbody>' + body + '</tbody>';
+}
+
+function renderWall() {
+  const q = state.queue;
+  document.getElementById('periodtext').textContent = state.period === 'start' ? 'since the challenge started' : 'over the last 7 days';
+  const rows = players.map((p, i) => ({ p, color: colorOf(i), cur: p.ranks?.[q]?.score ?? null, past: pastScore(p, q) }));
+  const vals = rows.flatMap(r => [r.cur, r.past]).filter(v => v != null);
+  const svg = document.getElementById('wall');
+  const n = rows.length, colW = 108, left = 92, top = 24, H = 500, bottom = 64, W = left + n * colW + 12;
+  svg.setAttribute('viewBox', `0 0 ${W} ${top + H + bottom}`);
+  svg.style.minWidth = Math.min(W, 640) + 'px';
+  if (!vals.length) { svg.innerHTML = `<text x="${W / 2}" y="${top + H / 2}" text-anchor="middle" class="role">Nobody is ranked in this queue yet.</text>`; return; }
+
+  const lo = Math.max(0, Math.floor((Math.min(...vals) - 120) / 400) * 400);
+  let hi = Math.ceil((Math.max(...vals) + 150) / 100) * 100;
+  if (hi - lo < 800) hi = lo + 800;
+  const y = v => top + H - (Math.min(Math.max(v, lo), hi) - lo) / (hi - lo) * H;
+  let s = '';
+
+  for (let t = 0; t <= 7; t++) {
+    const a = t * 400, b = t < 7 ? a + 400 : Infinity;
+    const from = Math.max(a, lo), to = Math.min(b, hi);
+    if (to <= from) continue;
+    const tier = t < 7 ? TIERS[t] : 'MASTER', col = TIER_COLORS[tier];
+    s += `<rect x="${left}" y="${y(to)}" width="${n * colW}" height="${y(from) - y(to)}" fill="${col}" fill-opacity=".12"/>`;
+    if (y(from) - y(to) > 22) s += `<text class="band" x="${left - 10}" y="${(y(from) + y(to)) / 2}" text-anchor="end" dominant-baseline="middle" fill="${col}">${t < 7 ? cap(tier) : 'Master+'}</text>`;
+    if (t < 7) for (let d = 1; d < 4; d++) { const v = a + d * 100; if (v > lo && v < hi) s += `<line class="div" x1="${left}" x2="${left + n * colW}" y1="${y(v)}" y2="${y(v)}"/>`; }
+    if (a > lo) s += `<line class="tierline" x1="${left}" x2="${left + n * colW}" y1="${y(a)}" y2="${y(a)}"/>`;
+  }
+  rows.forEach((r, i) => {
+    const cx = left + i * colW + colW / 2;
+    s += `<line class="rope" x1="${cx}" x2="${cx}" y1="${top}" y2="${top + H}"/>`;
+    if (r.cur == null) {
+      s += `<text class="unranked" x="${cx}" y="${top + H - 10}" text-anchor="middle">Unranked</text>`;
+    } else {
+      if (r.past != null && r.past !== r.cur) {
+        s += `<line x1="${cx}" x2="${cx}" y1="${y(r.past)}" y2="${y(r.cur)}" stroke="${r.color}" stroke-opacity=".35" stroke-width="8" stroke-linecap="round"/>`;
+        s += `<circle cx="${cx}" cy="${y(r.past)}" r="4" fill="none" stroke="${r.color}" stroke-width="2"/>`;
+      }
+      s += `<circle class="dot" cx="${cx}" cy="${y(r.cur)}" r="10" fill="${r.color}"><title>${esc(r.p.riotId)}: ${rankText(r.p.ranks[q])}</title></circle>`;
+      s += `<text class="pin" x="${cx}" y="${y(r.cur) - 17}" text-anchor="middle">${esc(pinText(r.p.ranks[q]))}</text>`;
+    }
+    s += `<text class="who" x="${cx}" y="${top + H + 26}" text-anchor="middle">${esc(nameOf(r.p))}</text>`;
+    s += `<text class="role" x="${cx}" y="${top + H + 44}" text-anchor="middle">${esc(r.p.role)}</text>`;
+  });
+  svg.innerHTML = s;
+}
+
+function renderWeek() {
+  const q = state.queue;
+  document.getElementById('weektitle').textContent = state.period === 'start' ? 'Since start' : 'This week';
+  const rows = players.map((p, i) => ({ p, i, g: periodGain(p, q) }))
+    .sort((a, b) => (b.g ?? -1e9) - (a.g ?? -1e9));
+  document.getElementById('week').innerHTML = rows.map(({ p, i, g }) => `
+    <li><span class="sw" style="background:${colorOf(i)}"></span>
+      <span><span class="name">${esc(nameOf(p))}</span><span class="sub">${esc(rankText(p.ranks?.[q]))}</span></span>
+      <span class="delta ${g > 0 ? 'up' : g < 0 ? 'down' : 'flat'}">${g == null ? '–' : signed(g) + ' LP'}</span></li>`).join('');
+}
+
+function renderChart() {
+  if (!window.Chart) return;
+  const q = state.queue, css = getComputedStyle(document.documentElement);
+  const muted = css.getPropertyValue('--muted').trim(), line = css.getPropertyValue('--line').trim(), ink = css.getPropertyValue('--ink').trim();
+  const datasets = players.map((p, i) => ({
+    label: nameOf(p),
+    data: (p.history || []).filter(h => h[q] != null).map(h => ({ x: Date.parse(h.t), y: h[q] })),
+    borderColor: colorOf(i), backgroundColor: colorOf(i), borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5, tension: .2,
+  }));
+  const ys = datasets.flatMap(d => d.data.map(pt => pt.y));
+  const range = ys.length ? Math.max(...ys) - Math.min(...ys) : 0;
+  chart?.destroy();
+  chart = new Chart(document.getElementById('chart'), {
+    type: 'line',
+    data: { datasets },
+    options: {
+      parsing: false, animation: false, maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false },
+      scales: {
+        x: { type: 'linear', grid: { color: line }, ticks: { color: muted, maxTicksLimit: 8, callback: v => new Date(v).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) } },
+        y: { grid: { color: line }, ticks: { color: muted, stepSize: range > 1200 ? 400 : 100, callback: v => scoreText(v, true) } },
+      },
+      plugins: {
+        legend: { labels: { color: ink, usePointStyle: true, boxWidth: 8, font: { family: 'Barlow', size: 14 } } },
+        tooltip: { callbacks: { title: it => new Date(it[0].parsed.x).toLocaleString(), label: c => `${c.dataset.label}: ${scoreText(c.parsed.y)}` } },
+      },
+    },
+  });
+}
+
+function renderBoards() {
+  document.getElementById('boards').innerHTML = CHALLENGES.map(ch => {
+    const rows = players.map((p, i) => ({ p, i, v: p.stats ? ch.value(p) : null }));
+    const ranked = rows.filter(r => r.v != null).sort((a, b) => (b.v - a.v) || ((ch.tie?.(b.p) ?? 0) - (ch.tie?.(a.p) ?? 0)));
+    const rest = rows.filter(r => r.v == null);
+    const leader = ranked.length && ranked[0].v > 0 ? ranked[0] : null;
+    return `<div class="board" style="border-top-color:${leader ? colorOf(leader.i) : 'var(--line)'}">
+      <h3>${esc(ch.title)}</h3><p>${esc(ch.desc)}</p>
+      <ol>${ranked.map((r, k) => `<li class="${k === 0 && leader ? 'lead' : ''}"><span>${esc(nameOf(r.p))}</span><span class="v">${esc(ch.fmt(r.v, r.p))}</span></li>`).join('')}
+      ${rest.map(r => `<li class="none"><span>${esc(nameOf(r.p))}</span><span>–</span></li>`).join('')}</ol></div>`;
+  }).join('');
+}
+
+function renderPlayers() {
+  const head = `<thead><tr><th>Player</th><th>Solo/Duo</th><th>Flex</th><th>Tracked games</th><th>Win rate</th><th>Streak</th><th>Most played</th><th>Last game</th></tr></thead>`;
+  const body = players.map((p, i) => {
+    const s = p.stats || {};
+    const last = (p.recent || []).at(-1);
+    const top = Object.entries(p.champions || {}).sort((a, b) => b[1].games - a[1].games).slice(0, 3);
+    const rk = r => r ? `<span class="rk">${esc(rankText(r))}<small>${r.wins}W ${r.losses}L, ${pct(r.wins / Math.max(1, r.wins + r.losses))}</small></span>` : '<span class="rk">Unranked</span>';
+    const streak = s.curStreak > 0 ? `<span style="color:var(--up)">${s.curStreak} wins</span>` : s.curStreak < 0 ? `<span style="color:var(--down)">${-s.curStreak} losses</span>` : '–';
+    return `<tr>
+      <td><div class="pl">${p.profileIconId != null ? `<img src="${iconImg(p.profileIconId)}" alt="" style="border-color:${colorOf(i)}" onerror="this.style.visibility='hidden'">` : ''}
+        <div><b>${esc(nameOf(p))}</b><span>${esc(p.role)}${p.summonerLevel ? `, level ${p.summonerLevel}` : ''}</span>
+        ${p.error ? `<div class="err">${esc(p.error)}</div>` : ''}</div></div></td>
+      <td>${rk(p.ranks?.solo)}</td><td>${rk(p.ranks?.flex)}</td>
+      <td class="num">${s.games ?? 0}</td>
+      <td class="num">${s.games ? pct(s.wins / s.games) : '–'}</td>
+      <td>${streak}</td>
+      <td><div class="champs">${top.map(([c, v]) => `<img src="${champImg(c)}" alt="${esc(champName(c))}" title="${esc(champName(c))}: ${v.games} games, ${pct(v.wins / v.games)} win rate" onerror="this.style.display='none'">`).join('') || '–'}</div></td>
+      <td>${last ? timeAgo(last.t) : '–'}</td></tr>`;
+  }).join('');
+  document.getElementById('players').innerHTML = head + '<tbody>' + body + '</tbody>';
+}
+
+function renderFeed() {
+  const games = players.flatMap((p, i) => (p.recent || []).map(g => ({ ...g, p, i })))
+    .sort((a, b) => b.t - a.t).slice(0, 15);
+  document.getElementById('feed').innerHTML = games.length ? games.map(g => `
+    <li><span class="bar" style="background:${g.win ? 'var(--up)' : 'var(--down)'}"></span>
+      <img src="${champImg(g.champ)}" alt="" onerror="this.style.visibility='hidden'">
+      <div><div class="line1">${esc(nameOf(g.p))} ${g.win ? 'won' : 'lost'} as ${esc(champName(g.champ))}${g.multi ? `<span class="tag">${g.multi}</span>` : ''}</div>
+        <div class="line2">${g.k}/${g.d}/${g.a} in ${Math.round(g.duration / 60)} min, ${QUEUE_NAMES[g.queue] || 'Ranked'}</div></div>
+      <span class="when">${timeAgo(g.t)}</span></li>`).join('')
+    : '<li style="display:block;color:var(--muted)">No tracked games yet. They appear after the next update.</li>';
+}
+
+function renderEmpty(reason) {
+  document.getElementById('app').innerHTML = `
+    <div class="empty"><h2>No squad data yet</h2>
+      <p>${esc(reason)}</p>
+      <ol>
+        <li>Add your Riot API key as the repository secret <b>RIOT_API_KEY</b>.</li>
+        <li>Open the <b>Actions</b> tab, choose <b>Update squad data</b> and click <b>Run workflow</b>.</li>
+        <li>Reload this page when the run finishes (a few minutes).</li>
+      </ol>
+      <p><a href="?demo=1">Preview the page with sample data</a></p></div>`;
+}
+
+async function main() {
+  const demo = new URLSearchParams(location.search).has('demo');
+  try {
+    const v = await fetch('https://ddragon.leagueoflegends.com/api/versions.json').then(r => r.json());
+    if (Array.isArray(v) && v[0]) ddVersion = v[0];
+  } catch { /* keep fallback version */ }
+  try {
+    data = await fetch((demo ? 'data.sample.json' : 'data.json') + '?t=' + Date.now()).then(r => { if (!r.ok) throw new Error(); return r.json(); });
+  } catch {
+    return renderEmpty('The data file could not be loaded. If you just set things up, the first update has not run yet.');
+  }
+  players = data.players || [];
+  if (!players.length) return renderEmpty('The tracker is set up, but the first update has not run yet.');
+  if (demo) data.updatedAt = new Date(Date.now() - 35 * 60_000).toISOString();
+  document.title = data.squadName || 'Squad ladder';
+  renderShell(); renderStandings(); renderWall(); renderWeek(); renderChart(); renderBoards(); renderPlayers(); renderFeed();
+}
+main();
+</script>
+</body>
+</html>
