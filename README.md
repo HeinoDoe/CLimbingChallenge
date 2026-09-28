@@ -1,6 +1,6 @@
 # Climbing Challenge
 
-A points competition for the squad's ranked games in League of Legends. The website shows:
+A points competition for the squad's ranked games in League of Legends. **Solo/Duo and Flex are two separate competitions**, each with its own tab, standings and awards. The website shows:
 
 - **Standings:** total points per player (LP earned + achievements + end awards), with a tap-to-expand breakdown
 - **End awards:** who's leading each award right now, and the winners once the challenge is over
@@ -13,9 +13,11 @@ It runs for free on GitHub. A scheduled job fetches data from the Riot API every
 
 ## How scoring works
 
-**Total = LP earned + achievements + end awards.** End awards only count once the challenge is over; until then they show as "ausstehend".
+Solo/Duo and Flex are scored separately with the same rules: the Solo/Duo tab only uses Solo/Duo games and Solo/Duo LP, the Flex tab only Flex games and Flex LP.
 
-**LP earned:** net Solo/Duo LP change during the challenge, on one scale where every division is 100 LP (Plat 4 0 LP → Plat 1 0 LP = +300; Master and above is one open-ended scale). Losses subtract, so it can be negative.
+**Total = LP earned + achievements + end awards.** End awards only count once the challenge is over; until then they show as "pending".
+
+**LP earned:** net LP change in that queue during the challenge, on one scale where every division is 100 LP (Plat 4 0 LP → Plat 1 0 LP = +300; Master and above is one open-ended scale). Losses subtract, so it can be negative.
 - The starting rank is the first rank snapshot at or after the start. Riot's API has no past LP, so it's recorded on the first update after the start. Players unranked at that point start from their first ranked snapshot.
 - After the end date, LP is frozen at the last snapshot before the end.
 
@@ -26,9 +28,6 @@ It runs for free on GitHub. A scheduled job fetches data from the Riot API every
 | Each different champion played | +5 |
 | Pentakill | +10 |
 | Quadrakill (one that didn't become a penta) | +5 |
-| Off-role win: a win where your position isn't the `role` in the config | +5 |
-
-Off-role only works for players with a role of `Top`, `Jungle`, `Mid`, `ADC` or `Support`. Anything else (for example `""` or `"Fill"`) never counts, and games with no position are skipped.
 
 **End awards** (+10 each, handed out after the end date; everyone tied for first gets the full points):
 
@@ -36,7 +35,9 @@ Most games · Highest win rate · Highest KDA · Lowest KDA · Best vision score
 
 Win rate, both KDA awards, vision and deaths per game need at least `minGames` (20) games. **One-trick:** each player's best champion by win rate (with at least 10 games on it); the two players with the highest such win rate get +10 each, and anyone tied at the cut-off does too.
 
-Only ranked games played between the start and end date count (the queues in `queues`). Remakes don't count.
+Only ranked games played between the start and end date count. Remakes don't count.
+
+**Trial run:** with `challenge.preview.start` set, the site scores a trial from that day until the real start, so you can see live results early. When the real challenge starts, everything resets automatically: game stats are counted again from the real start and the LP baseline is taken fresh. Remove `preview` if you don't want a trial.
 
 ## Run it locally
 
@@ -93,13 +94,13 @@ Everything lives in `squad.config.json`:
 | `platform` / `region` | `euw1` / `europe` for EUW. |
 | `challenge.start` / `challenge.end` | First and last day of the challenge (`YYYY-MM-DD`, both days included, midnight in `challenge.timeZone`). Changing them re-processes all games on the next runs. |
 | `challenge.timeZone` | Time zone for the dates. Default `Europe/Berlin`. |
-| `challenge.lpQueue` | Which queue's LP counts. `solo` or `flex`. |
+| `challenge.preview.start` | Optional trial run from this day until `challenge.start`. Resets automatically when the real challenge starts. |
 | `challenge.minGames` | Games needed for the rate-based awards (win rate, KDA, vision, deaths). |
 | `challenge.oneTrickMinGames` | Games on one champion needed for the one-trick award. |
 | `challenge.points` | Points for every achievement and award. |
-| `queues` | `420` = Solo/Duo, `440` = Flex. Only these games count for achievements and awards. |
+| `queues` | `420` = Solo/Duo, `440` = Flex. Each is its own competition; other queues are ignored. |
 | `maxNewMatchesPerPlayerPerRun` | How many games to catch up per player per run. Keep it at 60 or lower on a personal key. |
-| `players` | For each person: `name` (shown on the site), `riotId` (`Name#TAG`) and `role` (`Top`, `Jungle`, `Mid`, `ADC`, `Support`, or empty). |
+| `players` | For each person: `name` (shown on the site), `riotId` (`Name#TAG`) and `role` (only shown on the site). |
 
 All scoring lives in `scripts/challenge.mjs`. If you change what it tracks per game, bump `STATS_VERSION` at the top: the next runs then reset everyone's game stats and re-process every challenge game (rank history is kept). Add a test in `scripts/challenge.test.mjs` for new rules.
 

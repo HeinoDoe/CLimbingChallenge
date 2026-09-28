@@ -5,7 +5,11 @@
 // Bump this whenever addMatch() starts tracking something new. update.mjs then
 // resets every player's match stats and re-processes all challenge matches
 // (puuid and rank history are kept).
-export const STATS_VERSION = 2;
+export const STATS_VERSION = 3;
+
+// Each ranked queue is its own competition with its own LP, achievements and awards.
+export const MODES = { 420: 'solo', 440: 'flex' };
+export const emptyMode = () => ({ stats: emptyStats(), champions: {}, recent: [] });
 
 // ---------- Dates ----------
 // "start" and "end" are calendar days in the challenge time zone. The end day is
@@ -36,16 +40,23 @@ export function challengeWindow(ch) {
   return { startMs, endMs };
 }
 
-// ---------- Match stats ----------
-// Config role -> Riot teamPosition. Anything else ("Fill", "") never counts as off-role.
-const ROLE_POSITIONS = { top: 'TOP', jungle: 'JUNGLE', mid: 'MIDDLE', adc: 'BOTTOM', support: 'UTILITY' };
-export const positionOf = (role) => ROLE_POSITIONS[String(role || '').trim().toLowerCase()] || null;
+// The window the script scores right now. Before the real start, an optional trial
+// run (challenge.preview.start) counts from its own start until the real start. When
+// the real challenge begins the window changes, which resets every stat and the LP
+// baseline automatically.
+export function activeWindow(ch, now) {
+  const real = challengeWindow(ch);
+  if (!ch.preview?.start || now >= real.startMs) return real;
+  const trial = challengeWindow({ ...ch, start: ch.preview.start, end: new Date(real.startMs).toISOString() });
+  return { ...trial, preview: true, realStartMs: real.startMs, realEndMs: real.endMs };
+}
 
+// ---------- Match stats ----------
 export const emptyStats = () => ({
   games: 0, wins: 0, kills: 0, deaths: 0, assists: 0,
   doubleKills: 0, tripleKills: 0, quadraKills: 0, pentaKills: 0,
   firstBloods: 0, soloKills: 0, visionScore: 0, timePlayed: 0, damage: 0,
-  curStreak: 0, bestWinStreak: 0, worstLoseStreak: 0, offRoleWins: 0,
+  curStreak: 0, bestWinStreak: 0, worstLoseStreak: 0,
   maxKills: 0, maxKillsChamp: null,
 });
 
@@ -55,7 +66,7 @@ export const emptyStats = () => ({
 // quadra became the penta). So the quadras that stayed quadras are the difference.
 export const pureQuadras = (me) => Math.max(0, (me.quadraKills || 0) - (me.pentaKills || 0));
 
-// Adds one finished match to p.stats / p.champions / p.recent.
+// Adds one finished match to a mode's stats / champions / recent (p = { stats, champions, recent }).
 export function addMatch(p, m, me) {
   const s = p.stats;
   const quadras = pureQuadras(me);
@@ -74,9 +85,6 @@ export function addMatch(p, m, me) {
   s.curStreak = win ? Math.max(s.curStreak, 0) + 1 : Math.min(s.curStreak, 0) - 1;
   s.bestWinStreak = Math.max(s.bestWinStreak, s.curStreak);
   s.worstLoseStreak = Math.max(s.worstLoseStreak, -s.curStreak);
-  const mainPos = positionOf(p.role);
-  const offRole = Boolean(win && mainPos && me.teamPosition && me.teamPosition !== mainPos);
-  if (offRole) s.offRoleWins++;
   if (me.kills > s.maxKills) { s.maxKills = me.kills; s.maxKillsChamp = me.championName; }
 
   const c = (p.champions[me.championName] ??= { games: 0, wins: 0 });
@@ -88,7 +96,6 @@ export function addMatch(p, m, me) {
     win, champ: me.championName,
     k: me.kills, d: me.deaths, a: me.assists,
     queue: m.info.queueId, duration: m.info.gameDuration,
-    pos: me.teamPosition || null, offRole,
     multi: me.pentaKills ? 'Pentakill' : quadras ? 'Quadrakill' : null,
   });
   if (p.recent.length > 20) p.recent = p.recent.slice(-20);
@@ -99,9 +106,9 @@ export function addMatch(p, m, me) {
 // latest snapshot (or, once the challenge is over, the last one before the end).
 export function lpEarned(history, queue, { startMs, endMs }, now) {
   const ranked = (history || []).filter((h) => h[queue] != null).map((h) => ({ t: Date.parse(h.t), v: h[queue] }));
-  const base = ranked.find((h) => h.t >= startMs && h.t < endMs);
+  const base = ranked.find((h) => h.t >= startMs && h.t < endMs && h.t <= now);
   if (!base) return null;
-  const pool = ranked.filter((h) => h.t >= base.t && (now < endMs || h.t < endMs));
+  const pool = ranked.filter((h) => h.t >= base.t && h.t <= now && (now < endMs || h.t < endMs));
   const last = pool.at(-1);
   return {
     lp: last.v - base.v,
@@ -147,7 +154,8 @@ export const AWARDS = [
 ];
 
 // ---------- Points ----------
-// Writes p.points on every player and returns the award summary for data.json.
+// Writes p.points on every entry ({ key, stats, champions, history }) and returns the
+// award summary for data.json. ch.lpQueue picks which queue's LP counts.
 export function computePoints(players, ch, win, now) {
   const pts = ch.points || {};
   const minGames = ch.minGames ?? 20;
@@ -162,7 +170,6 @@ export function computePoints(players, ch, win, now) {
       uniqueChampions: item(Object.keys(p.champions || {}).length, 'uniqueChampion'),
       pentakills: item(s.pentaKills, 'pentakill'),
       quadrakills: item(s.quadraKills, 'quadrakill'),
-      offRoleWins: item(s.offRoleWins, 'offRoleWin'),
     };
     p.points = {
       lp: lpInfo ? lpInfo.lp : null,
@@ -212,5 +219,18 @@ export function computePoints(players, ch, win, now) {
   }
   // Place = 1 + number of players with a strictly higher total (ties share a place).
   for (const p of players) p.points.place = 1 + players.filter((o) => o.points.total > p.points.total).length;
+  return awards;
+}
+
+// Scores every mode (solo, flex) separately. Players carry p.modes[mode] =
+// { stats, champions, recent }; the result lands in p.points[mode] and the
+// returned object is { solo: awards, flex: awards }.
+export function scoreModes(players, ch, win, now) {
+  const awards = {};
+  for (const mode of Object.values(MODES)) {
+    const views = players.map((p) => ({ key: p.key, history: p.history, ...(p.modes?.[mode] ?? emptyMode()) }));
+    awards[mode] = computePoints(views, { ...ch, lpQueue: mode }, win, now);
+    players.forEach((p, i) => { (p.points ??= {})[mode] = views[i].points; });
+  }
   return awards;
 }

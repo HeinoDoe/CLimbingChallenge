@@ -1,27 +1,27 @@
 // Scoring tests on a small fake dataset. Run with `npm test`.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { challengeWindow, emptyStats, addMatch, lpEarned, computePoints, pureQuadras, positionOf } from './challenge.mjs';
+import { challengeWindow, activeWindow, emptyStats, addMatch, lpEarned, computePoints, scoreModes, pureQuadras } from './challenge.mjs';
 
 const CH = {
   start: '2026-10-01', end: '2026-10-14', timeZone: 'Europe/Berlin', lpQueue: 'solo', minGames: 20, oneTrickMinGames: 10,
   points: {
-    uniqueChampion: 5, pentakill: 10, quadrakill: 5, offRoleWin: 5, mostGames: 10, highestWinRate: 10, highestKda: 10,
+    uniqueChampion: 5, pentakill: 10, quadrakill: 5, mostGames: 10, highestWinRate: 10, highestKda: 10,
     lowestKda: 10, bestVision: 10, longestWinStreak: 10, longestLoseStreak: 10, mostDeathsPerGame: 10, oneTrick: 10,
   },
 };
 const WIN = challengeWindow(CH);
 const at = (iso) => Date.parse(iso);
-const DURING = at('2026-10-07T12:00:00Z');
+const DURING = at('2026-10-12T12:00:00Z');
 const AFTER = at('2026-10-20T12:00:00Z');
 
-// Plays `games` fake matches: each is [champion, win, {k,d,a,pos,vision,penta,quadra}]
+// Plays `games` fake matches: each is [champion, win, {k,d,a,vision,penta,quadra}]
 function player(key, role, games = [], history = []) {
   const p = { key, name: key, role, stats: emptyStats(), champions: {}, recent: [], history };
   games.forEach(([champ, win, o = {}], i) => {
     const m = { metadata: { matchId: `EUW1_${i}` }, info: { gameDuration: 1800, gameEndTimestamp: DURING, queueId: 420 } };
     const me = { championName: champ, win, kills: o.k ?? 5, deaths: o.d ?? 5, assists: o.a ?? 5, visionScore: o.vision ?? 30,
-      timePlayed: 1800, teamPosition: o.pos ?? positionOf(role) ?? 'MIDDLE', pentaKills: o.penta ?? 0, quadraKills: o.quadra ?? 0 };
+      timePlayed: 1800, pentaKills: o.penta ?? 0, quadraKills: o.quadra ?? 0 };
     addMatch(p, m, me);
   });
   return p;
@@ -58,25 +58,25 @@ test('LP: unranked at the start uses the first ranked snapshot', () => {
 
 test('LP: frozen at the last snapshot before the end', () => {
   const h = [{ t: '2026-10-01T08:00:00Z', solo: 1000 }, { t: '2026-10-14T20:00:00Z', solo: 1150 }, { t: '2026-10-16T08:00:00Z', solo: 1500 }];
-  assert.equal(lpEarned(h, 'solo', WIN, DURING).lp, 500); // still running: latest counts
+  const live = lpEarned(h, 'solo', WIN, at('2026-10-14T21:00:00Z')); // last evening, still running
+  assert.deepEqual([live.lp, live.frozen], [150, false]);
   const r = lpEarned(h, 'solo', WIN, AFTER);
   assert.equal(r.lp, 150);
   assert.equal(r.frozen, true);
 });
 
-test('achievements: unique champs, pentas, quadras, off-role wins', () => {
+test('achievements: unique champs, pentas, quadras', () => {
   const p = player('a', 'Mid', [
-    ['Ahri', true, { pos: 'MIDDLE' }],
-    ['Jinx', true, { pos: 'BOTTOM', penta: 1 }],   // off-role win + penta
-    ['Jinx', false, { pos: 'BOTTOM', quadra: 2 }], // 2 quadras; off-role loss: no points
-    ['Lux', true, { pos: '' }],                     // no position: never off-role
+    ['Ahri', true],
+    ['Jinx', true, { penta: 1, quadra: 1 }],  // one penta (Riot also counts its quadra)
+    ['Jinx', false, { quadra: 2 }],           // two real quadras
+    ['Lux', true],
   ]);
-  const fill = player('b', 'Fill', [['Ahri', true, { pos: 'TOP' }]]);
-  computePoints([p, fill], CH, WIN, DURING);
+  computePoints([p], CH, WIN, DURING);
   const a = p.points.achievements;
-  assert.deepEqual([a.uniqueChampions.points, a.pentakills.points, a.quadrakills.points, a.offRoleWins.points], [15, 10, 10, 5]);
-  assert.equal(p.points.achievementsTotal, 40);
-  assert.equal(fill.points.achievements.offRoleWins.count, 0);
+  assert.deepEqual(Object.keys(a), ['uniqueChampions', 'pentakills', 'quadrakills']);
+  assert.deepEqual([a.uniqueChampions.points, a.pentakills.points, a.quadrakills.points], [15, 10, 10]);
+  assert.equal(p.points.achievementsTotal, 35);
 });
 
 test('quadras: a quadra that became a penta is not counted', () => {
@@ -149,4 +149,31 @@ test('places: ties share a place, sorted by total', () => {
   const z = player('z', 'ADC', [['Jinx', true], ['Ezreal', true]]);
   computePoints([x, y, z], CH, WIN, DURING);
   assert.deepEqual([z, x, y].map((p) => p.points.place), [1, 2, 2]);
+});
+
+test('trial run: counts from its own start until the real start, then switches', () => {
+  const ch = { ...CH, preview: { start: '2026-09-28' } };
+  const trial = activeWindow(ch, at('2026-09-29T12:00:00Z'));
+  assert.equal(trial.preview, true);
+  assert.equal(new Date(trial.startMs).toISOString(), '2026-09-27T22:00:00.000Z'); // 28 Sep 00:00 Berlin
+  assert.equal(trial.endMs, WIN.startMs);                                           // ends when the real one starts
+  const real = activeWindow(ch, at('2026-10-01T08:00:00Z'));
+  assert.equal(real.preview, undefined);
+  assert.deepEqual([real.startMs, real.endMs], [WIN.startMs, WIN.endMs]);
+  // After the switch, trial snapshots no longer count for LP.
+  const h = [{ t: '2026-09-28T10:00:00Z', solo: 1000 }, { t: '2026-09-30T10:00:00Z', solo: 1200 }, { t: '2026-10-01T06:00:00Z', solo: 1200 }, { t: '2026-10-03T06:00:00Z', solo: 1230 }];
+  assert.equal(lpEarned(h, 'solo', trial, at('2026-09-30T12:00:00Z')).lp, 200);
+  assert.equal(lpEarned(h, 'solo', real, at('2026-10-03T12:00:00Z')).lp, 30);
+});
+
+test('solo and flex are separate competitions', () => {
+  const mode = (games) => { const { stats, champions, recent } = player('tmp', 'Mid', games); return { stats, champions, recent }; };
+  const h = [{ t: '2026-10-01T08:00:00Z', solo: 1000, flex: 2000 }, { t: '2026-10-05T08:00:00Z', solo: 1100, flex: 1950 }];
+  const p = { key: 'p', history: h, modes: { solo: mode([['Ahri', true], ['Zed', true]]), flex: mode([['Jinx', false]]) } };
+  const awards = scoreModes([p], CH, WIN, DURING);
+  assert.equal(p.points.solo.lp, 100);
+  assert.equal(p.points.flex.lp, -50);
+  assert.equal(p.points.solo.achievements.uniqueChampions.count, 2);
+  assert.equal(p.points.flex.achievements.uniqueChampions.count, 1);
+  assert.deepEqual(Object.keys(awards), ['solo', 'flex']);
 });

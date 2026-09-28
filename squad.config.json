@@ -6,11 +6,11 @@
     "start": "2026-10-01",
     "end": "2026-10-14",
     "timeZone": "Europe/Berlin",
-    "lpQueue": "solo",
+    "preview": { "start": "2026-09-28" },
     "minGames": 20,
     "oneTrickMinGames": 10,
     "points": {
-      "uniqueChampion": 5, "pentakill": 10, "quadrakill": 5, "offRoleWin": 5,
+      "uniqueChampion": 5, "pentakill": 10, "quadrakill": 5,
       "mostGames": 10, "highestWinRate": 10, "highestKda": 10, "lowestKda": 10,
       "bestVision": 10, "longestWinStreak": 10, "longestLoseStreak": 10,
       "mostDeathsPerGame": 10, "oneTrick": 10

@@ -3,7 +3,7 @@
 // Runs on GitHub Actions (see .github/workflows/update.yml) or locally with
 // `npm run update`. Needs Node 18+.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { STATS_VERSION, challengeWindow, emptyStats, addMatch, computePoints } from './challenge.mjs';
+import { STATS_VERSION, MODES, activeWindow, emptyMode, addMatch, scoreModes } from './challenge.mjs';
 
 // Locally the key comes from a .env file next to package.json (never committed).
 try {
@@ -27,7 +27,7 @@ if (!CH?.start || !CH?.end) {
   process.exit(1);
 }
 let WIN;
-try { WIN = challengeWindow(CH); } catch (e) { console.error(e.message); process.exit(1); }
+try { WIN = activeWindow(CH, Date.now()); } catch (e) { console.error(e.message); process.exit(1); }
 const DATA_URL = new URL('../docs/data.json', import.meta.url);
 
 let previous = {};
@@ -36,10 +36,11 @@ const oldPlayers = new Map((previous.players || []).map((p) => [p.key, p]));
 
 const PLATFORM = cfg.platform || 'euw1';
 const REGION = cfg.region || 'europe';
-const QUEUES = cfg.queues || [420, 440];
+// Solo/Duo (420) and Flex (440) are separate competitions; other queues are ignored.
+const QUEUES = (cfg.queues || [420, 440]).filter((q) => MODES[q]);
 const CAP = cfg.maxNewMatchesPerPlayerPerRun ?? 60;
 // Match stats reset when the scoring code or the challenge dates/queues change.
-const STATS_KEY = `${STATS_VERSION}|${CH.start}|${CH.end}|${QUEUES.join(',')}`;
+const STATS_KEY = `${STATS_VERSION}|${WIN.startMs}|${WIN.endMs}|${QUEUES.join(',')}`;
 
 // ---------- Rate limiting (personal/dev keys: 20 req/s, 100 req/2 min) ----------
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -106,11 +107,11 @@ async function updatePlayer(entry) {
   p.riotId = entry.riotId;
   p.role = entry.role || '';
   p.error = null;
-  for (const k of ['startAt', 'start', 'trackSince']) delete p[k]; // pre-challenge fields
+  for (const k of ['startAt', 'start', 'trackSince', 'statsRole', 'stats', 'champions', 'recent']) delete p[k]; // older layouts
 
   // New scoring code or new dates: re-process every match (history and puuid stay).
-  if (p.statsKey !== STATS_KEY || p.statsRole !== p.role) {
-    Object.assign(p, { statsKey: STATS_KEY, statsRole: p.role, stats: emptyStats(), champions: {}, recent: [], seen: [] });
+  if (p.statsKey !== STATS_KEY) {
+    Object.assign(p, { statsKey: STATS_KEY, modes: Object.fromEntries(Object.values(MODES).map((m) => [m, emptyMode()])), seen: [] });
   }
   p.history ??= [];
 
@@ -163,7 +164,8 @@ async function updatePlayer(entry) {
         if (!m) continue;
         const me = m.info.participants.find((x) => x.puuid === p.puuid);
         if (!me || me.gameEndedInEarlySurrender || m.info.gameDuration < 300) continue; // skip remakes
-        addMatch(p, m, me);
+        const mode = p.modes[MODES[m.info.queueId]];
+        if (mode) addMatch(mode, m, me);
       }
       p.seen = [...seen];
       p.pendingMatches = unseen.length - todo.length;
@@ -187,12 +189,12 @@ try {
     console.log(`Updating ${entry.riotId}`);
     players.push(await updatePlayer(entry));
   }
-  const awards = computePoints(players, CH, WIN, Date.now());
+  const awards = scoreModes(players, CH, WIN, Date.now());
   const data = {
     squadName: cfg.squadName,
     platform: PLATFORM,
     queues: QUEUES,
-    challenge: { ...CH, startMs: WIN.startMs, endMs: WIN.endMs },
+    challenge: { ...CH, ...WIN },
     awards,
     updatedAt: new Date().toISOString(),
     players,
