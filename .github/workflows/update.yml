@@ -23,6 +23,9 @@ jobs:
         with:
           node-version: 20
 
+      - name: Test the scoring
+        run: node --test scripts/challenge.test.mjs
+
       - name: Fetch data from the Riot API
         run: node scripts/update.mjs
         env:

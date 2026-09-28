@@ -1,11 +1,9 @@
-// Pulls ranks, match stats and Riot challenge points for every player in
-// squad.config.json and writes them to docs/data.json for the website.
+// Pulls ranks and match stats for every player in squad.config.json, scores the
+// challenge (see scripts/challenge.mjs) and writes everything to docs/data.json.
 // Runs on GitHub Actions (see .github/workflows/update.yml) or locally with
 // `npm run update`. Needs Node 18+.
-//
-//   node scripts/update.mjs              normal update
-//   node scripts/update.mjs --start-now  set startAt in squad.config.json to now, then update
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { STATS_VERSION, challengeWindow, emptyStats, addMatch, computePoints } from './challenge.mjs';
 
 // Locally the key comes from a .env file next to package.json (never committed).
 try {
@@ -22,21 +20,14 @@ if (!KEY) {
   process.exit(1);
 }
 
-const CONFIG_URL = new URL('../squad.config.json', import.meta.url);
-const cfg = JSON.parse(await readFile(CONFIG_URL, 'utf8'));
-if (process.argv.includes('--start-now')) {
-  cfg.startAt = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
-  await writeFile(CONFIG_URL, JSON.stringify(cfg, null, 2) + '\n');
-  console.log(`Start point set to ${cfg.startAt}`);
-}
-// startAt is the challenge start: LP gains and match stats count from here.
-// (trackSince is the older name for the same setting.)
-const START = cfg.startAt || cfg.trackSince;
-const START_MS = Date.parse(START);
-if (Number.isNaN(START_MS)) {
-  console.error(`startAt "${START}" in squad.config.json is not a valid date, e.g. "2026-10-01T18:00:00+02:00".`);
+const cfg = JSON.parse(await readFile(new URL('../squad.config.json', import.meta.url), 'utf8'));
+const CH = cfg.challenge;
+if (!CH?.start || !CH?.end) {
+  console.error('squad.config.json needs a "challenge" block with "start" and "end" dates (see README).');
   process.exit(1);
 }
+let WIN;
+try { WIN = challengeWindow(CH); } catch (e) { console.error(e.message); process.exit(1); }
 const DATA_URL = new URL('../docs/data.json', import.meta.url);
 
 let previous = {};
@@ -45,9 +36,10 @@ const oldPlayers = new Map((previous.players || []).map((p) => [p.key, p]));
 
 const PLATFORM = cfg.platform || 'euw1';
 const REGION = cfg.region || 'europe';
-const SINCE = Math.floor(START_MS / 1000);
 const QUEUES = cfg.queues || [420, 440];
 const CAP = cfg.maxNewMatchesPerPlayerPerRun ?? 60;
+// Match stats reset when the scoring code or the challenge dates/queues change.
+const STATS_KEY = `${STATS_VERSION}|${CH.start}|${CH.end}|${QUEUES.join(',')}`;
 
 // ---------- Rate limiting (personal/dev keys: 20 req/s, 100 req/2 min) ----------
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -101,72 +93,32 @@ function score(e) {
 }
 const rankOf = (e) => (e ? { tier: e.tier, rank: e.rank, lp: e.leaguePoints, wins: e.wins, losses: e.losses, score: score(e) } : null);
 
-const emptyStats = () => ({
-  games: 0, wins: 0, kills: 0, deaths: 0, assists: 0,
-  doubleKills: 0, tripleKills: 0, quadraKills: 0, pentaKills: 0,
-  firstBloods: 0, soloKills: 0, visionScore: 0, timePlayed: 0, damage: 0,
-  curStreak: 0, bestWinStreak: 0, maxKills: 0, maxKillsChamp: null,
-});
-
 const matchNum = (id) => Number(id.split('_')[1]) || 0;
 const keyOf = (riotId) => riotId.toLowerCase().replace(/\s+/g, '');
-
-function addMatch(p, m, me) {
-  const s = p.stats;
-  const win = Boolean(me.win);
-  s.games++; if (win) s.wins++;
-  s.kills += me.kills; s.deaths += me.deaths; s.assists += me.assists;
-  s.doubleKills += me.doubleKills || 0;
-  s.tripleKills += me.tripleKills || 0;
-  s.quadraKills += me.quadraKills || 0;
-  s.pentaKills += me.pentaKills || 0;
-  if (me.firstBloodKill) s.firstBloods++;
-  s.soloKills += me.challenges?.soloKills || 0;
-  s.visionScore += me.visionScore || 0;
-  s.timePlayed += me.timePlayed || m.info.gameDuration || 0;
-  s.damage += me.totalDamageDealtToChampions || 0;
-  s.curStreak = win ? Math.max(s.curStreak, 0) + 1 : Math.min(s.curStreak, 0) - 1;
-  s.bestWinStreak = Math.max(s.bestWinStreak, s.curStreak);
-  if (me.kills > s.maxKills) { s.maxKills = me.kills; s.maxKillsChamp = me.championName; }
-
-  const c = (p.champions[me.championName] ??= { games: 0, wins: 0 });
-  c.games++; if (win) c.wins++;
-
-  p.recent.push({
-    id: m.metadata.matchId,
-    t: m.info.gameEndTimestamp || m.info.gameCreation,
-    win, champ: me.championName,
-    k: me.kills, d: me.deaths, a: me.assists,
-    queue: m.info.queueId, duration: m.info.gameDuration,
-    multi: me.pentaKills ? 'Pentakill' : me.quadraKills ? 'Quadrakill' : null,
-  });
-  if (p.recent.length > 20) p.recent = p.recent.slice(-20);
-}
 
 // ---------- Per player ----------
 async function updatePlayer(entry) {
   const [gameName, tagLine] = entry.riotId.split('#').map((s) => s.trim());
   const key = keyOf(entry.riotId);
   const old = oldPlayers.get(key);
-  let p = old ? { ...old } : { key };
-
-  // Changing startAt in the config restarts the counters and the LP baseline.
-  if (p.startAt !== START) {
-    Object.assign(p, { startAt: START, start: {}, stats: emptyStats(), champions: {}, recent: [], seen: [] });
-    delete p.trackSince;
-  }
-  p.history ??= [];
-  p.start ??= {};
+  const p = old ? { ...old } : { key };
   p.name = entry.name || gameName;
   p.riotId = entry.riotId;
   p.role = entry.role || '';
   p.error = null;
+  for (const k of ['startAt', 'start', 'trackSince']) delete p[k]; // pre-challenge fields
+
+  // New scoring code or new dates: re-process every match (history and puuid stay).
+  if (p.statsKey !== STATS_KEY || p.statsRole !== p.role) {
+    Object.assign(p, { statsKey: STATS_KEY, statsRole: p.role, stats: emptyStats(), champions: {}, recent: [], seen: [] });
+  }
+  p.history ??= [];
 
   try {
     // Look the PUUID up every run: Riot encrypts it per API key's app, so a
     // stored one stops working when you switch keys (e.g. dev -> personal).
     const acc = await riot(`https://${REGION}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`);
-    if (!acc) { p.error = `Riot ID not found. Check the spelling and tag in squad.config.json.`; return p; }
+    if (!acc) { p.error = 'Riot ID not found. Check the spelling and tag in squad.config.json.'; return p; }
     p.puuid = acc.puuid;
 
     const sum = await riot(`https://${PLATFORM}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${p.puuid}`);
@@ -178,57 +130,48 @@ async function updatePlayer(entry) {
       flex: rankOf(entries.find((e) => e.queueType === 'RANKED_FLEX_SR')),
     };
 
-    try {
-      const ch = await riot(`https://${PLATFORM}.api.riotgames.com/lol/challenges/v1/player-data/${p.puuid}`);
-      p.challengePoints = ch?.totalPoints
-        ? { level: ch.totalPoints.level, current: ch.totalPoints.current, percentile: ch.totalPoints.percentile ?? null }
-        : null;
-    } catch (e) {
-      if (e instanceof FatalError) throw e;
-    }
-
-    // Starting point: the first rank seen at or after startAt. Riot has no LP
-    // history, so this is recorded on the first update after the start. A queue
-    // the player was unranked in gets its baseline once they finish placements.
-    if (Date.now() >= START_MS) {
-      for (const q of ['solo', 'flex']) {
-        const r = p.ranks[q];
-        if (!p.start[q] && r) p.start[q] = { ...r, t: new Date().toISOString() };
-      }
-    }
-
-    // Rank history: a point whenever rank changes, plus one per day for the weekly comparison.
-    const snap = { t: new Date().toISOString(), solo: p.ranks.solo?.score ?? null, flex: p.ranks.flex?.score ?? null };
+    // Rank history: a point whenever rank changes, once a day, and on the first run
+    // after the challenge starts or ends (the LP baseline and the frozen final LP).
+    const now = Date.now();
+    const snap = { t: new Date(now).toISOString(), solo: p.ranks.solo?.score ?? null, flex: p.ranks.flex?.score ?? null };
     const last = p.history.at(-1);
-    if (!last || last.solo !== snap.solo || last.flex !== snap.flex || Date.now() - Date.parse(last.t) > 86_400_000) {
+    const lastT = last ? Date.parse(last.t) : 0;
+    const crossed = (edge) => lastT < edge && now >= edge;
+    if (!last || last.solo !== snap.solo || last.flex !== snap.flex || now - lastT > 86_400_000 || crossed(WIN.startMs) || crossed(WIN.endMs)) {
       p.history.push(snap);
     }
     if (p.history.length > 3000) p.history = p.history.slice(-3000);
 
-    // Matches since trackSince, processed oldest first so streaks stay in order.
-    const seen = new Set(p.seen);
-    const ids = new Set();
-    for (const q of QUEUES) {
-      for (let start = 0; ; start += 100) {
-        const page = (await riot(`https://${REGION}.api.riotgames.com/lol/match/v5/matches/by-puuid/${p.puuid}/ids?queue=${q}&startTime=${SINCE}&start=${start}&count=100`)) || [];
-        page.forEach((id) => ids.add(id));
-        if (page.length < 100 || page.every((id) => seen.has(id))) break;
+    // Challenge matches, processed oldest first so streaks stay in order.
+    if (now >= WIN.startMs) {
+      const from = Math.floor(WIN.startMs / 1000), to = Math.floor(WIN.endMs / 1000);
+      const seen = new Set(p.seen);
+      const ids = new Set();
+      for (const q of QUEUES) {
+        for (let start = 0; ; start += 100) {
+          const page = (await riot(`https://${REGION}.api.riotgames.com/lol/match/v5/matches/by-puuid/${p.puuid}/ids?queue=${q}&startTime=${from}&endTime=${to}&start=${start}&count=100`)) || [];
+          page.forEach((id) => ids.add(id));
+          if (page.length < 100 || page.every((id) => seen.has(id))) break;
+        }
       }
-    }
-    const unseen = [...ids].filter((id) => !seen.has(id)).sort((a, b) => matchNum(a) - matchNum(b));
-    const todo = unseen.slice(0, CAP);
+      const unseen = [...ids].filter((id) => !seen.has(id)).sort((a, b) => matchNum(a) - matchNum(b));
+      const todo = unseen.slice(0, CAP);
 
-    for (const id of todo) {
-      const m = await riot(`https://${REGION}.api.riotgames.com/lol/match/v5/matches/${id}`);
-      seen.add(id);
-      if (!m) continue;
-      const me = m.info.participants.find((x) => x.puuid === p.puuid);
-      if (!me || me.gameEndedInEarlySurrender || m.info.gameDuration < 300) continue; // skip remakes
-      addMatch(p, m, me);
+      for (const id of todo) {
+        const m = await riot(`https://${REGION}.api.riotgames.com/lol/match/v5/matches/${id}`);
+        seen.add(id);
+        if (!m) continue;
+        const me = m.info.participants.find((x) => x.puuid === p.puuid);
+        if (!me || me.gameEndedInEarlySurrender || m.info.gameDuration < 300) continue; // skip remakes
+        addMatch(p, m, me);
+      }
+      p.seen = [...seen];
+      p.pendingMatches = unseen.length - todo.length;
+      console.log(`  ${todo.length} new matches, ${p.pendingMatches} still queued`);
+    } else {
+      p.pendingMatches = 0;
+      console.log('  challenge has not started yet, ranks only');
     }
-    p.seen = [...seen];
-    p.pendingMatches = unseen.length - todo.length;
-    console.log(`  ${todo.length} new matches, ${p.pendingMatches} still queued`);
   } catch (e) {
     if (e instanceof FatalError) throw e;
     p.error = e.message;
@@ -244,11 +187,13 @@ try {
     console.log(`Updating ${entry.riotId}`);
     players.push(await updatePlayer(entry));
   }
+  const awards = computePoints(players, CH, WIN, Date.now());
   const data = {
     squadName: cfg.squadName,
     platform: PLATFORM,
-    startAt: START,
     queues: QUEUES,
+    challenge: { ...CH, startMs: WIN.startMs, endMs: WIN.endMs },
+    awards,
     updatedAt: new Date().toISOString(),
     players,
   };

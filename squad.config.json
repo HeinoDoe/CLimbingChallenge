@@ -2,7 +2,20 @@
   "squadName": "Climbing Challenge",
   "platform": "euw1",
   "region": "europe",
-  "startAt": "2026-09-26T00:00:00+02:00",
+  "challenge": {
+    "start": "2026-10-01",
+    "end": "2026-10-14",
+    "timeZone": "Europe/Berlin",
+    "lpQueue": "solo",
+    "minGames": 20,
+    "oneTrickMinGames": 10,
+    "points": {
+      "uniqueChampion": 5, "pentakill": 10, "quadrakill": 5, "offRoleWin": 5,
+      "mostGames": 10, "highestWinRate": 10, "highestKda": 10, "lowestKda": 10,
+      "bestVision": 10, "longestWinStreak": 10, "longestLoseStreak": 10,
+      "mostDeathsPerGame": 10, "oneTrick": 10
+    }
+  },
   "queues": [420, 440],
   "maxNewMatchesPerPlayerPerRun": 60,
   "players": [

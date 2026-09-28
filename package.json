@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node scripts/serve.mjs",
     "update": "node scripts/update.mjs",
-    "start-now": "node scripts/update.mjs --start-now"
+    "test": "node --test scripts/challenge.test.mjs",
+    "sample": "node scripts/make-sample.mjs"
   }
 }

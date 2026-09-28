@@ -1,43 +1,63 @@
 # Climbing Challenge
 
-A website that tracks the squad's ranked climb and in-game challenges in League of Legends. It shows:
+A points competition for the squad's ranked games in League of Legends. The website shows:
 
-- how much LP everyone gained or lost since the challenge started (you pick the start time)
-- where everyone stands right now and how far each player moved since the start or this week
-- rank over time
-- leaderboards for pentakills, quadrakills, win streaks, KDA, vision and more
-- a feed of everyone's latest games
+- **Standings:** total points per player (LP earned + achievements + end awards), with a tap-to-expand breakdown
+- **End awards:** who's leading each award right now, and the winners once the challenge is over
+- the challenge dates and a countdown to the end
+- where everyone stands in rank, how far they moved since the start or this week, and rank over time
+- a players table and a feed of everyone's latest games
+- a Prime League tab with our draft pool, comps and a scouting tool
 
-It runs for free on GitHub. A scheduled job fetches data from the Riot API every hour and saves it into this repository. The website is a static page on GitHub Pages that reads that saved file. Your API key stays in a GitHub secret and never reaches the website.
+It runs for free on GitHub. A scheduled job fetches data from the Riot API every 30 minutes, scores it and saves it into this repository. The website is a static page on GitHub Pages that only displays that saved file. Your API key stays in a GitHub secret and never reaches the website.
+
+## How scoring works
+
+**Total = LP earned + achievements + end awards.** End awards only count once the challenge is over; until then they show as "ausstehend".
+
+**LP earned:** net Solo/Duo LP change during the challenge, on one scale where every division is 100 LP (Plat 4 0 LP → Plat 1 0 LP = +300; Master and above is one open-ended scale). Losses subtract, so it can be negative.
+- The starting rank is the first rank snapshot at or after the start. Riot's API has no past LP, so it's recorded on the first update after the start. Players unranked at that point start from their first ranked snapshot.
+- After the end date, LP is frozen at the last snapshot before the end.
+
+**Achievements** (live):
+
+| | Points |
+| --- | --- |
+| Each different champion played | +5 |
+| Pentakill | +10 |
+| Quadrakill (one that didn't become a penta) | +5 |
+| Off-role win: a win where your position isn't the `role` in the config | +5 |
+
+Off-role only works for players with a role of `Top`, `Jungle`, `Mid`, `ADC` or `Support`. Anything else (for example `""` or `"Fill"`) never counts, and games with no position are skipped.
+
+**End awards** (+10 each, handed out after the end date; everyone tied for first gets the full points):
+
+Most games · Highest win rate · Highest KDA · Lowest KDA · Best vision score per minute · Longest win streak · Longest losing streak · Most deaths per game · One-trick
+
+Win rate, both KDA awards, vision and deaths per game need at least `minGames` (20) games. **One-trick:** each player's best champion by win rate (with at least 10 games on it); the two players with the highest such win rate get +10 each, and anyone tied at the cut-off does too.
+
+Only ranked games played between the start and end date count (the queues in `queues`). Remakes don't count.
 
 ## Run it locally
 
 You need [Node.js](https://nodejs.org) 18 or newer. There are no packages to install.
 
 1. Copy `.env.example` to `.env` and paste your Riot API key into it (see step 1 below for getting one). `.env` is ignored by git.
-2. `npm run update` fetches ranks and games and writes `docs/data.json`.
+2. `npm run update` fetches ranks and games, scores them and writes `docs/data.json`.
 3. `npm start` serves the site on <http://localhost:8000>. Open <http://localhost:8000/?demo=1> to see it with sample data.
+4. `npm test` runs the scoring tests. `npm run sample` rebuilds the demo data in `docs/data.sample.json`.
 
 Edit `docs/index.html` and reload the browser to see changes.
 
-**Heads-up:** once the GitHub Action is running, it commits a fresh `docs/data.json` every hour. Run `git pull` before you start working, and don't commit a `data.json` from a local test run unless you mean to replace the live data.
+**Heads-up:** the GitHub Action commits a fresh `docs/data.json` every 30 minutes. Run `git pull` before you start working, and don't commit a `data.json` from a local test run unless you mean to replace the live data.
 
-## Setting the starting point
-
-`startAt` in `squad.config.json` is when the challenge starts. LP gains and game stats count from that moment.
-
-- **Start right now:** `npm run start-now`. This sets `startAt` to the current time, records everyone's current rank as their starting rank, and writes `docs/data.json`. Commit and push `squad.config.json` and `docs/data.json` afterwards.
-- **Start at a set time:** put a date and time in `startAt`, for example `"2026-10-01T18:00:00+02:00"`, and push. The site shows "Challenge starts …" until then. The starting rank is recorded on the first update after that time, so trigger the workflow by hand right at the start (Actions → Update squad data → Run workflow) if you want it exact. Otherwise it's taken at the next hourly run.
-
-Riot's API only returns the current rank, never past LP, so a starting rank can only be recorded at or after the start, not backdated. Changing `startAt` resets everyone's starting rank and game counters. Players who were unranked at the start get their starting rank once they finish placements.
-
-## Setup (about 15 minutes)
+## Setup
 
 ### 1. Get a Riot API key
 
 1. Sign in at <https://developer.riotgames.com> with your Riot account.
 2. On the dashboard you'll see a **Development API Key**. It works immediately but **expires every 24 hours**, so only use it for testing.
-3. For something that keeps running, click **Register Product** and choose **Personal API Key**. Describe it honestly, for example: "Private stats page tracking ranked progress for my group of 6 friends." Riot reviews it by hand, which can take a while. Once it's approved the key doesn't expire.
+3. For something that keeps running, click **Register Product** and choose **Personal API Key**. Describe it honestly, for example: "Private stats page tracking ranked progress for my group of 8 friends." Riot reviews it by hand, which can take a while. Once it's approved the key doesn't expire.
 
 ### 2. The repository
 
@@ -46,49 +66,47 @@ The code lives at <https://github.com/HeinoDoe/CLimbingChallenge>. It must stay 
 ### 3. Add the API key as a secret
 
 1. In the repository, go to **Settings → Secrets and variables → Actions**.
-2. Click **New repository secret**.
+2. Click **New repository secret** (or edit the existing one).
 3. Name it `RIOT_API_KEY` and paste your key as the value.
 
-When you replace a development key the next day, edit this same secret.
+When you replace a development key the next day, edit this same secret. Nothing is lost while it's expired: missed games are caught up on the next run.
 
 ### 4. Turn on the website
 
 1. Go to **Settings → Pages**.
 2. Under **Build and deployment**, choose **Deploy from a branch**, then branch `main` and folder `/docs`. Click **Save**.
-3. After a minute or two the page shows your site's address, `https://heinodoe.github.io/CLimbingChallenge/`. That's the link to share.
+3. The site is at <https://heinodoe.github.io/CLimbingChallenge/>.
 
-### 5. Run the first update
+### 5. Updating
 
-1. Open the **Actions** tab. If GitHub asks, click to enable workflows.
-2. Choose **Update squad data**, then **Run workflow**.
-3. When the run turns green, reload your site.
+The workflow runs every 30 minutes, but GitHub starts scheduled runs late or skips some when it's busy. To update right away: **Actions → Update squad data → Run workflow**.
 
-After that it updates by itself every hour.
-
-The first few runs catch up on older games, 60 per player per run, because of Riot's rate limits. While that's happening, the site says how many games are still loading.
+Run it by hand right after the challenge starts and right after it ends, so the LP baseline and the frozen final LP are as exact as possible.
 
 ## Customising
 
-Everything about the squad lives in `squad.config.json`:
+Everything lives in `squad.config.json`:
 
 | Setting | What it does |
 | --- | --- |
 | `squadName` | The big title on the page. |
-| `platform` / `region` | `euw1` / `europe` for EUW. EUNE is `eun1` / `europe`. |
-| `startAt` | When the challenge starts. LP gains and game stats count from here. Changing it restarts the counters on the next run. See "Setting the starting point". |
-| `queues` | `420` = Solo/Duo, `440` = Flex. For example, add `400` to include normal draft. |
-| `maxNewMatchesPerPlayerPerRun` | How many older games to catch up per run. Keep it at 60 or lower on a personal key. |
-| `players` | For each person: `name` (shown on the site), `riotId` (`Name#TAG`) and `role` (optional). Add or remove friends here. |
+| `platform` / `region` | `euw1` / `europe` for EUW. |
+| `challenge.start` / `challenge.end` | First and last day of the challenge (`YYYY-MM-DD`, both days included, midnight in `challenge.timeZone`). Changing them re-processes all games on the next runs. |
+| `challenge.timeZone` | Time zone for the dates. Default `Europe/Berlin`. |
+| `challenge.lpQueue` | Which queue's LP counts. `solo` or `flex`. |
+| `challenge.minGames` | Games needed for the rate-based awards (win rate, KDA, vision, deaths). |
+| `challenge.oneTrickMinGames` | Games on one champion needed for the one-trick award. |
+| `challenge.points` | Points for every achievement and award. |
+| `queues` | `420` = Solo/Duo, `440` = Flex. Only these games count for achievements and awards. |
+| `maxNewMatchesPerPlayerPerRun` | How many games to catch up per player per run. Keep it at 60 or lower on a personal key. |
+| `players` | For each person: `name` (shown on the site), `riotId` (`Name#TAG`) and `role` (`Top`, `Jungle`, `Mid`, `ADC`, `Support`, or empty). |
 
-To add or change a challenge, edit the `CHALLENGES` list near the top of the script in `docs/index.html`. Each board is a title, a description and a `value` function. You can use these tracked stats:
-
-`games`, `wins`, `kills`, `deaths`, `assists`, `doubleKills`, `tripleKills`, `quadraKills`, `pentaKills`, `firstBloods`, `soloKills`, `visionScore`, `timePlayed`, `damage`, `curStreak`, `bestWinStreak`, `maxKills`
+All scoring lives in `scripts/challenge.mjs`. If you change what it tracks per game, bump `STATS_VERSION` at the top: the next runs then reset everyone's game stats and re-process every challenge game (rank history is kept). Add a test in `scripts/challenge.test.mjs` for new rules.
 
 ## Good to know
 
-- **Rank history starts when you switch it on.** Riot's API only gives the current rank and LP, not past LP. The "Climb over time" graph fills in from day one onwards.
-- **Game stats can be backdated.** Pentas, streaks and so on come from match history, so if you set `startAt` in the past they go back to it. LP gains can't be backdated (see "Setting the starting point").
-- **LP is shown on one scale.** Every division is 100 points, so promotions and demotions show up as a smooth climb or drop. Master, Grandmaster and Challenger share one open-ended scale.
+- **Pentakills and quadrakills:** Riot's `quadraKills` counter also counts the quadra inside every pentakill (checked on real matches). The script subtracts those, so a penta gives +10, not +15.
+- **Catching up:** each run processes up to 60 new games per player, so after a date change or `STATS_VERSION` bump it can take a few runs until everything is counted. The page says how many games are still loading.
 - **The data is public.** Anyone with the link can see `docs/data.json`: ranks and match stats, which are public in League anyway.
 - **If updates stop,** check the Actions tab. A red run almost always means the API key expired (development keys last 24 hours). The run log says so explicitly.
 - **Riot's rules** require the "isn't endorsed by Riot Games" line at the bottom of the page. Leave it in.
@@ -96,12 +114,15 @@ To add or change a challenge, edit the `CHALLENGES` list near the top of the scr
 ## Files
 
 ```
-squad.config.json               who to track, and the start time
-package.json                    npm start / npm run update / npm run start-now
+squad.config.json               players and challenge settings
+package.json                    npm start / update / test / sample
 .env.example                    template for your local API key
-scripts/update.mjs              fetches data from the Riot API (Node 18+)
+scripts/update.mjs              fetches data from the Riot API and writes docs/data.json
+scripts/challenge.mjs           the scoring: dates, per-game stats, LP, achievements, awards
+scripts/challenge.test.mjs      scoring tests (npm test)
+scripts/make-sample.mjs         builds docs/data.sample.json (npm run sample)
 scripts/serve.mjs               local web server for docs/
-.github/workflows/update.yml    runs the script every hour and saves the result
+.github/workflows/update.yml    runs the update every 30 minutes and saves the result
 docs/index.html                 the website
 docs/data.json                  the data (written by the script, don't edit)
 docs/data.sample.json           sample data for ?demo=1

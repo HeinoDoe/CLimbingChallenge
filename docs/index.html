@@ -71,14 +71,44 @@
 
   .chart-box { position: relative; height: 380px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px; }
 
-  /* Standings since start */
-  .standings { min-width: 640px; }
-  .standings td.pos { font: 700 22px var(--display); color: var(--muted); width: 36px; }
-  .standings tr.first td.pos { color: #C9A13B; }
-  .standings .pl b { font-size: 20px; }
-  .standings .delta { font-size: 26px; }
-  .standings .arrow { color: var(--muted); padding: 0 6px; }
-  .standings .sw { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  /* Points standings */
+  .st { border-top: 2px solid var(--line); }
+  .st-head, .st-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) 90px 110px 110px 90px; gap: 10px; align-items: center; }
+  .st-head { font: 600 14px var(--body); color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line); }
+  .st-head span:nth-child(n+3), .st-row .n { text-align: right; }
+  .st-row { width: 100%; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 10px; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+  .st-row:hover { background: var(--panel); }
+  .st-row .pos { font: 700 24px var(--display); color: var(--muted); }
+  .st-row.first .pos { color: #C9A13B; }
+  .st-row .pl b { font-size: 20px; }
+  .st-row .n { font: 600 18px var(--display); font-variant-numeric: tabular-nums; }
+  .st-row .n small { display: none; font: 500 12px var(--body); color: var(--muted); }
+  .st-row .tot { font: 700 26px var(--display); }
+  .st-row .pend { font: 500 14px var(--body); color: var(--muted); font-style: italic; }
+  .st-row .chev { display: inline-block; margin-left: 6px; color: var(--muted); transition: transform .15s; }
+  .st-row[aria-expanded="true"] .chev { transform: rotate(90deg); }
+  .st-detail { background: var(--panel); border-bottom: 1px solid var(--line); padding: 12px 16px 14px 60px; font-size: 15px; }
+  .st-detail h4 { font: 700 17px var(--display); margin: 10px 0 4px; }
+  .st-detail h4:first-child { margin-top: 0; }
+  .st-detail ul { list-style: none; margin: 0; padding: 0; }
+  .st-detail li { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; border-bottom: 1px dashed var(--line); max-width: 560px; }
+  .st-detail li.muted { color: var(--muted); }
+  .st-detail li b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .countdown { font: 700 22px var(--display); color: var(--ink); display: block; margin-top: 4px; }
+  .award .status { display: inline-block; font: 600 12px var(--body); border-radius: 999px; padding: 1px 8px; margin-top: 6px; background: var(--bg); border: 1px solid var(--line); color: var(--muted); }
+  .award .status.won { background: #C9A13B; border-color: #C9A13B; color: #14222C; }
+  .award .who { font: 700 22px/1.1 var(--display); margin-top: 8px; }
+  .award .val { color: var(--muted); font-size: 14px; }
+  @media (max-width: 640px) {
+    .st-head { display: none; }
+    .st-row { grid-template-columns: 34px minmax(0, 1fr) auto; grid-template-areas: "pos who tot" ". nums nums"; row-gap: 4px; }
+    .st-row .pos { grid-area: pos; } .st-row .who { grid-area: who; } .st-row .tot { grid-area: tot; }
+    .st-row .nums { grid-area: nums; display: flex; gap: 14px; justify-content: flex-start; }
+    .st-row .n { text-align: left; font-size: 15px; } .st-row .n small { display: inline; margin-right: 3px; }
+    .st-row .n.tot { font-size: 26px; text-align: right; }
+    .st-detail { padding-left: 16px; }
+  }
+  @media (min-width: 641px) { .st-row .nums { display: contents; } }
 
   /* Challenges */
   .boards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 28px 32px; }
@@ -158,7 +188,7 @@
   .scout textarea { width: 100%; max-width: 560px; min-height: 110px; font: 15px var(--body); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
   .btn { display: inline-block; font: 600 15px var(--body); background: var(--ink); color: var(--bg); border: 0; border-radius: 999px; padding: 8px 18px; cursor: pointer; text-decoration: none; margin-top: 8px; }
 
-  @media (max-width: 860px) { .wall-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 860px) { .wall-grid { grid-template-columns: minmax(0, 1fr); } }
 </style>
 </head>
 <body>
@@ -271,26 +301,22 @@
 
 <script>
 // ---------- Settings you may want to change ----------
-const MIN_GAMES_FOR_RATES = 10;           // win rate / KDA boards need at least this many tracked games
 const PLAYER_COLORS = ['#2B59C3', '#1E8C6E', '#8E3BB5', '#C0392B', '#C08A0E', '#3D7A96', '#D0587E', '#5B8C2A', '#7A5230', '#5E6AD2'];
 
-// Each board ranks every player by value(p). Return null to leave a player unranked.
-// Add, remove or reorder boards here.
-const CHALLENGES = [
-  { title: 'Biggest climber', desc: 'Most solo queue LP gained since the start', value: p => startGain(p, 'solo'), fmt: v => signed(v) + ' LP' },
-  { title: 'Pentakill hunter', desc: 'Most pentakills', value: p => p.stats.pentaKills, fmt: v => v, tie: p => p.stats.quadraKills },
-  { title: 'Quadra collector', desc: 'Most quadrakills', value: p => p.stats.quadraKills, fmt: v => v, tie: p => p.stats.tripleKills },
-  { title: 'Climber of the week', desc: 'Most solo queue LP gained in the last 7 days', value: p => weekGain(p, 'solo'), fmt: v => signed(v) + ' LP' },
-  { title: 'Win rate', desc: `Best win rate, at least ${MIN_GAMES_FOR_RATES} games`, value: p => p.stats.games >= MIN_GAMES_FOR_RATES ? p.stats.wins / p.stats.games : null, fmt: v => pct(v) },
-  { title: 'KDA', desc: `(Kills + assists) per death, at least ${MIN_GAMES_FOR_RATES} games`, value: p => p.stats.games >= MIN_GAMES_FOR_RATES ? (p.stats.kills + p.stats.assists) / Math.max(1, p.stats.deaths) : null, fmt: v => v.toFixed(2) },
-  { title: 'Hot hand', desc: 'Longest win streak', value: p => p.stats.bestWinStreak, fmt: v => v + ' wins' },
-  { title: 'Biggest game', desc: 'Most kills in a single game', value: p => p.stats.maxKills, fmt: (v, p) => `${v} (${champName(p.stats.maxKillsChamp)})` },
-  { title: 'First blood', desc: 'Most first bloods', value: p => p.stats.firstBloods, fmt: v => v },
-  { title: 'Duelist', desc: 'Most solo kills', value: p => p.stats.soloKills, fmt: v => v },
-  { title: 'Eyes everywhere', desc: 'Vision score per minute', value: p => p.stats.timePlayed ? p.stats.visionScore / (p.stats.timePlayed / 60) : null, fmt: v => v.toFixed(2) },
-  { title: 'Grinder', desc: 'Most ranked games played', value: p => p.stats.games, fmt: v => v },
-  { title: 'Riot challenges', desc: 'Official challenge points', value: p => p.challengePoints?.current ?? null, fmt: (v, p) => `${v.toLocaleString()} (${cap(p.challengePoints.level)})` },
-];
+// How each end award's value is shown. Points and winners come from data.json
+// (scripts/challenge.mjs); the page never recalculates them.
+const AWARD_FMT = {
+  mostGames: v => `${v} games`,
+  highestWinRate: v => pct(v),
+  highestKda: v => v.toFixed(2) + ' KDA',
+  lowestKda: v => v.toFixed(2) + ' KDA',
+  bestVision: v => v.toFixed(2) + ' / min',
+  longestWinStreak: v => `${v} wins in a row`,
+  longestLoseStreak: v => `${v} losses in a row`,
+  mostDeathsPerGame: v => v.toFixed(1) + ' deaths / game',
+  oneTrick: (v, d) => `${pct(v)}${d ? ` on ${champName(d.champ)} (${d.games} games)` : ''}`,
+};
+const fmtAward = (key, v, d) => v == null ? '–' : (AWARD_FMT[key] || (x => x))(v, d);
 
 // ---------- Memes ----------
 // Scrolls across the top. Add your own.
@@ -312,10 +338,10 @@ const today = Math.floor(Date.now() / 86_400_000);
 const quip = k => QUIPS[k][today % QUIPS[k].length];
 
 function roastLine() {
-  const q = 'solo';
-  const rows = players.map(p => ({ p, g: startGain(p, q) })).filter(r => r.g != null).sort((a, b) => a.g - b.g);
+  const rows = players.map(p => ({ p, g: p.points?.lp })).filter(r => r.g != null).sort((a, b) => a.g - b.g);
   const tilted = players.filter(p => (p.stats?.curStreak ?? 0) <= -3).sort((a, b) => a.stats.curStreak - b.stats.curStreak)[0];
   const hot = players.filter(p => (p.stats?.curStreak ?? 0) >= 3).sort((a, b) => b.stats.curStreak - a.stats.curStreak)[0];
+  if (phase() === 'before') return `<b>Aufwärmen:</b> Noch ${countdownText(challenge().startMs)} bis zum Start. Letzte Chance, heimlich zu üben.`;
   if (tilted) return `<b>Tilt-Alarm:</b> ${esc(nameOf(tilted))} hat ${-tilted.stats.curStreak} Games in Folge verloren. Jemand sollte den PC ausmachen.`;
   if (rows.length && rows[0].g < 0) return `<b>Lappen des Tages:</b> ${esc(nameOf(rows[0].p))} hat seit dem Start ${-rows[0].g} LP gespendet. Danke für die Spende.`;
   if (hot) return `<b>On fire:</b> ${esc(nameOf(hot))} hat ${hot.stats.curStreak} Siege in Folge. Wer hat den gekauft?`;
@@ -330,7 +356,7 @@ const TIER_COLORS = { IRON: '#6E6A68', BRONZE: '#8C5A3C', SILVER: '#7F8E99', GOL
 const QUEUE_NAMES = { 420: 'Solo/Duo', 440: 'Flex' };
 const DAY = 86_400_000;
 
-let data, players, ddVersion = '16.18.1', state = { queue: 'solo', period: 'start' }, chart;
+let data, players, ddVersion = '16.18.1', state = { queue: 'solo', period: 'start', open: new Set() }, chart;
 
 const cap = s => s ? s[0] + s.slice(1).toLowerCase() : '';
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -341,6 +367,7 @@ const colorOf = i => PLAYER_COLORS[i % PLAYER_COLORS.length];
 const champName = c => ({ MonkeyKing: 'Wukong', Belveth: "Bel'Veth", Khazix: "Kha'Zix", ChoGath: "Cho'Gath", Chogath: "Cho'Gath", JarvanIV: 'Jarvan IV', KSante: "K'Sante", Kaisa: "Kai'Sa", Velkoz: "Vel'Koz", RekSai: "Rek'Sai", KogMaw: "Kog'Maw", MissFortune: 'Miss Fortune', MasterYi: 'Master Yi', TwistedFate: 'Twisted Fate', LeeSin: 'Lee Sin', XinZhao: 'Xin Zhao', DrMundo: 'Dr. Mundo', TahmKench: 'Tahm Kench', AurelionSol: 'Aurelion Sol', Leblanc: 'LeBlanc', Nunu: 'Nunu & Willump', Renata: 'Renata Glasc' }[c] || c || '');
 const champImg = c => `https://ddragon.leagueoflegends.com/cdn/${ddVersion}/img/champion/${c}.png`;
 const iconImg = id => `https://ddragon.leagueoflegends.com/cdn/${ddVersion}/img/profileicon/${id}.png`;
+const byKey = k => players.find(p => p.key === k);
 
 function scoreText(v, short) {
   if (v == null) return 'Unranked';
@@ -368,28 +395,30 @@ function weekGain(p, q) {
   const past = scoreAt(p, q, Date.now() - 7 * DAY);
   return cur == null || past == null ? null : cur - past;
 }
-// ---------- Starting point ----------
-// The script stores each player's rank at the first update after startAt in p.start.
-// Older data (and the demo) has no p.start, so fall back to the rank history.
-const startIso = () => data.startAt || data.trackSince;
-const startMs = () => Date.parse(startIso());
-const started = () => Date.now() >= startMs();
-function startScore(p, q) {
-  if (!started()) return null;
-  return p.start?.[q]?.score ?? scoreAt(p, q, startMs());
+// ---------- Challenge timing ----------
+const challenge = () => data.challenge;
+const phase = () => { const c = challenge(), now = Date.now(); return now < c.startMs ? 'before' : now < c.endMs ? 'running' : 'over'; };
+const awardsFinal = () => (data.awards || []).some(a => a.final);
+function countdownText(to) {
+  let s = Math.max(0, Math.round((to - Date.now()) / 1000));
+  const d = Math.floor(s / 86400); s -= d * 86400;
+  const h = Math.floor(s / 3600); s -= h * 3600;
+  const m = Math.floor(s / 60);
+  return d ? `${d}d ${h}h` : h ? `${h}h ${m}min` : `${m}min`;
 }
-function startGain(p, q) {
-  const cur = p.ranks?.[q]?.score ?? null, base = startScore(p, q);
-  return cur == null || base == null ? null : cur - base;
+function countdownLine() {
+  const c = challenge();
+  return phase() === 'before' ? `Starts in ${countdownText(c.startMs)}` : phase() === 'running' ? `Ends in ${countdownText(c.endMs)}` : 'Challenge over';
 }
-function startGames(p, q) {
-  const r = p.ranks?.[q], b = p.start?.[q];
-  if (!r || !b) return null;
-  return { wins: r.wins - b.wins, losses: r.losses - b.losses };
+const dayFmt = (ms, opts) => new Date(ms).toLocaleDateString(undefined, { timeZone: challenge().timeZone || 'Europe/Berlin', ...opts });
+const challengeDates = () => `${dayFmt(challenge().startMs, { day: 'numeric', month: 'long' })} – ${dayFmt(challenge().endMs - 1, { day: 'numeric', month: 'long', year: 'numeric' })}`;
+const baseScore = (p, q) => q === (challenge().lpQueue || 'solo') ? p.points?.lpInfo?.baseScore ?? null : (phase() === 'before' ? null : scoreAt(p, q, challenge().startMs));
+const pastScore = (p, q) => state.period === 'start' ? baseScore(p, q) : scoreAt(p, q, Date.now() - 7 * DAY);
+function periodGain(p, q) {
+  const cur = p.ranks?.[q]?.score ?? null, past = pastScore(p, q);
+  if (state.period === 'start' && q === (challenge().lpQueue || 'solo')) return p.points?.lp ?? null;
+  return cur == null || past == null ? null : cur - past;
 }
-const pastScore = (p, q) => state.period === 'start' ? startScore(p, q) : scoreAt(p, q, Date.now() - 7 * DAY);
-const periodGain = (p, q) => state.period === 'start' ? startGain(p, q) : weekGain(p, q);
-const fmtDateTime = iso => new Date(iso).toLocaleString(undefined, { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
 function timeAgo(ms) {
   const s = (Date.now() - ms) / 1000;
@@ -398,7 +427,6 @@ function timeAgo(ms) {
   if (s < 86400) return Math.round(s / 3600) + ' h ago';
   return Math.round(s / 86400) + ' days ago';
 }
-const fmtDate = iso => new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
 
 // ---------- Rendering ----------
 function renderShell() {
@@ -409,30 +437,35 @@ function renderShell() {
     ${demo ? '<div class="banner">Sample data preview. Remove ?demo=1 from the address to see your real data.</div>' : ''}
     <header class="top">
       <h1>${esc(data.squadName || 'Squad ladder')}</h1>
-      <p class="meta">Updated <strong>${timeAgo(Date.parse(data.updatedAt))}</strong>.
-        ${started() ? `Challenge started <strong>${fmtDateTime(startIso())}</strong>: ${tracked} ranked games so far${pending ? `, ${pending} older games still being loaded` : ''}.`
-          : `Challenge starts <strong>${fmtDateTime(startIso())}</strong>.`}</p>
+      <p class="meta"><strong>${challengeDates()}</strong><span class="countdown" id="countdown">${countdownLine()}</span>
+        Updated <strong>${timeAgo(Date.parse(data.updatedAt))}</strong>. ${tracked} ranked games in the challenge${pending ? `, ${pending} more still loading` : ''}.</p>
     </header>
     <p class="roast">${roastLine()}</p>
 
     <section style="margin-top:0">
-      <div style="display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <div><h2>Since the start</h2><p class="lede" style="margin:0">LP gained or lost since the challenge started, highest first.<span class="quip">${quip('standings')}</span></p></div>
-        <div class="seg" role="group" aria-label="Ranked queue">
-          <button type="button" data-q="solo" aria-pressed="true">Solo/Duo</button>
-          <button type="button" data-q="flex" aria-pressed="false">Flex</button>
-        </div>
-      </div>
-      <div class="table-scroll"><table class="standings" id="standings"></table></div>
-      <p class="footnote">The starting rank is recorded on the first update after the start time. Players who were unranked then get their starting rank once they finish placements.</p>
+      <h2>Standings</h2>
+      <p class="lede">Total = Solo/Duo LP earned + achievements${awardsFinal() ? ' + end awards' : ', plus end awards once the challenge is over'}. Tap a player for the breakdown.<span class="quip">${quip('standings')}</span></p>
+      <div class="st" id="standings"></div>
+    </section>
+
+    <section>
+      <h2>End awards</h2>
+      <p class="lede">+${(data.awards || [])[0]?.points ?? 10} each, handed out when the challenge ends. Ties for first all get the points.<span class="quip">${quip('boards')}</span></p>
+      <div class="boards" id="boards"></div>
     </section>
 
     <section>
       <div style="display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;margin-bottom:14px">
         <div><h2>The wall</h2><p class="lede" style="margin:0">Where everyone stands right now. The faded line shows how far each player moved <span id="periodtext"></span>.<span class="quip">${quip('wall')}</span></p></div>
-        <div class="seg" role="group" aria-label="Compare with">
-          <button type="button" data-p="start" aria-pressed="true">Since start</button>
-          <button type="button" data-p="week" aria-pressed="false">Last 7 days</button>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <div class="seg" role="group" aria-label="Ranked queue">
+            <button type="button" data-q="solo" aria-pressed="true">Solo/Duo</button>
+            <button type="button" data-q="flex" aria-pressed="false">Flex</button>
+          </div>
+          <div class="seg" role="group" aria-label="Compare with">
+            <button type="button" data-p="start" aria-pressed="true">Since start</button>
+            <button type="button" data-p="week" aria-pressed="false">Last 7 days</button>
+          </div>
         </div>
       </div>
       <div class="wall-grid">
@@ -446,12 +479,6 @@ function renderShell() {
       <h2>Climb over time</h2>
       <p class="lede">Rank history starts on the day the tracker was switched on. Riot doesn't provide older LP.</p>
       <div class="chart-box"><canvas id="chart" aria-label="Rank over time"></canvas></div>
-    </section>
-
-    <section>
-      <h2>Challenges</h2>
-      <p class="lede">Ranked Solo/Duo and Flex games since ${fmtDate(startIso())}. Remakes don't count.<span class="quip">${quip('boards')}</span></p>
-      <div class="boards" id="boards"></div>
     </section>
 
     <section>
@@ -470,7 +497,7 @@ function renderShell() {
   document.querySelectorAll('.seg button[data-q]').forEach(b => b.addEventListener('click', () => {
     state.queue = b.dataset.q;
     document.querySelectorAll('.seg button[data-q]').forEach(x => x.setAttribute('aria-pressed', x.dataset.q === b.dataset.q));
-    renderStandings(); renderWall(); renderWeek(); renderChart();
+    renderWall(); renderWeek(); renderChart();
   }));
   document.querySelectorAll('.seg button[data-p]').forEach(b => b.addEventListener('click', () => {
     state.period = b.dataset.p;
@@ -480,28 +507,92 @@ function renderShell() {
 }
 
 function renderStandings() {
-  const q = state.queue;
-  const rows = players.map((p, i) => ({ p, i, g: startGain(p, q), base: startScore(p, q), games: startGames(p, q) }))
-    .sort((a, b) => (b.g ?? -1e9) - (a.g ?? -1e9));
-  const head = `<thead><tr><th></th><th>Player</th><th>Start</th><th></th><th>Now</th><th>LP</th><th>Games since start</th></tr></thead>`;
-  const ranked = rows.filter(r => r.g != null);
-  const spread = ranked.length > 1 && ranked[0].g > ranked.at(-1).g;
-  const badges = (p, g) => [
-    spread && g === ranked[0].g ? '👑 Carry' : '',
-    spread && g === ranked.at(-1).g ? '🤡 Lappen' : '',
+  const final = awardsFinal();
+  const rows = players.map((p, i) => ({ p, i, P: p.points || {} }))
+    .sort((a, b) => (b.P.total ?? 0) - (a.P.total ?? 0) || nameOf(a.p).localeCompare(nameOf(b.p)));
+  const totals = rows.map(r => r.P.total ?? 0);
+  const spread = Math.max(...totals) > Math.min(...totals);
+  const badges = (p, P) => [
+    spread && P.place === 1 ? '👑 Carry' : '',
+    spread && (P.total ?? 0) === Math.min(...totals) ? '🤡 Lappen' : '',
     (p.stats?.curStreak ?? 0) >= 3 ? `🔥 ${p.stats.curStreak} Siege` : '',
     (p.stats?.curStreak ?? 0) <= -3 ? `💀 Tilt (${-p.stats.curStreak})` : '',
   ].filter(Boolean).map(b => `<span class="badge">${b}</span>`).join('');
-  const body = rows.map(({ p, i, g, base, games }, k) => `<tr class="${k === 0 && g > 0 ? 'first' : ''}">
-      <td class="pos">${g == null ? '' : k + 1}</td>
-      <td><div class="pl">${p.profileIconId != null ? `<img src="${iconImg(p.profileIconId)}" alt="" style="border-color:${colorOf(i)}" onerror="this.style.visibility='hidden'">` : `<span class="sw" style="background:${colorOf(i)}"></span>`}
-        <div><b>${esc(nameOf(p))}${badges(p, g)}</b><span>${esc(p.riotId)}</span>${p.error ? `<div class="err">${esc(p.error)}</div>` : ''}</div></div></td>
-      <td class="rk">${base == null ? '<span style="color:var(--muted)">–</span>' : esc(p.start?.[q] ? rankText(p.start[q]) : scoreText(base))}</td>
-      <td class="arrow">→</td>
-      <td class="rk">${esc(rankText(p.ranks?.[q]))}</td>
-      <td><span class="delta ${g > 0 ? 'up' : g < 0 ? 'down' : 'flat'}">${g == null ? '–' : signed(g)}</span></td>
-      <td class="num">${games ? `${games.wins + games.losses} (${games.wins}W ${games.losses}L)` : '–'}</td></tr>`).join('');
-  document.getElementById('standings').innerHTML = head + '<tbody>' + body + '</tbody>';
+
+  const head = `<div class="st-head" aria-hidden="true"><span>#</span><span>Player</span><span>LP earned</span><span>Achievements</span><span>End awards</span><span>Total</span></div>`;
+  const body = rows.map(({ p, i, P }) => {
+    const open = state.open.has(p.key);
+    const awardsCell = final ? signedPts(P.awardsTotal ?? 0) : '<span class="pend">ausstehend</span>';
+    return `<button type="button" class="st-row ${P.place === 1 && spread ? 'first' : ''}" data-key="${esc(p.key)}" aria-expanded="${open}">
+        <span class="pos">${P.place ?? ''}</span>
+        <span class="who"><span class="pl">${p.profileIconId != null ? `<img src="${iconImg(p.profileIconId)}" alt="" style="border-color:${colorOf(i)}" onerror="this.style.visibility='hidden'">` : ''}
+          <span><b>${esc(nameOf(p))}${badges(p, P)}<span class="chev">›</span></b><span>${esc(p.riotId)}</span>${p.error ? `<span class="err" style="display:block">${esc(p.error)}</span>` : ''}</span></span></span>
+        <span class="nums">
+          <span class="n ${P.lp > 0 ? 'up' : P.lp < 0 ? 'down' : ''}" style="color:${P.lp > 0 ? 'var(--up)' : P.lp < 0 ? 'var(--down)' : 'inherit'}"><small>LP</small>${P.lp == null ? '–' : signed(P.lp)}</span>
+          <span class="n"><small>Achiev.</small>${signedPts(P.achievementsTotal ?? 0)}</span>
+          <span class="n"><small>Awards</small>${awardsCell}</span>
+        </span>
+        <span class="n tot">${P.total ?? 0}</span>
+      </button>
+      <div class="st-detail" id="detail-${esc(p.key)}" ${open ? '' : 'hidden'}>${breakdown(p)}</div>`;
+  }).join('');
+  const el = document.getElementById('standings');
+  el.innerHTML = head + body;
+  el.querySelectorAll('.st-row').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.key, open = !state.open.has(k);
+    open ? state.open.add(k) : state.open.delete(k);
+    b.setAttribute('aria-expanded', open);
+    document.getElementById('detail-' + k).hidden = !open;
+  }));
+}
+const signedPts = v => v > 0 ? '+' + v : String(v);
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+function breakdown(p) {
+  const P = p.points || {}, A = P.achievements || {}, L = P.lpInfo, final = awardsFinal();
+  const line = (label, value, muted) => `<li class="${muted ? 'muted' : ''}"><span>${label}</span><b>${value}</b></li>`;
+  const ach = (a, one, many, extra = '') => a ? line(`${plural(a.count, one, many)} × ${a.per}${extra}`, '= ' + a.points, !a.count) : '';
+
+  const lp = L
+    ? line(`${esc(scoreText(L.baseScore))} → ${esc(scoreText(L.endScore))}${L.frozen ? ' (final)' : ''}`, signed(L.lp) + ' LP')
+    : line('No ranked Solo/Duo snapshot in the challenge yet', '0', true);
+
+  const awards = (data.awards || []).map(a => {
+    const mine = P.awards?.[a.key];
+    if (!mine) return '';
+    if (mine.leader) return line(`${esc(a.title)}: ${esc(fmtAward(a.key, mine.value, mine.detail))}`, final ? '+' + mine.points : `${final ? '' : 'ausstehend '}(+${a.points})`);
+    if (!mine.qualifies && mine.note) return line(`${esc(a.title)}: needs ${esc(mine.note)}`, '–', true);
+    return '';
+  }).join('');
+
+  return `<h4>LP earned (Solo/Duo)</h4><ul>${lp}</ul>
+    <h4>Achievements</h4><ul>
+      ${ach(A.uniqueChampions, 'champion', 'champions')}
+      ${ach(A.pentakills, 'pentakill', 'pentakills')}
+      ${ach(A.quadrakills, 'quadrakill', 'quadrakills')}
+      ${ach(A.offRoleWins, 'off-role win', 'off-role wins', p.role && !['top', 'jungle', 'mid', 'adc', 'support'].includes(p.role.toLowerCase()) ? '' : p.role ? ` (main role ${esc(p.role)})` : ' (no main role set)')}
+    </ul>
+    <h4>End awards ${final ? '' : '<span class="pend" style="font:500 13px var(--body)">ausstehend: currently leading</span>'}</h4><ul>${awards || line('None yet', '0', true)}</ul>
+    <h4>Total</h4><ul>${line(`${P.lp ?? 0} LP + ${P.achievementsTotal ?? 0} achievements${final ? ` + ${P.awardsTotal ?? 0} awards` : ''}`, '= ' + (P.total ?? 0))}</ul>`;
+}
+
+function renderBoards() {
+  const final = awardsFinal();
+  document.getElementById('boards').innerHTML = (data.awards || []).map(a => {
+    const leaders = a.leaders.map(l => ({ ...l, p: byKey(l.key) })).filter(l => l.p);
+    const color = leaders.length ? colorOf(players.indexOf(leaders[0].p)) : 'var(--line)';
+    const rest = a.ranking.filter(r => !a.leaders.some(l => l.key === r.key)).map(r => ({ ...r, p: byKey(r.key) })).filter(r => r.p);
+    return `<div class="board award" style="border-top-color:${color}">
+      <h3>${esc(a.title)} <span style="font:600 15px var(--display);color:var(--muted)">+${a.points}</span></h3><p>${esc(a.desc)}</p>
+      ${leaders.length
+        ? (leaders.every(l => l.value === leaders[0].value && !l.detail)
+          ? `<div class="who">${leaders.map(l => esc(nameOf(l.p))).join(', ')}</div><div class="val">${esc(fmtAward(a.key, leaders[0].value, leaders[0].detail))}</div>`
+          : leaders.map(l => `<div class="who">${esc(nameOf(l.p))}</div><div class="val">${esc(fmtAward(a.key, l.value, l.detail))}</div>`).join(''))
+        : '<div class="val" style="margin-top:8px">Nobody qualifies yet.</div>'}
+      <span class="status ${final && leaders.length ? 'won' : ''}">${final ? (leaders.length ? (a.key === 'oneTrick' || leaders.length > 1 ? 'Winners' : 'Winner') : 'No winner') : 'ausstehend'}</span>
+      ${rest.length ? `<ol style="margin-top:10px">${rest.slice(0, 3).map(r => `<li class="none"><span>${esc(nameOf(r.p))}</span><span>${esc(fmtAward(a.key, r.value, r.detail))}</span></li>`).join('')}</ol>` : ''}
+    </div>`;
+  }).join('');
 }
 
 function renderWall() {
@@ -591,21 +682,8 @@ function renderChart() {
   });
 }
 
-function renderBoards() {
-  document.getElementById('boards').innerHTML = CHALLENGES.map(ch => {
-    const rows = players.map((p, i) => ({ p, i, v: p.stats ? ch.value(p) : null }));
-    const ranked = rows.filter(r => r.v != null).sort((a, b) => (b.v - a.v) || ((ch.tie?.(b.p) ?? 0) - (ch.tie?.(a.p) ?? 0)));
-    const rest = rows.filter(r => r.v == null);
-    const leader = ranked.length && ranked[0].v > 0 ? ranked[0] : null;
-    return `<div class="board" style="border-top-color:${leader ? colorOf(leader.i) : 'var(--line)'}">
-      <h3>${esc(ch.title)}</h3><p>${esc(ch.desc)}</p>
-      <ol>${ranked.map((r, k) => `<li class="${k === 0 && leader ? 'lead' : ''}"><span>${esc(nameOf(r.p))}</span><span class="v">${esc(ch.fmt(r.v, r.p))}</span></li>`).join('')}
-      ${rest.map(r => `<li class="none"><span>${esc(nameOf(r.p))}</span><span>–</span></li>`).join('')}</ol></div>`;
-  }).join('');
-}
-
 function renderPlayers() {
-  const head = `<thead><tr><th>Player</th><th>Solo/Duo</th><th>Flex</th><th>Tracked games</th><th>Win rate</th><th>Streak</th><th>Most played</th><th>Last game</th></tr></thead>`;
+  const head = `<thead><tr><th>Player</th><th>Solo/Duo</th><th>Flex</th><th>Challenge games</th><th>Win rate</th><th>Streak</th><th>Most played</th><th>Last game</th></tr></thead>`;
   const body = players.map((p, i) => {
     const s = p.stats || {};
     const last = (p.recent || []).at(-1);
@@ -778,9 +856,20 @@ async function main() {
   }
   players = data.players || [];
   if (!players.length) return renderEmpty('The tracker is set up, but the first update has not run yet.');
-  if (demo) data.updatedAt = new Date(Date.now() - 35 * 60_000).toISOString();
+  if (demo) { // move the sample's clock so it always looks mid-challenge, updated 35 min ago
+    const shift = Math.round((Date.now() - Date.parse(data.updatedAt)) / DAY) * DAY, iso = t => new Date(Date.parse(t) + shift).toISOString();
+    data.updatedAt = new Date(Date.now() - 35 * 60_000).toISOString();
+    if (data.challenge) { data.challenge.startMs += shift; data.challenge.endMs += shift; }
+    for (const p of data.players || []) {
+      (p.history || []).forEach(h => { h.t = iso(h.t); });
+      (p.recent || []).forEach(g => { g.t += shift; });
+      if (p.points?.lpInfo) { p.points.lpInfo.baseT = iso(p.points.lpInfo.baseT); p.points.lpInfo.endT = iso(p.points.lpInfo.endT); }
+    }
+  }
   document.title = data.squadName || 'Squad ladder';
-  renderShell(); renderStandings(); renderWall(); renderWeek(); renderChart(); renderBoards(); renderPlayers(); renderFeed(); renderRoster();
+  if (!data.challenge) return renderEmpty('The data file is from before the points challenge. Run the "Update squad data" workflow once.');
+  renderShell(); renderStandings(); renderBoards(); renderWall(); renderWeek(); renderChart(); renderPlayers(); renderFeed(); renderRoster();
+  setInterval(() => { const el = document.getElementById('countdown'); if (el) el.textContent = countdownLine(); }, 30_000);
 }
 document.getElementById('ticker').textContent = (TICKER.join('   ·   ') + '   ·   ').repeat(2); // doubled so the loop is seamless
 renderPrime();
