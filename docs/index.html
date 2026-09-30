@@ -36,6 +36,7 @@
 
   header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; margin-bottom: 28px; }
   h1 { font: 700 clamp(48px, 9vw, 96px)/.88 var(--display); letter-spacing: -.01em; margin: 0; }
+  .goat { font: 700 clamp(30px, 5.5vw, 56px)/1.02 var(--display); color: #C9A13B; text-shadow: 2px 2px 0 var(--line); margin: 0 0 18px; max-width: 24ch; text-wrap: balance; }
   .meta { color: var(--muted); font-size: 15px; max-width: 46ch; }
   .meta strong { color: var(--ink); font-weight: 600; }
 
@@ -94,7 +95,6 @@
   .st-detail li { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; border-bottom: 1px dashed var(--line); max-width: 560px; }
   .st-detail li.muted { color: var(--muted); }
   .st-detail li b { font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .countdown { font: 700 22px var(--display); color: var(--ink); display: block; margin-top: 4px; }
   .award .status { display: inline-block; font: 600 12px var(--body); border-radius: 999px; padding: 1px 8px; margin-top: 6px; background: var(--bg); border: 1px solid var(--line); color: var(--muted); }
   .award .status.won { background: #C9A13B; border-color: #C9A13B; color: #14222C; }
   .award .who { font: 700 22px/1.1 var(--display); margin-top: 8px; }
@@ -415,19 +415,6 @@ function countdownText(to) {
   const m = Math.floor(s / 60);
   return d ? `${d}d ${h}h` : h ? `${h}h ${m}min` : `${m}min`;
 }
-function countdownLine() {
-  const c = challenge();
-  if (c.preview && phase() === 'running') return `Trial run: resets in ${countdownText(c.endMs)}`;
-  return phase() === 'before' ? `Starts in ${countdownText(c.startMs)}` : phase() === 'running' ? `Ends in ${countdownText(c.endMs)}` : 'Challenge over';
-}
-const dayFmt = (ms, opts) => new Date(ms).toLocaleDateString(undefined, { timeZone: challenge().timeZone || 'Europe/Berlin', ...opts });
-const dateRange = (a, b) => `${dayFmt(a, { day: 'numeric', month: 'long' })} – ${dayFmt(b - 1, { day: 'numeric', month: 'long', year: 'numeric' })}`;
-function challengeDates() {
-  const c = challenge();
-  return c.preview
-    ? `Trial run ${dateRange(c.startMs, c.endMs)}<br><span style="font-weight:400">Real challenge ${dateRange(c.realStartMs, c.realEndMs)}. Everything resets at the start.</span>`
-    : dateRange(c.startMs, c.endMs);
-}
 const baseScore = (p, q) => ptsOf(p, q).lpInfo?.baseScore ?? null;
 const pastScore = (p, q) => state.period === 'start' ? baseScore(p, q) : scoreAt(p, q, Date.now() - 7 * DAY);
 function periodGain(p, q) {
@@ -447,14 +434,11 @@ function timeAgo(ms) {
 // ---------- Rendering ----------
 function renderShell() {
   const demo = new URLSearchParams(location.search).has('demo');
-  const tracked = players.reduce((n, p) => n + (modeOf(p).stats.games || 0), 0);
-  const pending = players.reduce((n, p) => n + (p.pendingMatches || 0), 0);
   document.getElementById('app').innerHTML = `
     ${demo ? '<div class="banner">Sample data preview. Remove ?demo=1 from the address to see your real data.</div>' : ''}
+    <p class="goat">Wer bis zum 14.10 am meisten Punkte gefarmt hat ist der GOAT</p>
     <header class="top">
       <h1>${esc(data.squadName || 'Squad ladder')}</h1>
-      <p class="meta"><strong>${challengeDates()}</strong><span class="countdown" id="countdown">${countdownLine()}</span>
-        Updated <strong>${timeAgo(Date.parse(data.updatedAt))}</strong>. ${tracked} Solo/Duo games in the challenge${pending ? `, ${pending} more still loading` : ''}. Flex has <a href="#flex">its own tab</a>.</p>
     </header>
     <p class="roast">${roastLine()}</p>
 
@@ -732,12 +716,10 @@ function renderFeed(mode) {
 }
 
 function renderFlexTab() {
-  const tracked = players.reduce((n, p) => n + (modeOf(p, 'flex').stats.games || 0), 0);
   document.getElementById('tab-flex').innerHTML = `
+    <p class="goat">Wer bis zum 14.10 am meisten Punkte gefarmt hat ist der GOAT</p>
     <header class="top">
       <h1>Flex</h1>
-      <p class="meta"><strong>${challengeDates()}</strong><span class="countdown" data-countdown>${countdownLine()}</span>
-        Updated <strong>${timeAgo(Date.parse(data.updatedAt))}</strong>. ${tracked} Flex games in the challenge.</p>
     </header>
     <section style="margin-top:0">
       <h2>Flex standings</h2>
@@ -916,7 +898,6 @@ async function main() {
   if (!data.challenge || !data.awards?.solo) return renderEmpty('The data file is from an older version. Run the "Update squad data" workflow once.');
   renderShell(); renderStandings('solo'); renderBoards('solo'); renderWall(); renderWeek(); renderChart(); renderPlayers(); renderFeed('solo');
   renderFlexTab(); renderRoster();
-  setInterval(() => document.querySelectorAll('#countdown, [data-countdown]').forEach(el => { el.textContent = countdownLine(); }), 30_000);
 }
 document.getElementById('ticker').textContent = (TICKER.join('   ·   ') + '   ·   ').repeat(2); // doubled so the loop is seamless
 renderPrime();

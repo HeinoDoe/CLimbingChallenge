@@ -4,7 +4,6 @@ A points competition for the squad's ranked games in League of Legends. **Solo/D
 
 - **Standings:** total points per player (LP earned + achievements + end awards), with a tap-to-expand breakdown
 - **End awards:** who's leading each award right now, and the winners once the challenge is over
-- the challenge dates and a countdown to the end
 - where everyone stands in rank, how far they moved since the start or this week, and rank over time
 - a players table and a feed of everyone's latest games
 - a Prime League tab with our draft pool, comps and a scouting tool
@@ -94,7 +93,7 @@ Everything lives in `squad.config.json`:
 | --- | --- |
 | `squadName` | The big title on the page. |
 | `platform` / `region` | `euw1` / `europe` for EUW. |
-| `challenge.start` / `challenge.end` | First and last day of the challenge (`YYYY-MM-DD`, both days included, midnight in `challenge.timeZone`). Changing them re-processes all games on the next runs. |
+| `challenge.start` / `challenge.end` | First and last day of the challenge (`YYYY-MM-DD`, both days included, midnight in `challenge.timeZone`). A full timestamp like `2026-09-30T17:40:00+02:00` starts at that exact moment. Changing them re-processes all games on the next runs. |
 | `challenge.timeZone` | Time zone for the dates. Default `Europe/Berlin`. |
 | `challenge.preview.start` | Optional trial run from this day until `challenge.start`. Resets automatically when the real challenge starts. |
 | `challenge.minGames` | Games needed for the rate-based awards (win rate, KDA, vision, deaths). |
