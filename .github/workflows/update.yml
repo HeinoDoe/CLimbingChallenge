@@ -1,8 +1,7 @@
 name: Update squad data
 
+# Started once an hour by the "Hourly timer" workflow (timer.yml), or by hand.
 on:
-  schedule:
-    - cron: "7,37 * * * *"   # every 30 min; GitHub often starts these late or skips some
   workflow_dispatch:       # adds a "Run workflow" button in the Actions tab
 
 permissions:

@@ -9,7 +9,7 @@ A points competition for the squad's ranked games in League of Legends. **Solo/D
 - a players table and a feed of everyone's latest games
 - a Prime League tab with our draft pool, comps and a scouting tool
 
-It runs for free on GitHub. A scheduled job fetches data from the Riot API every 30 minutes, scores it and saves it into this repository. The website is a static page on GitHub Pages that only displays that saved file. Your API key stays in a GitHub secret and never reaches the website.
+It runs for free on GitHub. A background timer fetches data from the Riot API once an hour, scores it and saves it into this repository. The website is a static page on GitHub Pages that only displays that saved file. Your API key stays in a GitHub secret and never reaches the website.
 
 ## How scoring works
 
@@ -50,7 +50,7 @@ You need [Node.js](https://nodejs.org) 18 or newer. There are no packages to ins
 
 Edit `docs/index.html` and reload the browser to see changes.
 
-**Heads-up:** the GitHub Action commits a fresh `docs/data.json` every 30 minutes. Run `git pull` before you start working, and don't commit a `data.json` from a local test run unless you mean to replace the live data.
+**Heads-up:** the GitHub Action commits a fresh `docs/data.json` every hour. Run `git pull` before you start working, and don't commit a `data.json` from a local test run unless you mean to replace the live data.
 
 ## Setup
 
@@ -80,7 +80,9 @@ When you replace a development key the next day, edit this same secret. Nothing 
 
 ### 5. Updating
 
-The workflow runs every 30 minutes, but GitHub starts scheduled runs late or skips some when it's busy. To update right away: **Actions → Update squad data → Run workflow**.
+The **Hourly timer** workflow (`.github/workflows/timer.yml`) starts **Update squad data** once an hour. GitHub's built-in schedule often skips runs for hours, so the timer stays running instead and restarts itself every 5 hours; a backup schedule restarts it if the chain ever breaks. It's free on public repositories. To pause updates, disable **Hourly timer** in the Actions tab.
+
+To update right away: **Actions → Update squad data → Run workflow**.
 
 Run it by hand right after the challenge starts and right after it ends, so the LP baseline and the frozen final LP are as exact as possible.
 
@@ -123,7 +125,8 @@ scripts/challenge.mjs           the scoring: dates, per-game stats, LP, achievem
 scripts/challenge.test.mjs      scoring tests (npm test)
 scripts/make-sample.mjs         builds docs/data.sample.json (npm run sample)
 scripts/serve.mjs               local web server for docs/
-.github/workflows/update.yml    runs the update every 30 minutes and saves the result
+.github/workflows/update.yml    runs one update and saves the result
+.github/workflows/timer.yml     starts the update once an hour
 docs/index.html                 the website
 docs/data.json                  the data (written by the script, don't edit)
 docs/data.sample.json           sample data for ?demo=1
