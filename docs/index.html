@@ -143,7 +143,7 @@
   .st-row .tot { font: 700 23px var(--display); }
   /* Provisional end awards: visible, but clearly not locked in yet */
   .prov { filter: blur(1.4px); opacity: .55; transition: filter .2s, opacity .2s; }
-  .st-row:hover .prov, .award:hover .prov, .st-detail li:hover .prov { filter: blur(.4px); opacity: .85; }
+  .st-row:hover .prov, .st-detail li:hover .prov { filter: blur(.4px); opacity: .85; }
   .awchips { display: inline-flex; flex-wrap: wrap; gap: 3px; }
   .awchip { font: 600 11px/1.6 var(--body); border: 1px dashed var(--muted); border-radius: 999px; padding: 0 4px; color: var(--muted); white-space: nowrap; cursor: help; }
   .awchip .t { display: none; }
@@ -169,6 +169,8 @@
   .award .status { display: inline-block; font: 600 12px var(--body); border-radius: 999px; padding: 1px 8px; margin-top: 6px; background: var(--bg); border: 1px solid var(--line); color: var(--muted); }
   .award .status.won { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
   .award .who { font: 700 22px/1.1 var(--display); margin-top: 8px; }
+  .award .lead-now { margin-top: 8px; font: 600 11px var(--body); text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+  .award .lead-now + .who { margin-top: 2px; }
   .award .val { color: var(--muted); font-size: 14px; }
   @media (max-width: 640px) {
     /* Phones: title, then the leaderboard, then the news; one line per player */
@@ -588,7 +590,7 @@ function renderShell() {
 
     <section>
       <h2>End awards</h2>
-      <p class="lede">+${awardsOf('solo')[0]?.points ?? 10} each ${awardsFinal() ? '' : `on ${endDay()} `}for whoever leads. Faded = leading right now, not final yet.<span class="quip">${quip('boards')}</span></p>
+      <p class="lede">+${awardsOf('solo')[0]?.points ?? 10} each ${awardsFinal() ? '' : `on ${endDay()} `}for whoever leads then. Ties for first all get the points.<span class="quip">${quip('boards')}</span></p>
       <div class="boards" id="boards-solo"></div>
     </section>
 
@@ -735,8 +737,8 @@ function renderBoards(mode) {
       <h3>${esc(a.title)} <span style="font:600 15px var(--display);color:var(--muted)">+${a.points}</span></h3><p>${esc(a.desc)}</p>
       ${leaders.length
         ? (leaders.every(l => l.value === leaders[0].value && !l.detail)
-          ? `<div class="${final ? '' : 'prov'}"><div class="who">${leaders.map(l => esc(nameOf(l.p))).join(', ')}</div><div class="val">${esc(fmtAward(a.key, leaders[0].value, leaders[0].detail))}</div></div>`
-          : leaders.map(l => `<div class="${final ? '' : 'prov'}"><div class="who">${esc(nameOf(l.p))}</div><div class="val">${esc(fmtAward(a.key, l.value, l.detail))}</div></div>`).join(''))
+          ? `${final ? '' : '<div class="lead-now">Leading now</div>'}<div class="who">${leaders.map(l => esc(nameOf(l.p))).join(', ')}</div><div class="val">${esc(fmtAward(a.key, leaders[0].value, leaders[0].detail))}</div>`
+          : `${final ? '' : '<div class="lead-now">Leading now</div>'}` + leaders.map(l => `<div class="who">${esc(nameOf(l.p))}</div><div class="val">${esc(fmtAward(a.key, l.value, l.detail))}</div>`).join(''))
         : '<div class="val" style="margin-top:8px">Nobody qualifies yet.</div>'}
       ${final ? `<span class="status ${leaders.length ? 'won' : ''}">${leaders.length ? (a.key === 'oneTrick' || leaders.length > 1 ? 'Winners' : 'Winner') : 'No winner'}</span>` : ''}
       ${rest.length ? `<ol style="margin-top:10px">${rest.slice(0, 3).map(r => `<li class="none"><span>${esc(nameOf(r.p))}</span><span>${esc(fmtAward(a.key, r.value, r.detail))}</span></li>`).join('')}</ol>` : ''}
@@ -911,7 +913,7 @@ function renderFlexTab() {
     </section>
     <section>
       <h2>Flex end awards</h2>
-      <p class="lede">+${awardsOf('flex')[0]?.points ?? 10} each, handed out when the challenge ends${awardsFinal('flex') ? '' : ` on ${endDay()} Faded names are the current leaders, not final yet`}. Ties for first all get the points.</p>
+      <p class="lede">+${awardsOf('flex')[0]?.points ?? 10} each, handed out when the challenge ends${awardsFinal('flex') ? '' : ` on ${endDay()}`} to whoever leads then. Ties for first all get the points.</p>
       <div class="boards" id="boards-flex"></div>
     </section>
     <section>
