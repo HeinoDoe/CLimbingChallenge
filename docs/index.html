@@ -7,27 +7,23 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧗</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
+  /* "Brick & Ember": dark warm brown with ember orange, after the DIVE logo's tower. */
   :root {
-    --bg: #E6ECEF;
-    --panel: #F5F7F8;
-    --ink: #14222C;
-    --muted: #566873;
-    --line: #C6D0D6;
-    --up: #17804F;
-    --down: #B3392C;
-    --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+    color-scheme: dark;
+    --bg: #1B1210;
+    --panel: #291C17;
+    --ink: #F8EADF;
+    --muted: #C49F8C;
+    --line: #4A3128;
+    --up: #7BD389;
+    --down: #FF7A59;
+    --display: "Oswald", "Arial Narrow", sans-serif;
     --body: "Barlow", "Segoe UI", system-ui, sans-serif;
-    --accent: #C9A13B;      /* gold: greeting, GOAT line, first place, winners */
-    --on-accent: #14222C;   /* text on top of the accent colour */
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #131C23; --panel: #1A252E; --ink: #E3EAEE; --muted: #93A4AF;
-      --line: #2B3944; --up: #4CC28A; --down: #E6735F;
-    }
+    --accent: #F08A3A;      /* ember: greeting, GOAT line, first place, winners */
+    --on-accent: #1B1210;   /* text on top of the accent colour */
   }
   /* Team logo */
   .logo { height: 46px; width: auto; vertical-align: middle; margin-right: 10px; filter: drop-shadow(0 2px 4px rgb(0 0 0 / .2)); }
@@ -37,7 +33,7 @@
   html { -webkit-text-size-adjust: 100%; }
   body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); }
   a { color: inherit; }
-  :focus-visible { outline: 3px solid #4C6FD6; outline-offset: 2px; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 20px 64px; }
 
   header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; margin-bottom: 28px; }
