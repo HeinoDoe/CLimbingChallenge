@@ -87,12 +87,12 @@
         "bans": {
           "phase1": [
             {
-              "champ": "JarvanIV",
-              "why": "Flausch's most played Prime League jungler (4-2) and 6-3 in solo queue. Also LEC Summer's most picked jungler."
+              "champ": "Braum",
+              "why": "Their best answer to our Caitlyn + Nautilus/Leona lane: blocks Caitlyn's shots and Nautilus' hook. 2-0 for Lord Steve with this team."
             },
             {
-              "champ": "Kalista",
-              "why": "Don's carry in their best comp: 2-0, going 16/2 and 13/2. 691k mastery."
+              "champ": "JarvanIV",
+              "why": "Flausch's most played Prime League jungler (4-2) and 6-3 in solo queue. Also LEC Summer's most picked jungler."
             },
             {
               "champ": "Elise",
@@ -101,8 +101,12 @@
           ],
           "phase2": [
             {
+              "champ": "Kalista",
+              "why": "Don's carry in their best comp: 2-0, going 16/2 and 13/2. Ban it if he hasn't picked yet."
+            },
+            {
               "champ": "XinZhao",
-              "why": "If Flausch hasn't picked yet: 2-0 in Prime League, 5-1 in solo queue."
+              "why": "Flausch's third jungler: 2-0 in Prime League, 5-1 in solo queue."
             },
             {
               "champ": "Ambessa",
@@ -111,13 +115,9 @@
             {
               "champ": "KSante",
               "why": "Ruvex's most played Prime League top (3-2), 328k mastery."
-            },
-            {
-              "champ": "Anivia",
-              "why": "WoFu's most played Prime League mid (2-1) and the mage that annoys Heino's assassins most."
             }
           ],
-          "expect": "Against us, teams banned Shaco (5×), Ekko, Katarina and LeBlanc (3× each). BS eSports bans Sylas often. Plan Heino's mid with Ahri, Lissandra and Qiyana as backups."
+          "expect": "Against us, teams banned Shaco (5×), Ekko, Katarina and LeBlanc (3× each). BS eSports bans Sylas often. Heino has Ahri, Qiyana and Sylas as backups."
         },
         "roles": [
           {
@@ -127,24 +127,20 @@
             "about": "Diamond 4. Prime League: K'Sante 3-2, Ambessa 3-0, Ornn 2-1. Solo queue: Yone 9-2, Ambessa 3-6.",
             "picks": [
               {
-                "champ": "Rumble",
-                "why": "LEC Summer's most picked top (36 games, 61% WR). AP damage that kites K'Sante and Ornn; Equalizer wins teamfights. Plays like a mage, close to Kolbe's Viktor/Ryze."
-              },
-              {
                 "champ": "Trundle",
-                "why": "Kolbe comfort (368k mastery). Subjugate deletes K'Sante's and Ornn's tankiness, the pillar stops Ambessa and Yone dashes. 67% WR in LEC Summer."
+                "why": "Safe and comfortable (368k mastery). Subjugate deletes K'Sante's and Ornn's tankiness, the pillar stops Ambessa and Yone dashes. 67% WR in LEC Summer."
               },
               {
                 "champ": "Shen",
-                "why": "Safest blind pick. His ult turns Smette's ganks and bot dives into 2v1s or 3v2s. LEC Summer staple (24 games, 58% WR)."
-              },
-              {
-                "champ": "Jayce",
-                "why": "Most banned champ of LEC Summer. Ranged lane bully against Ruvex's melee picks; only if Kolbe has some games on him."
+                "why": "The safest blind pick. Holds the lane and his ult joins every bot or drake fight. LEC Summer staple (24 games, 58% WR)."
               },
               {
                 "champ": "Galio",
-                "why": "Kolbe's highest mastery (1.18M). Flex teamfight pick if they go two AP threats; weak in lane against Ambessa or Yone."
+                "why": "Kolbe's highest mastery (1.18M). Tanky engage for the team; in lane against Ambessa or Yone just farm and wait for teamfights."
+              },
+              {
+                "champ": "Rumble",
+                "why": "If the lane is free to win: LEC Summer's most picked top (36 games, 61% WR). AP damage that kites K'Sante and Ornn."
               }
             ],
             "counters": [
@@ -199,7 +195,13 @@
                 ]
               }
             ],
-            "tip": "Kolbe picks last on both sides: he's the flexible one, so he gets the counterpick. If Darius or Sett are open, take them: his team bans them often (Darius in 5 of 15 games, Sett in 4)."
+            "tip": "The goal is to neutralize the lane, not win it: Ruvex is Diamond 4 and Kolbe is off-role. Farm safely, keep TP for bot and drake fights, and pick last so you can counter. If Darius or Sett are open, take them: his team bans them often (Darius in 5 of 15 games, Sett in 4).",
+            "expected": [
+              "KSante",
+              "Ambessa",
+              "Ornn",
+              "Yone"
+            ]
           },
           {
             "role": "Jungle",
@@ -209,53 +211,50 @@
             "picks": [
               {
                 "champ": "MonkeyKing",
-                "why": "3-0 for Smette in our Prime League games. His ult chains with Shen, Nautilus and Lissandra."
-              },
-              {
-                "champ": "XinZhao",
-                "why": "Take it first to deny Flausch his next-best champion. Strong early 1v1, LEC Spring's most picked jungler."
-              },
-              {
-                "champ": "Viego",
-                "why": "Smette's main right now (17 ranked games, 10 wins). Resets in long fights, which fits the scaling plan."
+                "why": "3-0 for Smette in our Prime League games. Engage ult that chains with Nautilus, Leona and Shen."
               },
               {
                 "champ": "Vi",
-                "why": "Point-and-click lock on their immobile mid and ADC. High pro priority in LEC Summer (24 picks, 55 bans)."
+                "why": "Point-and-click engage on their immobile mid and ADC. High pro priority in LEC Summer (24 picks, 55 bans)."
+              },
+              {
+                "champ": "XinZhao",
+                "why": "Engage plus a strong early 1v1; picking it also takes Flausch's third jungler away. LEC Spring's most picked jungler."
+              },
+              {
+                "champ": "Viego",
+                "why": "Smette's main right now (17 ranked games, 10 wins). Less engage, so only if the others are gone."
               }
             ],
             "counters": [
               {
                 "if": [
-                  "JarvanIV",
-                  "XinZhao"
+                  "XinZhao",
+                  "Vi"
                 ],
                 "then": [
                   "MonkeyKing",
-                  "Viego"
+                  "Vi"
                 ]
               },
               {
                 "if": [
-                  "Elise",
-                  "LeeSin"
+                  "LeeSin",
+                  "Viego"
                 ],
                 "then": [
                   "XinZhao",
                   "MonkeyKing"
                 ]
-              },
-              {
-                "if": [
-                  "Vi"
-                ],
-                "then": [
-                  "Viego",
-                  "XinZhao"
-                ]
               }
             ],
-            "tip": "Don't 1v1 Flausch early, he's 1,000+ LP ahead. Ward your raptors/blue entrance by 1:15, ping where he starts, and play for mid and bot prio instead of invading."
+            "tip": "Don't 1v1 Flausch early, he's 1,000+ LP ahead. Ward your raptors/blue entrance by 1:15, ping where he starts, and play for mid and bot prio instead of invading.",
+            "expected": [
+              "XinZhao",
+              "Vi",
+              "MonkeyKing",
+              "Viego"
+            ]
           },
           {
             "role": "Mid",
@@ -269,19 +268,15 @@
               },
               {
                 "champ": "Ahri",
-                "why": "22/3/8 in our last Prime League game with her. Safe blind pick, charm for catches, pro-viable."
+                "why": "22/3/8 in our last Prime League game with her. Charm for catches, safe into everything."
               },
               {
-                "champ": "Lissandra",
-                "why": "KDA 17 in her last ranked game. The engage for comp C, and a counter to Akali, Diana and Yasuo."
-              },
-              {
-                "champ": "Katarina",
-                "why": "Heino's highest mastery (558k). Punishes Viktor, Syndra, Xerath, Ziggs and Veigar."
+                "champ": "Sylas",
+                "why": "Heino's third highest mastery (328k). Steals their Nautilus, Rell or Leona ult. BS eSports banned it in 3 of 15 games, so it may be gone."
               },
               {
                 "champ": "Qiyana",
-                "why": "Pro-viable assassin (picked in the LEC Summer playoffs). All-in on immobile mages, and a backup if Ekko and Katarina are banned."
+                "why": "All-in on immobile mages, pro-viable (picked in the LEC Summer playoffs). Backup if Ekko is banned."
               }
             ],
             "counters": [
@@ -291,8 +286,7 @@
                 ],
                 "then": [
                   "Ahri",
-                  "Kassadin",
-                  "Leblanc"
+                  "Sylas"
                 ]
               },
               {
@@ -301,7 +295,6 @@
                 ],
                 "then": [
                   "Ekko",
-                  "Katarina",
                   "Qiyana"
                 ]
               },
@@ -313,9 +306,9 @@
                   "Veigar"
                 ],
                 "then": [
-                  "Katarina",
                   "Qiyana",
-                  "Leblanc"
+                  "Ekko",
+                  "Ahri"
                 ]
               },
               {
@@ -325,12 +318,18 @@
                   "Yasuo"
                 ],
                 "then": [
-                  "Lissandra",
-                  "Ahri"
+                  "Ahri",
+                  "Sylas"
                 ]
               }
             ],
-            "tip": "Mid is where we can break them. Shove, then roam to bot river with HennenG. Smette's first gank comes mid."
+            "tip": "Mid is where we can break them. Shove, then roam to bot river with HennenG. Smette's first gank comes mid.",
+            "expected": [
+              "Anivia",
+              "Viktor",
+              "Xerath",
+              "Ziggs"
+            ]
           },
           {
             "role": "ADC",
@@ -340,25 +339,29 @@
             "picks": [
               {
                 "champ": "Caitlyn",
-                "why": "EP's most played ADC. Outranges Varus, Jinx and Kalista in lane. Pro pick (13 LEC Summer games)."
-              },
-              {
-                "champ": "Ezreal",
-                "why": "Joint most picked ADC of the LEC Summer playoffs (with Ashe). Safest into their engage supports, and poke for the scaling plan."
+                "why": "Our win condition. EP's most played ADC; outranges Varus, Jinx and Kalista and bullies the lane with Nautilus or Leona."
               },
               {
                 "champ": "Varus",
-                "why": "Most banned champ in LCK and LEC Spring 2026. Take it if open: it's Don's most played Prime League pick (though 2-4)."
+                "why": "Backup if Caitlyn is banned: long-range engage follow-up. Don's most played Prime League pick, so taking it also denies him."
+              },
+              {
+                "champ": "Jhin",
+                "why": "Backup with Leona or Thresh: his W roots anyone our support just hit. 210k mastery."
+              },
+              {
+                "champ": "Ezreal",
+                "why": "Safe fallback if they ban our bot lane and draft heavy engage. Joint most picked ADC of the LEC Summer playoffs."
               }
             ],
             "counters": [
               {
                 "if": [
-                  "Jinx"
+                  "Jinx",
+                  "Kaisa"
                 ],
                 "then": [
-                  "Caitlyn",
-                  "Varus"
+                  "Caitlyn"
                 ]
               },
               {
@@ -367,21 +370,18 @@
                   "Varus"
                 ],
                 "then": [
-                  "Ezreal",
-                  "Caitlyn"
-                ]
-              },
-              {
-                "if": [
-                  "Kaisa"
-                ],
-                "then": [
                   "Caitlyn",
-                  "Varus"
+                  "Ezreal"
                 ]
               }
             ],
-            "tip": "Their bot lane is their strongest duo (two Master players). Don't fight level 2 if they hit it first. Rell, Nautilus and Leona all go in on it."
+            "tip": "With Caitlyn, shove for level 2 first and let Nautilus/Leona go in when they walk up. If they hit level 2 first, back off: their bot pair are two Master players.",
+            "expected": [
+              "Kalista",
+              "Varus",
+              "Ashe",
+              "Jinx"
+            ]
           },
           {
             "role": "Support",
@@ -395,29 +395,14 @@
               },
               {
                 "champ": "Leona",
-                "why": "HennenG's most played (11 ranked games, 7 wins). LEC Summer's most picked support."
+                "why": "HennenG's most played (11 ranked games, 7 wins). Perfect with Caitlyn: stun into a free headshot. LEC Summer's most picked support."
               },
               {
-                "champ": "Braum",
-                "why": "Counter to their engage (Rell, Nautilus, Jarvan ult). Fits the scaling comp."
-              },
-              {
-                "champ": "Milio",
-                "why": "3-1 for HennenG in Prime League. Cleanses Nautilus and Rell CC, great with Ezreal or Caitlyn."
+                "champ": "Thresh",
+                "why": "Engage plus lantern saves; 3-1 in his recent ranked games. Backup if both are gone."
               }
             ],
             "counters": [
-              {
-                "if": [
-                  "Rell",
-                  "Nautilus",
-                  "Leona"
-                ],
-                "then": [
-                  "Braum",
-                  "Milio"
-                ]
-              },
               {
                 "if": [
                   "Nami",
@@ -430,88 +415,94 @@
               },
               {
                 "if": [
-                  "Bard",
-                  "Neeko"
+                  "Rell",
+                  "Nautilus"
                 ],
                 "then": [
-                  "Nautilus",
-                  "Braum"
+                  "Leona",
+                  "Nautilus"
                 ]
               }
             ],
-            "tip": "Hold a ward in tri-brush for their level 2. After the first back, roam mid with Heino: that's the lane we win."
+            "tip": "Play level 2 with Caitlyn's range. After the first back, roam mid with Heino: that's the other lane we win.",
+            "expected": [
+              "Nami",
+              "Nautilus",
+              "Rell",
+              "Lulu"
+            ]
           }
         ],
         "comps": [
           {
-            "name": "A · Dive & catch",
-            "sub": "our comfort identity",
+            "name": "Main plan",
+            "sub": "bot lane wins, engage jungle, safe top",
             "lineup": [
-              "Shen",
+              "Trundle",
               "MonkeyKing",
               "Ekko",
               "Caitlyn",
               "Nautilus"
             ],
-            "win": "Catch their immobile mid or ADC: Nautilus or Wukong engage, Shen ults in, Ekko cleans up. Take drakes when Caitlyn has lane prio.",
-            "why": "Wukong 3-0 and Nautilus 3-0 in our Prime League games, Ekko 6-0 in ranked, Caitlyn is EP's most played ADC.",
-            "risk": "Weak into Braum/Anivia peel, and it falls off if we get no early lead."
+            "win": "Caitlyn + Nautilus win lane and take drakes; Wukong and Ekko collapse on their immobile mid and ADC. Trundle holds top and joins with TP.",
+            "why": "The team's own call. Wukong 3-0 and Nautilus 3-0 in our Prime League games, Ekko 6-0 in ranked, Caitlyn is EP's most played ADC.",
+            "risk": "If their bot lane wins level 2, play safe until Smette arrives."
           },
           {
-            "name": "B · Scale & teamfight",
-            "sub": "punish their weak late game",
+            "name": "Backup B",
+            "sub": "full engage",
             "lineup": [
-              "Trundle",
-              "Viego",
+              "Shen",
+              "Vi",
               "Ahri",
-              "Ezreal",
-              "Braum"
-            ],
-            "win": "Survive lanes, trade objectives cross-map, fight at 3 items. They lose their long games.",
-            "why": "Braum blocks their engage, Trundle beats K'Sante and Ornn, Viego is Smette's main, Ahri and Ezreal are safe against their skirmish.",
-            "risk": "Gives up early drakes. Needs patience and vision."
-          },
-          {
-            "name": "C · LEC meta wombo",
-            "sub": "pro picks that suit our players",
-            "lineup": [
-              "Rumble",
-              "XinZhao",
-              "Lissandra",
               "Varus",
               "Leona"
             ],
-            "win": "Chain CC: Leona + Lissandra + Xin knock-up, then Rumble's Equalizer and Varus' ult on the stack.",
-            "why": "LEC 2026's most picked top (Rumble), jungle (Xin Zhao) and support (Leona), plus Varus, the most banned champ in LCK and LEC Spring 2026.",
-            "risk": "Rumble and Varus are often banned. Kolbe and EP need reps on them."
+            "win": "Chain engage: Leona or Vi go in, Varus ult extends it, Ahri charms, Shen ults onto the fight.",
+            "why": "Same idea with different champions, if they ban Caitlyn or Ekko.",
+            "risk": "Varus and Ahri are often contested; needs EP comfortable on Varus."
+          },
+          {
+            "name": "Backup C",
+            "sub": "comfort teamfight",
+            "lineup": [
+              "Galio",
+              "XinZhao",
+              "Sylas",
+              "Jhin",
+              "Thresh"
+            ],
+            "win": "Thresh or Xin start the fight, Galio ults in, Sylas steals their engage ult, Jhin roots the stack.",
+            "why": "Kolbe's highest mastery champion and comfort picks around it.",
+            "risk": "Sylas is often banned by them; Jhin did poorly in pro play this year."
           }
         ],
-        "fearless": "The three comps share no champions. If this game day is a series with Fearless Draft, play them in order (A, then B, then C).",
+        "fearless": "The three comps share no champions: the backups also work for game 2 and 3 if this game day is a series with Fearless Draft.",
         "draftOrder": {
           "blue": [
-            "Bans: Jarvan IV, Kalista, Elise.",
-            "B1: Xin Zhao or Wukong for Smette, taking Flausch's next-best champion.",
-            "B2 + B3: bot pair after their first picks. Caitlyn + Nautilus into a scaling ADC, Ezreal + Braum into engage.",
-            "Phase-2 bans: Ruvex's remaining comfort (K'Sante / Ambessa) or Lord Steve's (Rell / Nami).",
-            "B4: Heino's mid, countering their mid if it's out.",
-            "B5: Kolbe counterpicks top."
+            "Bans: Braum, Jarvan IV, Elise.",
+            "B1: Caitlyn, our win condition.",
+            "B2 + B3: Nautilus or Leona, plus Smette's engage jungler (Wukong, Vi or Xin Zhao).",
+            "Phase-2 bans: Kalista if still open, otherwise Ruvex's top (K'Sante / Ambessa) or Xin Zhao.",
+            "B4: Heino's fighting mid, countering their mid if it's out.",
+            "B5: Kolbe's safe top (Trundle, Shen or Galio)."
           ],
           "red": [
-            "Bans: Jarvan IV, Kalista, Elise.",
-            "R1 + R2: Smette's jungler and Heino's best open mid (Ekko or Ahri).",
-            "R3: HennenG's support, answering their bot lane.",
-            "Phase-2 bans: Ruvex's top (K'Sante / Ambessa) so he ends up on something worse.",
-            "R4: EP's ADC.",
-            "R5: Kolbe counterpicks top last."
+            "Bans: Braum, Jarvan IV, Elise.",
+            "R1 + R2: Caitlyn + Nautilus or Leona.",
+            "R3: Smette's engage jungler.",
+            "Phase-2 bans: Kalista if still open, otherwise Ruvex's top (K'Sante / Ambessa).",
+            "R4: Heino's fighting mid.",
+            "R5: Kolbe's safe top, last pick."
           ]
         },
         "gamePlan": [
           {
             "phase": "Early (0–14 min)",
             "points": [
-              "Ward our jungle entrances by 1:15. Flausch loves level-3 skirmishes with Jarvan, Xin and Elise.",
-              "Bot respects level 2 against Rell, Nautilus and Leona; HennenG wards tri-brush.",
-              "Smette's first gank goes mid. WoFu is their lowest-ranked player and plays immobile mages."
+              "Bot lane is our win condition: Caitlyn shoves for level 2, Nautilus/Leona go in when they walk up. Smette paths toward bot early.",
+              "Ward our jungle entrances by 1:15. Flausch loves level-3 skirmishes.",
+              "First gank mid if bot doesn't need help: WoFu is their lowest-ranked player and plays immobile mages."
             ]
           },
           {
@@ -555,6 +546,13 @@
             "label": "BS eSports on primeleague.gg",
             "url": "https://www.primeleague.gg/en/leagues/teams/90392-bs-esports"
           }
+        ],
+        "oneLiner": "Win bot with **Caitlyn + Nautilus/Leona**, take their jungler's champions away, fight with an engage jungler and a fighting mid, and let Kolbe play it safe top.",
+        "gist": [
+          "**Bot is our win condition.** Caitlyn with Nautilus or Leona beats most of their bot champions. Braum is their best answer to it, so we ban it.",
+          "**Take Flausch's champions.** Their jungler is their best player: Jarvan IV and Elise go in phase 1.",
+          "**Gank mid first.** WoFu Ven is their lowest-ranked player and plays immobile mages, the perfect target for Smette and Heino.",
+          "**Top just has to hold.** Kolbe takes something safe he's comfortable on and picks last. They lose long games, so no early coin-flips."
         ]
       }
     },
