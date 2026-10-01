@@ -81,6 +81,6 @@ async function main() {
   console.log(`Results checked: ${stats.calls} API calls.`);
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((e) => { console.error(e.message); process.exit(1); });
 }

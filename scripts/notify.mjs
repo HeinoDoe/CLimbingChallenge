@@ -2,7 +2,8 @@
 // step of the update workflow runs this file, which sends them with the
 // DISCORD_WEBHOOK_URL secret (without the secret nothing is sent).
 //
-//   node scripts/notify.mjs     send everything in notify.json, then empty it
+//   node scripts/notify.mjs          send everything in notify.json, then empty it
+//   node scripts/notify.mjs --test   send one test post built from the current data.json
 import { readFile, writeFile, unlink } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { champName } from './review.mjs';
@@ -78,12 +79,33 @@ export async function queue(embeds) {
   console.log(`Queued ${embeds.length} Discord post(s).`);
 }
 
-async function send() {
-  let embeds;
-  try { embeds = JSON.parse(await readFile(QUEUE, 'utf8')); } catch { console.log('Nothing to post.'); return; }
-  const hook = process.env.DISCORD_WEBHOOK_URL;
-  if (!hook) { console.log(`${embeds.length} post(s) skipped: no DISCORD_WEBHOOK_URL secret.`); await unlink(QUEUE); return; }
+// A labelled sample in the real format: the latest Tagesrückblick and today's leaderboard.
+export function testEmbed(data, { siteUrl = '', timeZone = 'Europe/Berlin' } = {}) {
+  const r = [...(data.reviews || [])].sort((a, b) => b.startMs - a.startMs)[0];
+  return {
+    title: `🧪 Test · ${r ? `Tagesrückblick · ${dayLabel(r.startMs, timeZone)}` : 'Climbing Challenge'}`, url: siteUrl, color: COLOR,
+    description: r ? r.highlights.map((h) => `${h.icon} ${h.text}`).join('\n') : 'Noch kein Tagesrückblick.',
+    fields: [{ name: '🏆 Leaderboard Solo/Duo', value: leaderboardText(data.players || [], 'solo') }],
+    footer: { text: 'Testnachricht: so sehen die echten Posts aus. Ab jetzt kommt das nach jedem Tag automatisch.' },
+  };
+}
+
+async function send(test = false) {
   const cfg = JSON.parse(await readFile(new URL('../squad.config.json', import.meta.url), 'utf8'));
+  let embeds;
+  if (test) {
+    const data = JSON.parse(await readFile(new URL('../docs/data.json', import.meta.url), 'utf8'));
+    embeds = [testEmbed(data, { siteUrl: cfg.siteUrl, timeZone: cfg.challenge?.timeZone })];
+  } else {
+    try { embeds = JSON.parse(await readFile(QUEUE, 'utf8')); } catch { console.log('Nothing to post.'); return; }
+  }
+  const hook = process.env.DISCORD_WEBHOOK_URL;
+  if (!hook) {
+    console.log(`${embeds.length} post(s) skipped: no DISCORD_WEBHOOK_URL secret.`);
+    if (!test) await unlink(QUEUE);
+    if (test) process.exitCode = 1;
+    return;
+  }
   for (let i = 0; i < embeds.length; i += 10) { // Discord takes up to 10 embeds per message
     for (let attempt = 0; attempt < 3; attempt++) {
       const res = await fetch(hook, {
@@ -99,10 +121,10 @@ async function send() {
       break;
     }
   }
-  await unlink(QUEUE);
+  if (!test) await unlink(QUEUE);
   console.log(`Posted ${embeds.length} embed(s) to Discord.`);
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  send().catch((e) => { console.error(e.message); process.exit(1); });
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  send(process.argv.includes('--test')).catch((e) => { console.error(e.message); process.exit(1); });
 }

@@ -1,0 +1,22 @@
+name: Test Discord post
+
+# Actions -> Test Discord post -> Run workflow: sends one labelled test message
+# (latest Tagesrückblick + leaderboard) to the channel of the DISCORD_WEBHOOK_URL secret.
+on:
+  workflow_dispatch:
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Send test post
+        run: node scripts/notify.mjs --test
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
