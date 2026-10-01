@@ -40,6 +40,8 @@
   h1 { font: 700 clamp(36px, 5.5vw, 64px)/.92 var(--display); letter-spacing: -.01em; margin: 0; }
   .goat { font: 700 clamp(17px, 2.3vw, 26px)/1.15 var(--display); color: var(--accent); margin: 0 0 4px; }
   header.hero { display: block; margin-bottom: 16px; }
+  .prize { display: inline-block; margin-left: 8px; padding: 2px 12px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-size: .8em; vertical-align: 2px; white-space: nowrap; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
+  @media (max-width: 640px) { .prize { margin: 6px 0 0; } }
   .how { margin: 8px 0 0; color: var(--muted); font-size: 15px; }
   .how b { color: var(--ink); }
   .how.mob { display: none; }
@@ -591,7 +593,7 @@ function renderShell() {
   document.getElementById('app').innerHTML = `
     ${demo ? '<div class="banner">Sample data preview. Remove ?demo=1 from the address to see your real data.</div>' : ''}
     <header class="hero">
-      <p class="goat">Wer bis zum 14.10 am meisten Punkte gefarmt hat ist der GOAT</p>
+      <p class="goat">Wer bis zum 14.10 am meisten Punkte gefarmt hat ist der GOAT <span class="prize" title="Preis für Platz 1 im Solo/Duo-Leaderboard am 14.10.">🏆 Preis: 20 € Riot Points</span></p>
       <h1>${esc(data.squadName || 'Squad ladder')}</h1>
       <p class="how desk">${howToScore('Solo/Duo')}</p>
     </header>
