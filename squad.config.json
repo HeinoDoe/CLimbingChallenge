@@ -14,7 +14,15 @@
       "mostGames": 10, "highestWinRate": 10, "highestKda": 10, "lowestKda": 10,
       "bestVision": 10, "longestWinStreak": 10, "longestLoseStreak": 10,
       "mostDeathsPerGame": 10, "oneTrick": 10
-    }
+    },
+    "bounties": [
+      {
+        "id": "week-1-10-champs", "type": "distinctChampionWins", "queue": "solo",
+        "title": "10 verschiedene Champions",
+        "desc": "Wer als Erster mit 10 verschiedenen Champions ein Solo/Duo-Game gewinnt, bekommt +20 Punkte.",
+        "target": 10, "points": 20, "start": "2026-09-30T17:40:00+02:00", "end": "2026-10-04"
+      }
+    ]
   },
   "queues": [420, 440],
   "maxNewMatchesPerPlayerPerRun": 60,

@@ -3,7 +3,7 @@
 // Runs on GitHub Actions (see .github/workflows/update.yml) or locally with
 // `npm run update`. Needs Node 18+.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { STATS_VERSION, MODES, activeWindow, emptyMode, addMatch, scoreModes, trackPlaces, dayOf } from './challenge.mjs';
+import { STATS_VERSION, MODES, activeWindow, emptyMode, addMatch, scoreModes, scoreBounties, trackPlaces, dayOf } from './challenge.mjs';
 import { buildReviews } from './review.mjs';
 import { buildNotifications, queue } from './notify.mjs';
 
@@ -192,6 +192,7 @@ try {
     players.push(await updatePlayer(entry));
   }
   const awards = scoreModes(players, CH, WIN, Date.now());
+  const bounties = scoreBounties(players, CH, Date.now()); // adds bounty points and re-ranks
   // Daily reviews: kept between runs; a new day is only written once every game is in.
   const kept = previous.reviewsKey === STATS_KEY ? previous.reviews || [] : [];
   const complete = players.every((p) => !p.error && !p.pendingMatches);
@@ -205,6 +206,7 @@ try {
     queues: QUEUES,
     challenge: { ...CH, ...WIN },
     awards,
+    bounties,
     reviews,
     reviewsKey: STATS_KEY,
     places,

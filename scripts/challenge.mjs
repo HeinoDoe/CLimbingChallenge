@@ -254,3 +254,45 @@ export function trackPlaces(players, snaps, today) {
   const out = { ...snaps, [today]: Object.fromEntries(Object.values(MODES).map((m) => [m, Object.fromEntries(players.map((p) => [p.key, p.points[m].place]))])) };
   return Object.fromEntries(Object.entries(out).sort(([a], [b]) => a.localeCompare(b)).slice(-30));
 }
+
+// ---------- Weekly bounties ----------
+// challenge.bounties: [{ id, type: "distinctChampionWins", title, desc, target, points,
+// queue: "solo", start, end }]. The first player to win with `target` different champions
+// in the window gets `points` right away (players reaching it in the same game share it).
+// Adds the points to p.points[queue].total, re-ranks, and returns a summary per bounty.
+function windowEdge(v, tz, isEnd) {
+  return DATE_ONLY.test(v) ? zonedMidnight(v, tz, isEnd ? 1 : 0) : Date.parse(v);
+}
+export function scoreBounties(players, ch, now) {
+  const tz = ch.timeZone || 'Europe/Berlin';
+  const list = (ch.bounties || []).filter((b) => b.type === 'distinctChampionWins').map((b) => {
+    const mode = b.queue || 'solo';
+    const startMs = windowEdge(b.start, tz, false), endMs = windowEdge(b.end, tz, true);
+    const rows = players.map((p) => {
+      const wins = (p.modes?.[mode]?.log || []).filter((g) => g.win && g.t >= startMs && g.t < endMs).sort((x, y) => x.t - y.t);
+      const champs = new Set();
+      let reachedAt = null;
+      for (const g of wins) { champs.add(g.champ); if (reachedAt == null && champs.size >= b.target) reachedAt = g.t; }
+      return { key: p.key, value: champs.size, reachedAt };
+    });
+    const first = Math.min(...rows.map((r) => r.reachedAt ?? Infinity));
+    const winners = Number.isFinite(first) ? rows.filter((r) => r.reachedAt === first).map((r) => r.key) : [];
+    for (const p of players) {
+      const P = p.points[mode], r = rows.find((x) => x.key === p.key);
+      const pts = winners.includes(p.key) ? b.points : 0;
+      (P.bounties ??= {})[b.id] = { progress: r.value, target: b.target, points: pts };
+      P.bountyTotal = (P.bountyTotal || 0) + pts;
+      P.total += pts;
+    }
+    return {
+      id: b.id, title: b.title, desc: b.desc, target: b.target, points: b.points, queue: mode, startMs, endMs,
+      status: winners.length ? 'won' : now >= endMs ? 'expired' : now < startMs ? 'upcoming' : 'open',
+      winners, wonAt: winners.length ? first : null,
+      progress: [...rows].sort((x, y) => y.value - x.value).map(({ key, value }) => ({ key, value })),
+    };
+  });
+  for (const mode of Object.values(MODES)) {
+    for (const p of players) p.points[mode].place = 1 + players.filter((o) => o.points[mode].total > p.points[mode].total).length;
+  }
+  return list;
+}

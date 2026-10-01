@@ -52,6 +52,22 @@ export function buildNotifications(prev, next, { siteUrl = '', timeZone = 'Europ
     }
   }
 
+  // Weekly bounties: announce when one goes live, celebrate when someone completes it.
+  const names = new Map((next.players || []).map((p) => [p.key, p.name]));
+  const prevB = new Map((prev.bounties || []).map((b) => [b.id, b]));
+  for (const b of next.bounties || []) {
+    const old = prevB.get(b.id);
+    if (b.status === 'open' && (!old || old.status === 'upcoming')) {
+      const lead = b.progress.filter((r) => r.value > 0).slice(0, 3).map((r) => `**${names.get(r.key)}** ${r.value}/${b.target}`).join(' · ');
+      embeds.push({ title: `🎯 Neue Wochen-Bounty: ${b.title}`, url: siteUrl, color: COLOR,
+        description: `${b.desc}\nLäuft bis ${dayLabel(b.endMs - 1, timeZone)}.${lead ? `\nStand: ${lead}` : ''}` });
+    }
+    if (b.status === 'won' && old?.status !== 'won') {
+      embeds.push({ title: '🎯 Bounty geschafft!', url: siteUrl, color: COLOR,
+        description: `${b.winners.map((k) => `**${names.get(k)}**`).join(' und ')} ${b.winners.length > 1 ? 'haben' : 'hat'} „${b.title}“ als Erste${b.winners.length > 1 ? '' : 'r'} geschafft: +${b.points} Punkte!` });
+    }
+  }
+
   const leader = (d) => { const top = (d.players || []).filter((p) => p.points?.solo?.place === 1); return top.length === 1 && top[0].points.solo.total > 0 ? top[0] : null; };
   const was = leader(prev), now = leader(next);
   if (now && was?.key !== now.key) {

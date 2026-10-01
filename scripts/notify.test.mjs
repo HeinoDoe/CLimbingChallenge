@@ -84,3 +84,46 @@ test('places: movement against the last snapshot of an earlier day', () => {
   assert.equal(ps[0].points.solo.prevPlace, 1);
   assert.deepEqual(Object.keys(snaps), ['2026-10-01', '2026-10-02']);
 });
+
+import { scoreBounties } from './challenge.mjs';
+
+const BOUNTY = { id: 'b1', type: 'distinctChampionWins', queue: 'solo', title: '10 verschiedene Champions', desc: 'd', target: 3, points: 20, start: '2026-10-01', end: '2026-10-04' };
+const t = (iso) => Date.parse(iso);
+const bp = (key, total, games) => ({ key, name: key.toUpperCase(), points: { solo: { total, place: 0 }, flex: { total: 0, place: 0 } },
+  modes: { solo: { log: games.map(([iso, champ, win]) => ({ t: t(iso), champ, win })) }, flex: { log: [] } } });
+
+test('bounty: first to N different winning champions gets the points and moves up', () => {
+  const a = bp('a', 50, [['2026-10-01T10:00Z', 'Ahri', true], ['2026-10-01T11:00Z', 'Ahri', true], ['2026-10-01T12:00Z', 'Zed', false],
+    ['2026-10-02T10:00Z', 'Zed', true], ['2026-10-03T10:00Z', 'Lux', true]]);                     // 3rd champ on 3 Oct
+  const b = bp('b', 60, [['2026-09-30T10:00Z', 'Jinx', true],                                        // before the bounty
+    ['2026-10-01T10:00Z', 'Ezreal', true], ['2026-10-02T09:00Z', 'Caitlyn', true], ['2026-10-03T20:00Z', 'Varus', true]]); // 3rd later
+  const [s] = scoreBounties([a, b], { bounties: [BOUNTY] }, t('2026-10-03T22:00Z'));
+  assert.equal(s.status, 'won');
+  assert.deepEqual(s.winners, ['a']);
+  assert.equal(a.points.solo.total, 70);
+  assert.deepEqual([a.points.solo.place, b.points.solo.place], [1, 2]);
+  assert.deepEqual(a.points.solo.bounties.b1, { progress: 3, target: 3, points: 20 });
+  assert.equal(b.points.solo.bounties.b1.points, 0);
+});
+
+test('bounty: open while nobody has it, shared when reached in the same game, expired after the end', () => {
+  const x = bp('x', 0, [['2026-10-01T10:00Z', 'Ahri', true]]);
+  assert.equal(scoreBounties([x], { bounties: [BOUNTY] }, t('2026-10-02T10:00Z'))[0].status, 'open');
+  assert.equal(scoreBounties([bp('x', 0, [])], { bounties: [BOUNTY] }, t('2026-10-05T10:00Z'))[0].status, 'expired');
+  const g = [['2026-10-01T10:00Z', 'Ahri', true], ['2026-10-01T11:00Z', 'Zed', true], ['2026-10-01T12:00Z', 'Lux', true]];
+  const [s] = scoreBounties([bp('d1', 0, g), bp('d2', 0, g)], { bounties: [BOUNTY] }, t('2026-10-02T10:00Z'));
+  assert.deepEqual(s.winners, ['d1', 'd2']);
+});
+
+test('bounty posts: announced once when it goes live, celebrated once when won', () => {
+  const live = { id: 'b1', title: 'T', desc: 'D', target: 10, points: 20, endMs: t('2026-10-04T22:00Z'), status: 'open', winners: [], progress: [{ key: 'a', value: 4 }] };
+  const players = [player('a', 'A', 1, 10)];
+  const prev = { reviewsKey: 'k', reviews: [], players, bounties: [] };
+  const next = { reviewsKey: 'k', reviews: [], players, bounties: [live] };
+  const out = buildNotifications(prev, next);
+  assert.equal(out.length, 1);
+  assert.match(out[0].description, /Stand: \*\*A\*\* 4\/10/);
+  assert.equal(buildNotifications(next, next).length, 0);
+  const won = { ...next, bounties: [{ ...live, status: 'won', winners: ['a'] }] };
+  assert.match(buildNotifications(next, won)[0].description, /\*\*A\*\* hat „T“ als Erster geschafft: \+20 Punkte/);
+});

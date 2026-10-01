@@ -35,6 +35,8 @@ Most games · Highest win rate · Highest KDA · Lowest KDA · Best vision score
 
 Win rate, both KDA awards, vision and deaths per game need at least `minGames` (20) games. **One-trick:** each player's best champion by win rate (with at least 10 games on it); the two players with the highest such win rate get +10 each, and anyone tied at the cut-off does too.
 
+**Weekly bounties** (`challenge.bounties`): a side quest per week. The first player to win games on `target` different champions between `start` and `end` gets `points` right away (players who reach it in the same game share it). Week 1: 10 different champions, +20, until Sunday 4.10. The bounty card sits above the news; Discord gets a post when a bounty goes live and when someone completes it. To add next week's bounty, add another entry with a new `id`, `start` and `end`.
+
 Only ranked games played between the start and end date count. Remakes don't count.
 
 **Trial run:** with `challenge.preview.start` set, the site scores a trial from that day until the real start, so you can see live results early. When the real challenge starts, everything resets automatically: game stats are counted again from the real start and the LP baseline is taken fresh. Remove `preview` if you don't want a trial.
@@ -130,6 +132,7 @@ Everything lives in `squad.config.json`:
 | `platform` / `region` | `euw1` / `europe` for EUW. |
 | `challenge.start` / `challenge.end` | First and last day of the challenge (`YYYY-MM-DD`, both days included, midnight in `challenge.timeZone`). A full timestamp like `2026-09-30T17:40:00+02:00` starts at that exact moment. Changing them re-processes all games on the next runs. |
 | `challenge.timeZone` | Time zone for the dates. Default `Europe/Berlin`. |
+| `challenge.bounties` | Weekly bounties: `id`, `type` (`distinctChampionWins`), `queue` (`solo`/`flex`), `title`, `desc`, `target`, `points`, `start`, `end`. |
 | `challenge.preview.start` | Optional trial run from this day until `challenge.start`. Resets automatically when the real challenge starts. |
 | `challenge.minGames` | Games needed for the rate-based awards (win rate, KDA, vision, deaths). |
 | `challenge.oneTrickMinGames` | Games on one champion needed for the one-trick award. |

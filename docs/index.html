@@ -48,6 +48,17 @@
   .fold { display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 16px 32px; align-items: start; }
   .st-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; margin-bottom: 6px; }
   .st-title h2 { font-size: 26px; margin: 0; }
+  .side { display: grid; gap: 14px; align-content: start; min-width: 0; }
+  .bounty { background: color-mix(in srgb, var(--accent) 14%, var(--panel)); border: 1px solid var(--accent); border-radius: 6px; padding: 12px 16px; }
+  .bounty h2 { font-size: clamp(20px, 2.8vh, 26px); margin: 0; }
+  .bpts { display: inline-block; background: var(--accent); color: var(--on-accent); border-radius: 999px; padding: 0 9px; font-size: .7em; vertical-align: middle; }
+  .bdesc { margin: 4px 0; font-size: 14px; }
+  .bprog { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 5px; }
+  .bprog li { display: grid; grid-template-columns: minmax(70px, 110px) 1fr 44px; gap: 8px; align-items: center; font-size: 14px; }
+  .bprog .bar { height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+  .bprog .bar i { display: block; height: 100%; background: var(--accent); }
+  .bprog b { text-align: right; }
+  .bwin { font-weight: 700; color: var(--accent); margin: 4px 0; }
   .news { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; }
   .news h2 { font-size: 24px; margin: 0; }
   .news .day { color: var(--muted); font-size: 13px; margin: 0 0 6px; }
@@ -321,6 +332,10 @@
     .slot img[width="56"] { width: 44px; height: 44px; }
     .slot b { font-size: 13px; } .slot-champ { font-size: 12px; } .slot-role { font-size: 10px; }
   }
+  .pcard .phead { display: flex; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; margin-bottom: 4px; }
+  .pcard h3 { margin: 0; } .pcard h3 a { text-decoration: none; }
+  .prow { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 6px; padding: 6px 0; border-top: 1px dashed var(--line); }
+  .plbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; padding-top: 5px; }
   .gd-empty { background: var(--panel); border: 1px dashed var(--line); border-radius: 6px; padding: 18px; max-width: 640px; color: var(--muted); }
 
   .btn { display: inline-block; font: 600 15px var(--body); background: var(--ink); color: var(--bg); border: 0; border-radius: 999px; padding: 8px 18px; cursor: pointer; text-decoration: none; margin-top: 8px; }
@@ -350,63 +365,28 @@
 <div class="wrap prime" id="tab-prime" hidden>
   <section style="margin-top:0" id="gamedays"></section>
 
-  <h2 style="margin-top:56px">Our draft pool</h2>
-  <p class="lede">Champion pools, comps and synergies from the draft pool sheet (op.gg data from 24 September 2026).</p>
-
-  <section style="margin-top:24px">
-    <h2>What the sheet says</h2>
-    <ul>
-      <li><b>Wide rank spread:</b> ShaiTing, Heino and EP Theyron are Master; top and support are Emerald/Platinum. Draft comfort picks for the lower-ranked lanes.</li>
-      <li><b>Bel'Veth conflict:</b> it's the #1 lifetime champ of both junglers. ShaiTing owns it (mastery 101, 193 games in 2026); Smette's identity is Shaco.</li>
-      <li><b>EP Theyron plays more jungle than ADC</b> this season (39% vs 22%). His ADC pool is small: Caitlyn, Ezreal, Jhin, Varus.</li>
-      <li><b>Backup junglers:</b> Heino and EP Theyron can both cover jungle (Jarvan IV, Graves, Lee Sin).</li>
-      <li><b>Natural identity:</b> assassins in jungle and mid, engage on support. That means <i>pick &amp; collapse</i> or <i>hard engage</i>.</li>
-    </ul>
-  </section>
+  <section style="margin-top:56px" id="pool"></section>
 
   <section>
-    <h2>Team pool</h2>
-    <p class="lede">Top 5 per player by priority score (55% games played in 2026, 45% lifetime mastery). Core = 50+, Secondary = 25+, below that Pocket.</p>
-    <div class="table-scroll"><table id="pool"></table></div>
-  </section>
-
-  <section>
-    <h2>Comps</h2>
-    <p class="lede">Five lineups built from our pools, with 2026 pro-play context.</p>
-    <div class="cards" id="comps"></div>
-  </section>
-
-  <section>
-    <h2>Duo synergies</h2>
-    <div class="table-scroll"><table id="synergies"></table></div>
-  </section>
-
-  <section>
-    <h2>2026 pro meta vs. our pools</h2>
+    <h2>2026 pro meta</h2>
     <div class="cards">
       <div class="card"><h3>Play it</h3><ul>
-        <li><b>Jarvan IV</b>: most picked at MSI 2026 (19 games). Smette, ShaiTing, Heino.</li>
+        <li><b>Jarvan IV</b>: most picked at MSI 2026 (19 games). Smette, Heino and EP Theyron have games on him.</li>
         <li><b>Ezreal</b>: 3rd most picked at MSI (18). EP Theyron's safest ADC.</li>
-        <li><b>Varus</b>: most banned all spring (700+ bans). EP Theyron, 5-1 in 2026.</li>
-        <li><b>Xin Zhao</b>: in 4 of 6 LEC playoff teams' top 5. Smette, Heino.</li>
+        <li><b>Varus</b>: most banned in LCK and LEC Spring 2026. EP Theyron's backup ADC.</li>
+        <li><b>Xin Zhao</b>: in 4 of 6 LEC playoff teams' top 5. Smette and Heino play him.</li>
       </ul></div>
       <div class="card"><h3>Be careful</h3><ul>
-        <li><b>Sion</b>: won 1 of 10 MSI games. Prefer Cho'Gath.</li>
+        <li><b>Sion</b>: won 1 of 10 MSI games.</li>
         <li><b>Jhin</b>: 13% win rate at MSI. Prefer Varus in pick comps.</li>
-        <li><b>Galio</b>: 17% at MSI. Lissandra is the better engage mid.</li>
+        <li><b>Galio</b>: 17% at MSI, but Kolbe's comfort pick: fine as a safe top at our level.</li>
       </ul></div>
       <div class="card"><h3>Ban or respect</h3><ul>
         <li>MSI most banned: Poppy, Vi, Jayce, Orianna, Akali.</li>
-        <li>Best MSI win rates: Dr. Mundo, Lucian, Milio (HennenG has it), Trundle.</li>
+        <li>Best MSI win rates: Dr. Mundo, Lucian, Milio (HennenG has it), Trundle (Kolbe's comfort).</li>
       </ul></div>
     </div>
-    <p class="footnote">Sources: <a href="https://rft.gg/event/msi-2026/champions" target="_blank" rel="noopener">rft.gg MSI 2026</a>, <a href="https://pem.lol/msi/2026" target="_blank" rel="noopener">pem.lol</a>, <a href="https://rdy.gg/en/lol/tournaments/1165" target="_blank" rel="noopener">rdy.gg LEC Spring 2026</a>, <a href="https://www.hotspawn.com/league-of-legends/news/best-msi-2026-pickems" target="_blank" rel="noopener">Hotspawn</a>.</p>
-  </section>
-
-  <section>
-    <h2>Roster right now</h2>
-    <p class="lede">Live ranks and most played champs since the challenge start. <a id="ourmulti" href="#" target="_blank" rel="noopener">Whole squad on OP.GG</a></p>
-    <div class="table-scroll"><table id="roster"></table></div>
+    <p class="footnote">Sources: <a href="https://rft.gg/event/msi-2026/champions" target="_blank" rel="noopener">rft.gg MSI 2026</a>, <a href="https://pem.lol/msi/2026" target="_blank" rel="noopener">pem.lol</a>, <a href="https://gol.gg/tournament/tournament-picksandbans/LEC%202026%20Summer%20Season/" target="_blank" rel="noopener">gol.gg LEC 2026</a>.</p>
   </section>
 
   <section>
@@ -423,7 +403,7 @@
     <div class="cards">
       <div class="card"><h3>Before</h3><ul>
         <li>Opponent scouted, bans agreed</li>
-        <li>2–3 comps from above picked, first choice per role</li>
+        <li>Comps from the game day plan agreed, first choice per role</li>
         <li>Everyone in voice 15 minutes early, client restarted, rune pages saved</li>
         <li>Current Prime League rulebook checked (format, check-in, side choice)</li>
       </ul></div>
@@ -435,7 +415,7 @@
       </ul></div>
       <div class="card"><h3>After</h3><ul>
         <li>5-minute review: when did the game turn, and why?</li>
-        <li>Update the draft pool sheet if someone found a new comfort pick</li>
+        <li>Run <b>Actions → Scout opponent</b> before the next game day, so the pools above stay current</li>
       </ul></div>
     </div>
   </section>
@@ -560,7 +540,7 @@ const endDay = () => zoneDate(challenge().endMs - 1, { day: 'numeric', month: 'n
 // One line for first-time visitors: how points are earned.
 function howToScore(queue) {
   const pt = challenge().points || {};
-  return `<b>How to score</b> (${queue} games only): 📈 1 LP = 1 point · 🎭 each new champion +${pt.uniqueChampion ?? 5} · 💥 pentakill +${pt.pentakill ?? 10} · 🔥 quadrakill +${pt.quadrakill ?? 5} · 🏆 end awards +${pt.mostGames ?? 10} each on ${endDay()}`;
+  return `<b>How to score</b> (${queue} games only): 📈 1 LP = 1 point · 🎭 each new champion +${pt.uniqueChampion ?? 5} · 💥 pentakill +${pt.pentakill ?? 10} · 🔥 quadrakill +${pt.quadrakill ?? 5} · 🏆 end awards +${pt.mostGames ?? 10} each on ${endDay()}${(data.bounties || []).some(b => b.queue === (queue === 'Flex' ? 'flex' : 'solo')) ? ' · 🎯 weekly bounty' : ''}`;
 }
 function countdownText(to) {
   let s = Math.max(0, Math.round((to - Date.now()) / 1000));
@@ -603,7 +583,7 @@ function renderShell() {
         <p class="footnote">${awardsFinal() ? '' : `Faded +points: end awards they'd get if it ended now, added on ${endDay()} `}<i>${quip('standings')}</i></p>
         <p class="how mob">${howToScore('Solo/Duo')}</p>
       </section>
-      <aside class="news" id="review"></aside>
+      <aside class="side"><div class="bounty" id="bounty"></div><div class="news" id="review"></div></aside>
     </div>
 
     <section>
@@ -678,6 +658,7 @@ function renderStandings(mode) {
       spread && (P.total ?? 0) === Math.min(...totals) ? ['🤡', 'Lappen: last place'] : null,
       st >= 3 ? ['🔥', `${st} Siege in Folge`] : null,
       st <= -3 ? ['💀', `Tilt: ${-st} Niederlagen in Folge`] : null,
+      P.bountyTotal ? ['🎯', `Wochen-Bounty geschafft: +${P.bountyTotal}`] : null,
     ].filter(Boolean).map(([e, t]) => `<span class="bdg" title="${t}">${e}</span>`).join('');
   };
 
@@ -736,8 +717,12 @@ function breakdown(p, mode) {
       ${ach(A.pentakills, 'pentakill', 'pentakills')}
       ${ach(A.quadrakills, 'quadrakill', 'quadrakills')}
     </ul>
+    ${(data.bounties || []).some(b => b.queue === mode) ? `<h4>Bounty</h4><ul>${(data.bounties || []).filter(b => b.queue === mode).map(b => {
+      const mine = P.bounties?.[b.id];
+      return mine ? line(`🎯 ${esc(b.title)}: ${mine.progress}/${mine.target}`, mine.points ? '+' + mine.points : '0', !mine.points) : '';
+    }).join('')}</ul>` : ''}
     <h4>End awards ${final ? '' : `<span class="hint">currently leading, locked in on ${endDay()}</span>`}</h4><ul>${awards || line('None yet', '0', true)}</ul>
-    <h4>Total</h4><ul>${line(`${P.lp ?? 0} LP + ${P.achievementsTotal ?? 0} achievements${final ? ` + ${P.awardsTotal ?? 0} awards` : ''}`, '= ' + (P.total ?? 0))}</ul>`;
+    <h4>Total</h4><ul>${line(`${P.lp ?? 0} LP + ${P.achievementsTotal ?? 0} achievements${P.bountyTotal ? ` + ${P.bountyTotal} bounty` : ''}${final ? ` + ${P.awardsTotal ?? 0} awards` : ''}`, '= ' + (P.total ?? 0))}</ul>`;
 }
 
 function renderBoards(mode) {
@@ -757,6 +742,20 @@ function renderBoards(mode) {
       ${rest.length ? `<ol style="margin-top:10px">${rest.slice(0, 3).map(r => `<li class="none"><span>${esc(nameOf(r.p))}</span><span>${esc(fmtAward(a.key, r.value, r.detail))}</span></li>`).join('')}</ol>` : ''}
     </div>`;
   }).join('');
+}
+
+// Weekly bounty card above the news: the latest Solo/Duo bounty that has started.
+function renderBounty() {
+  const el = document.getElementById('bounty');
+  const b = (data.bounties || []).filter(x => x.queue === 'solo' && x.status !== 'upcoming').sort((x, y) => y.startMs - x.startMs)[0];
+  if (!b) { el.remove(); return; }
+  const who = k => esc(nameOf(byKey(k) || { riotId: k }));
+  const ends = zoneDate(b.endMs - 1, { weekday: 'long', day: 'numeric', month: 'numeric' });
+  const state = b.status === 'won' ? `<p class="bwin">🏆 Geschafft von ${b.winners.map(who).join(' & ')}: +${b.points} Punkte</p>`
+    : b.status === 'expired' ? '<p class="hint">Vorbei, niemand hat es geschafft.</p>'
+    : `<p class="hint">Noch ${countdownText(b.endMs)}, bis ${ends}</p>`;
+  el.innerHTML = `<h2>🎯 Wochen-Bounty <span class="bpts">+${b.points}</span></h2><p class="bdesc">${esc(b.desc)}</p>${state}
+    <ol class="bprog">${b.progress.slice(0, 4).map(r => `<li><span>${who(r.key)}</span><span class="bar"><i style="width:${Math.min(100, r.value / b.target * 100)}%"></i></span><b>${r.value}/${b.target}</b></li>`).join('')}</ol>`;
 }
 
 // News panel next to the standings: the live roast line + the latest Tagesrückblick.
@@ -934,82 +933,7 @@ function renderEmpty(reason) {
       <p><a href="?demo=1">Preview the page with sample data</a></p></div>`;
 }
 
-// ---------- Prime League data (from LoL_Team_Draft_Pool_2026.ods, op.gg 24 Sep 2026) ----------
-// Champions use Data Dragon ids (Khazix, Belveth, JarvanIV...); champName() turns them into display names.
-const POOL = [
-  { role: 'Top', who: 'BigLennen420', picks: [['Fiora', 76], ['Kayle', 73], ['Chogath', 60], ['Jax', 43], ['Quinn', 43]] },
-  { role: 'Jungle', who: 'Smette', picks: [['Shaco', 73], ['Khazix', 46], ['Belveth', 45], ['Kayn', 19], ['Evelynn', 11]] },
-  { role: 'Jungle', who: 'ShaiTing', picks: [['Belveth', 100], ['Evelynn', 70], ['Talon', 25], ['Khazix', 15], ['Sylas', 9]] },
-  { role: 'Mid', who: 'Heino', picks: [['Ekko', 99], ['Katarina', 74], ['Sylas', 46], ['Qiyana', 23], ['Lissandra', 18]] },
-  { role: 'ADC', who: 'EP Theyron', picks: [['Caitlyn', 90], ['Ezreal', 83], ['Jhin', 79], ['Varus', 45], ['Jinx', 29]] },
-  { role: 'Support', who: 'HennenG', picks: [['Nautilus', 100], ['Thresh', 39], ['Leona', 38], ['Lulu', 38], ['Braum', 35]] },
-];
-const COMPS = [
-  { name: 'Hard engage', sub: 'J4 front-to-back', jungler: 'Smette',
-    lineup: ['Chogath', 'JarvanIV', 'Lissandra', 'Varus', 'Nautilus'],
-    win: 'Chain CC onto one target: Cataclysm, Nautilus ult and Lissandra ult, Cho\'Gath knock-up follows, Varus ult extends it from range.',
-    why: 'Uses HennenG\'s two best supports and J4, which Smette, Heino and EP Theyron all have games on. J4 tied for most picked at MSI 2026.',
-    risk: 'Kited by disengage and poke. Smette has only 12 J4 games; Heino or EP Theyron could jungle it.',
-    alt: 'Top Sion · Mid Galio · ADC Kai\'Sa · Sup Leona' },
-  { name: 'Protect the hypercarry', sub: 'scaling', jungler: 'ShaiTing',
-    lineup: ['Kayle', 'Belveth', 'Sylas', 'Jinx', 'Lulu'],
-    win: 'Survive lane, trade objectives, fight at 3 items. Lulu keeps Kayle and the ADC alive; Bel\'Veth takes over side lanes and Barons late.',
-    why: 'Kayle is BigLennen420\'s best 2026 record (11-3), Bel\'Veth is ShaiTing\'s main, Sylas steals the enemy engage ult.',
-    risk: 'Very weak first 15 minutes. Jinx is mastery-only for EP Theyron in 2026; Kai\'Sa is the safer carry.',
-    alt: 'ADC Kai\'Sa, Caitlyn · Sup Braum, Janna · Mid Lissandra' },
-  { name: 'Pick & collapse', sub: 'our natural identity', jungler: 'ShaiTing',
-    lineup: ['Fiora', 'Evelynn', 'Ekko', 'Varus', 'Thresh'],
-    win: 'Win the vision game, catch one target (Varus ult, Thresh hook, Evelynn stealth), collapse 5v4, take the objective. Fiora holds a side lane.',
-    why: 'Plays to the assassin core: Evelynn (ShaiTing, 169 games), Ekko (Heino\'s most played), Thresh (HennenG).',
-    risk: 'Struggles if the enemy groups 5 with tanks. Needs vision discipline. Prefer Varus over Jhin here.',
-    alt: 'Jungle Shaco (Smette) · Mid Qiyana · Sup Pantheon · ADC Ezreal' },
-  { name: 'Early dive', sub: 'snowball and end before 30', jungler: 'ShaiTing',
-    lineup: ['Jax', 'Talon', 'Sylas', 'Caitlyn', 'Leona'],
-    win: 'Cait-Leona bully bot and win 2v2s, Talon and Sylas roam for early kills, take first drakes and grubs, end early.',
-    why: 'Caitlyn is EP Theyron\'s most played ADC, Leona is HennenG\'s best win rate (70%), Talon is 5-1 for ShaiTing lately.',
-    risk: 'Falls off hard if the early lead doesn\'t happen. Weak into scaling tanks.',
-    alt: 'Jungle Kha\'Zix · Mid Katarina · Sup Nautilus' },
-  { name: 'Resets & chaos', sub: 'play around Katarina', jungler: 'Smette',
-    lineup: ['Sion', 'JarvanIV', 'Katarina', 'Ezreal', 'Nautilus'],
-    win: 'Frontline and CC lock enemies in place (J4 ult, Nautilus, Sion), Katarina cleans up with resets, Ezreal stays safe and pokes.',
-    why: 'Katarina is Heino\'s highest mastery, Ezreal is EP Theyron\'s safest ADC.',
-    risk: 'Point-and-click CC and Zhonya\'s shut Katarina down. Sion lost 9 of 10 MSI games; Cho\'Gath may be better.',
-    alt: 'Top Cho\'Gath · Jungle Lillia · Mid Ekko' },
-];
-const LINEUP_PLAYERS = ['BigLennen420', null, 'Heino', 'EP Theyron', 'HennenG'];
-const SYNERGIES = [
-  ['Nautilus + Kai\'Sa', 'HennenG + EP Theyron', 'Nautilus roots and knock-ups stack Kai\'Sa\'s passive and give her a safe ult target.'],
-  ['Leona + Caitlyn', 'HennenG + EP Theyron', 'Leona\'s stun lets Caitlyn land traps for guaranteed headshots. One of the strongest lane bullies.'],
-  ['Leona / Nautilus + Jhin', 'HennenG + EP Theyron', 'Jhin\'s W roots anyone an ally just damaged, so it chains off the engage.'],
-  ['Nautilus / Thresh + Varus', 'HennenG + EP Theyron', 'Varus ult chains into a hook, box or Nautilus ult: long-range CC for picks.'],
-  ['Lulu + Kayle / Jinx / Bel\'Veth', 'HennenG + carry', 'Lulu ult and shield keep the scaling carry alive through dives.'],
-  ['Jarvan IV + Lissandra / Galio', 'Smette + Heino', 'Cataclysm traps a group; Lissandra or Galio ult follows into the same spot.'],
-  ['Jarvan IV + Katarina', 'Smette + Heino', 'J4 locks enemies inside Cataclysm, Katarina resets through them.'],
-  ['Cho\'Gath + Jarvan IV', 'BigLennen420 + Smette', 'Flag-and-drag knock-up into Rupture knock-up: long chained CC.'],
-  ['Evelynn + Qiyana / Ekko', 'ShaiTing + Heino', 'Two burst assassins who both love fog-of-war picks around mid.'],
-  ['Talon / Kha\'Zix + Sylas', 'ShaiTing + Heino', 'High-roam early duo; Sylas can steal an enemy engage ult.'],
-  ['Pantheon + Varus / Ezreal', 'HennenG + EP Theyron', 'Pantheon\'s stun and global ult flank create picks for long-range ADCs.'],
-];
-const tierOf = v => v >= 50 ? 'Core' : v >= 25 ? 'Secondary' : 'Pocket';
 const champIcon = (c, size = 30) => `<img src="${champImg(c)}" alt="" width="${size}" height="${size}" style="border-radius:4px;vertical-align:middle" onerror="this.style.visibility='hidden'">`;
-
-function renderPrime() {
-  document.getElementById('pool').innerHTML = `<thead><tr><th>Role</th><th>Player</th><th>#1</th><th>#2</th><th>#3</th><th>#4</th><th>#5</th></tr></thead><tbody>` +
-    POOL.map(r => `<tr><td>${r.role}</td><td><b>${esc(r.who)}</b></td>${r.picks.map(([c, v]) =>
-      `<td><div class="pl">${champIcon(c)}<div><b style="font-size:16px">${esc(champName(c))}</b><span>${tierOf(v)} · ${v}</span></div></div></td>`).join('')}</tr>`).join('') + '</tbody>';
-
-  document.getElementById('comps').innerHTML = COMPS.map((c, k) => `<div class="card">
-    <h3>${k + 1}. ${esc(c.name)}</h3><p class="footnote" style="margin:0 0 10px">${esc(c.sub)}</p>
-    <div style="display:flex;gap:6px;margin-bottom:10px">${c.lineup.map((ch, i) =>
-      `<span title="${esc(champName(ch))} (${esc(i === 1 ? c.jungler : LINEUP_PLAYERS[i])})" style="text-align:center;font-size:11px;color:var(--muted)">${champIcon(ch, 40)}<br>${['Top', 'Jg', 'Mid', 'ADC', 'Sup'][i]}</span>`).join('')}</div>
-    <p style="margin:0 0 6px"><b>How it wins:</b> ${esc(c.win)}</p>
-    <p style="margin:0 0 6px"><b>Why us:</b> ${esc(c.why)}</p>
-    <p style="margin:0 0 6px"><b>Watch out:</b> ${esc(c.risk)}</p>
-    <p class="footnote" style="margin:0">Alternatives: ${esc(c.alt)}</p></div>`).join('');
-
-  document.getElementById('synergies').innerHTML = '<thead><tr><th>Duo</th><th>Players</th><th>Why it works</th></tr></thead><tbody>' +
-    SYNERGIES.map(([d, w, y]) => `<tr><td><b>${esc(d)}</b></td><td>${esc(w)}</td><td>${esc(y)}</td></tr>`).join('') + '</tbody>';
-}
 
 // ---------- Tabs ----------
 function showTab() {
@@ -1027,24 +951,6 @@ window.addEventListener('hashchange', showTab);
 // ---------- Prime League tab ----------
 const opggName = id => { const [n, t] = id.split('#'); return `https://op.gg/lol/summoners/euw/${encodeURIComponent(n.trim())}-${encodeURIComponent((t || '').trim())}`; };
 const opggMulti = ids => `https://op.gg/lol/multisearch/euw?summoners=${encodeURIComponent(ids.join(','))}`;
-
-function renderRoster() {
-  document.getElementById('ourmulti').href = opggMulti(players.map(p => p.riotId));
-  const head = '<thead><tr><th>Player</th><th>Role</th><th>Solo/Duo</th><th>Flex</th><th>Most played since start</th><th></th></tr></thead>';
-  const body = players.map((p, i) => {
-    const champs = {};
-    for (const m of ['solo', 'flex']) for (const [c, v] of Object.entries(modeOf(p, m).champions)) { const t = (champs[c] ??= { games: 0, wins: 0 }); t.games += v.games; t.wins += v.wins; }
-    const top = Object.entries(champs).sort((a, b) => b[1].games - a[1].games).slice(0, 4);
-    return `<tr>
-      <td><div class="pl">${p.profileIconId != null ? `<img src="${iconImg(p.profileIconId)}" alt="" style="border-color:${colorOf(i)}" onerror="this.style.visibility='hidden'">` : ''}
-        <div><b>${esc(nameOf(p))}</b><span>${esc(p.riotId)}</span></div></div></td>
-      <td>${esc(p.role) || '–'}</td>
-      <td>${esc(rankText(p.ranks?.solo))}</td><td>${esc(rankText(p.ranks?.flex))}</td>
-      <td><div class="champs">${top.map(([c, v]) => `<img src="${champImg(c)}" alt="${esc(champName(c))}" title="${esc(champName(c))}: ${v.games} games, ${pct(v.wins / v.games)} win rate" onerror="this.style.display='none'">`).join('') || '<span style="color:var(--muted)">no games yet</span>'}</div></td>
-      <td><a href="${opggName(p.riotId)}" target="_blank" rel="noopener">OP.GG</a></td></tr>`;
-  }).join('');
-  document.getElementById('roster').innerHTML = head + '<tbody>' + body + '</tbody>';
-}
 
 document.getElementById('scoutbtn').addEventListener('click', () => {
   const ids = document.getElementById('scoutin').value.split(/[\n,]+/).map(s => s.trim()).filter(s => s.includes('#'));
@@ -1068,6 +974,7 @@ async function loadGamedays() {
   const next = gd.cfg.gamedays.find(g => g.date && Date.parse(g.date) > Date.now() - 6 * 3600_000);
   gd.day = (next || gd.cfg.gamedays[0]).day;
   renderGamedays();
+  renderPool();
 }
 async function scoutOf(day) {
   if (!(day in gd.scout)) gd.scout[day] = await fetch(`prime/scout-day${day}.json?t=${Date.now()}`).then(r => (r.ok ? r.json() : null)).catch(() => null);
@@ -1214,6 +1121,36 @@ function renderGameday(g, scout) {
   return out.join('');
 }
 
+// Our draft pool: one card per player of the Prime League roster, from the newest scout
+// file (last 30 ranked games, Prime League games, mastery) plus live challenge data.
+async function renderPool() {
+  const el = document.getElementById('pool');
+  if (!el || !gd.cfg) return;
+  let scout = null;
+  for (const g of [...gd.cfg.gamedays].reverse()) if (g.opponent?.players?.length && (scout = await scoutOf(g.day))) break;
+  const scouted = Object.fromEntries((scout?.us || []).map(p => [idKey(p.riotId), p]));
+  const live = Object.fromEntries((players || []).map(p => [idKey(p.riotId), p]));
+  const k = v => v >= 1e6 ? (v / 1e6).toFixed(1) + 'M' : Math.round(v / 1000) + 'k';
+  const row = (label, chips) => chips ? `<div class="prow"><span class="plbl">${label}</span><span>${chips}</span></div>` : '';
+  const cards = gd.cfg.ourTeam.map(pl => {
+    const s = scouted[idKey(pl.riotId)], lp = live[idKey(pl.riotId)];
+    const rank = lp?.ranks?.solo ? rankText(lp.ranks.solo) : s?.solo || '';
+    const inChallenge = {};
+    for (const m of ['solo', 'flex']) for (const [c, v] of Object.entries(lp ? modeOf(lp, m).champions : {})) inChallenge[c] = (inChallenge[c] || 0) + v.games;
+    return `<div class="card pcard">
+      <div class="phead"><span class="slot-role">${esc(pl.role)}</span><h3><a href="${opggName(pl.riotId)}" target="_blank" rel="noopener">${esc(pl.name)}</a></h3><span class="hint">${esc(rank)}</span></div>
+      ${row('Plays right now', (s?.ranked.champions || []).slice(0, 4).map(c => cchip(c.champ, `${c.games}g ${Math.round(c.winRate * 100)}%`)).join(''))}
+      ${row('In the challenge', Object.entries(inChallenge).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([c, n]) => cchip(c, `${n}g`)).join(''))}
+      ${row('Prime League', (s?.tourney.champions || []).slice(0, 3).map(c => cchip(c.champ, `${c.wins}-${c.games - c.wins}`)).join(''))}
+      ${row('Best mastery', (s?.mastery || []).slice(0, 3).map(m => cchip(m.champ, k(m.points))).join(''))}
+    </div>`;
+  }).join('');
+  el.innerHTML = `<h2>Our draft pool</h2>
+    <p class="lede">Who plays what right now: the last 30 ranked games, games since the challenge start, Prime League games and top mastery.${scout ? ` Scouted ${new Date(scout.generatedAt).toLocaleDateString('de-DE')}; run <b>Actions → Scout opponent</b> to refresh.` : ''}
+      <a href="${opggMulti(gd.cfg.ourTeam.map(p => p.riotId))}" target="_blank" rel="noopener">Whole team on op.gg</a></p>
+    <div class="cards">${cards}</div>`;
+}
+
 async function main() {
   const demo = new URLSearchParams(location.search).has('demo');
   try {
@@ -1244,11 +1181,10 @@ async function main() {
   }
   document.title = data.squadName || 'Squad ladder';
   if (!data.challenge || !data.awards?.solo) return renderEmpty('The data file is from an older version. Run the "Update squad data" workflow once.');
-  renderShell(); renderReview(); renderStandings('solo'); renderBoards('solo'); renderWall(); renderWeek(); renderChart(); renderPlayers(); renderFeed('solo');
-  renderFlexTab(); renderRoster();
+  renderShell(); renderBounty(); renderReview(); renderStandings('solo'); renderBoards('solo'); renderWall(); renderWeek(); renderChart(); renderPlayers(); renderFeed('solo');
+  renderFlexTab(); renderPool();
 }
 document.getElementById('ticker').textContent = (TICKER.join('   ·   ') + '   ·   ').repeat(2); // doubled so the loop is seamless
-renderPrime();
 showTab();
 main();
 </script>
