@@ -1,0 +1,7167 @@
+{
+ "day": 1,
+ "generatedAt": "2026-10-01T16:20:34.188Z",
+ "patch": "16.19.1",
+ "us": [
+  {
+   "name": "Kolbe",
+   "riotId": "Jack The Dripper#1608",
+   "role": "Top",
+   "solo": "Emerald II 89 LP",
+   "flex": "Emerald I 50 LP",
+   "soloWinRate": 0.5,
+   "mastery": [
+    {
+     "champ": "Galio",
+     "level": 110,
+     "points": 1183874,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Rengar",
+     "level": 96,
+     "points": 1026542,
+     "lastPlayed": "2026-09-30"
+    },
+    {
+     "champ": "Ryze",
+     "level": 49,
+     "points": 509253,
+     "lastPlayed": "2026-09-14"
+    },
+    {
+     "champ": "Orianna",
+     "level": 45,
+     "points": 466103,
+     "lastPlayed": "2026-09-16"
+    },
+    {
+     "champ": "Draven",
+     "level": 41,
+     "points": 419146,
+     "lastPlayed": "2026-09-30"
+    },
+    {
+     "champ": "Viktor",
+     "level": 36,
+     "points": 371883,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Trundle",
+     "level": 36,
+     "points": 368552,
+     "lastPlayed": "2026-09-18"
+    },
+    {
+     "champ": "Sylas",
+     "level": 36,
+     "points": 363045,
+     "lastPlayed": "2026-09-21"
+    },
+    {
+     "champ": "Ekko",
+     "level": 32,
+     "points": 324715,
+     "lastPlayed": "2026-08-12"
+    },
+    {
+     "champ": "Yone",
+     "level": 32,
+     "points": 320807,
+     "lastPlayed": "2026-08-12"
+    },
+    {
+     "champ": "Sett",
+     "level": 30,
+     "points": 300797,
+     "lastPlayed": "2026-07-15"
+    },
+    {
+     "champ": "Akali",
+     "level": 30,
+     "points": 298565,
+     "lastPlayed": "2026-09-30"
+    }
+   ],
+   "ranked": {
+    "games": 30,
+    "wins": 9,
+    "roles": {
+     "MIDDLE": 23,
+     "TOP": 2,
+     "JUNGLE": 1,
+     "BOTTOM": 1,
+     "UTILITY": 3
+    },
+    "champions": [
+     {
+      "champ": "TwistedFate",
+      "games": 9,
+      "wins": 1,
+      "k": 27,
+      "d": 60,
+      "a": 86,
+      "roles": {
+       "MIDDLE": 9
+      },
+      "kda": 1.88,
+      "winRate": 0.11
+     },
+     {
+      "champ": "Viktor",
+      "games": 5,
+      "wins": 3,
+      "k": 45,
+      "d": 24,
+      "a": 31,
+      "roles": {
+       "MIDDLE": 5
+      },
+      "kda": 3.17,
+      "winRate": 0.6
+     },
+     {
+      "champ": "Akali",
+      "games": 3,
+      "wins": 2,
+      "k": 46,
+      "d": 10,
+      "a": 16,
+      "roles": {
+       "MIDDLE": 3
+      },
+      "kda": 6.2,
+      "winRate": 0.67
+     },
+     {
+      "champ": "Galio",
+      "games": 3,
+      "wins": 1,
+      "k": 14,
+      "d": 13,
+      "a": 35,
+      "roles": {
+       "MIDDLE": 2,
+       "TOP": 1
+      },
+      "kda": 3.77,
+      "winRate": 0.33
+     },
+     {
+      "champ": "Anivia",
+      "games": 2,
+      "wins": 0,
+      "k": 5,
+      "d": 8,
+      "a": 7,
+      "roles": {
+       "MIDDLE": 2
+      },
+      "kda": 1.5,
+      "winRate": 0
+     },
+     {
+      "champ": "Shen",
+      "games": 1,
+      "wins": 1,
+      "k": 7,
+      "d": 7,
+      "a": 13,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 2.86,
+      "winRate": 1
+     },
+     {
+      "champ": "Thresh",
+      "games": 1,
+      "wins": 1,
+      "k": 0,
+      "d": 12,
+      "a": 18,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 1.5,
+      "winRate": 1
+     },
+     {
+      "champ": "Sion",
+      "games": 1,
+      "wins": 0,
+      "k": 1,
+      "d": 8,
+      "a": 1,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 0.25,
+      "winRate": 0
+     },
+     {
+      "champ": "Kassadin",
+      "games": 1,
+      "wins": 0,
+      "k": 11,
+      "d": 9,
+      "a": 4,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 1.67,
+      "winRate": 0
+     },
+     {
+      "champ": "Rengar",
+      "games": 1,
+      "wins": 0,
+      "k": 4,
+      "d": 7,
+      "a": 5,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 1.29,
+      "winRate": 0
+     },
+     {
+      "champ": "Tristana",
+      "games": 1,
+      "wins": 0,
+      "k": 4,
+      "d": 9,
+      "a": 5,
+      "roles": {
+       "BOTTOM": 1
+      },
+      "kda": 1,
+      "winRate": 0
+     },
+     {
+      "champ": "Lux",
+      "games": 1,
+      "wins": 0,
+      "k": 7,
+      "d": 6,
+      "a": 11,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 3,
+      "winRate": 0
+     },
+     {
+      "champ": "Brand",
+      "games": 1,
+      "wins": 0,
+      "k": 0,
+      "d": 11,
+      "a": 1,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 0.09,
+      "winRate": 0
+     }
+    ]
+   },
+   "recent": [
+    "TwistedFate L",
+    "Viktor W",
+    "Galio L",
+    "Viktor L",
+    "Sion L",
+    "Galio L",
+    "Shen W",
+    "Viktor W",
+    "Kassadin L",
+    "Akali L"
+   ],
+   "tourney": {
+    "games": 0,
+    "wins": 0,
+    "roles": {},
+    "champions": []
+   }
+  },
+  {
+   "name": "Smette",
+   "riotId": "Smette#xDD",
+   "role": "Jungle",
+   "solo": "Diamond IV 96 LP",
+   "flex": "Diamond IV 0 LP",
+   "soloWinRate": 0.5,
+   "mastery": [
+    {
+     "champ": "Khazix",
+     "level": 73,
+     "points": 771830,
+     "lastPlayed": "2026-09-23"
+    },
+    {
+     "champ": "Belveth",
+     "level": 54,
+     "points": 568193,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Jinx",
+     "level": 34,
+     "points": 347510,
+     "lastPlayed": "2026-09-10"
+    },
+    {
+     "champ": "Kayn",
+     "level": 30,
+     "points": 308421,
+     "lastPlayed": "2026-07-28"
+    },
+    {
+     "champ": "Shaco",
+     "level": 30,
+     "points": 303826,
+     "lastPlayed": "2026-09-30"
+    },
+    {
+     "champ": "Evelynn",
+     "level": 17,
+     "points": 196417,
+     "lastPlayed": "2026-09-02"
+    },
+    {
+     "champ": "Diana",
+     "level": 18,
+     "points": 165068,
+     "lastPlayed": "2026-03-09"
+    },
+    {
+     "champ": "Talon",
+     "level": 16,
+     "points": 149151,
+     "lastPlayed": "2026-09-08"
+    },
+    {
+     "champ": "Viego",
+     "level": 16,
+     "points": 146612,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Qiyana",
+     "level": 16,
+     "points": 142043,
+     "lastPlayed": "2026-09-02"
+    },
+    {
+     "champ": "Gwen",
+     "level": 15,
+     "points": 140625,
+     "lastPlayed": "2026-09-29"
+    },
+    {
+     "champ": "Shyvana",
+     "level": 14,
+     "points": 130333,
+     "lastPlayed": "2026-09-14"
+    }
+   ],
+   "ranked": {
+    "games": 29,
+    "wins": 16,
+    "roles": {
+     "JUNGLE": 28,
+     "TOP": 1
+    },
+    "champions": [
+     {
+      "champ": "Viego",
+      "games": 17,
+      "wins": 10,
+      "k": 147,
+      "d": 98,
+      "a": 87,
+      "roles": {
+       "JUNGLE": 17
+      },
+      "kda": 2.39,
+      "winRate": 0.59
+     },
+     {
+      "champ": "Belveth",
+      "games": 4,
+      "wins": 2,
+      "k": 24,
+      "d": 19,
+      "a": 10,
+      "roles": {
+       "JUNGLE": 4
+      },
+      "kda": 1.79,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Elise",
+      "games": 3,
+      "wins": 2,
+      "k": 33,
+      "d": 14,
+      "a": 18,
+      "roles": {
+       "JUNGLE": 3
+      },
+      "kda": 3.64,
+      "winRate": 0.67
+     },
+     {
+      "champ": "Lillia",
+      "games": 1,
+      "wins": 1,
+      "k": 5,
+      "d": 2,
+      "a": 4,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 4.5,
+      "winRate": 1
+     },
+     {
+      "champ": "Shaco",
+      "games": 1,
+      "wins": 1,
+      "k": 3,
+      "d": 5,
+      "a": 12,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 3,
+      "winRate": 1
+     },
+     {
+      "champ": "MonkeyKing",
+      "games": 1,
+      "wins": 0,
+      "k": 4,
+      "d": 13,
+      "a": 14,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 1.38,
+      "winRate": 0
+     },
+     {
+      "champ": "Gwen",
+      "games": 1,
+      "wins": 0,
+      "k": 7,
+      "d": 6,
+      "a": 6,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 2.17,
+      "winRate": 0
+     },
+     {
+      "champ": "Fiora",
+      "games": 1,
+      "wins": 0,
+      "k": 1,
+      "d": 7,
+      "a": 4,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 0.71,
+      "winRate": 0
+     }
+    ]
+   },
+   "recent": [
+    "Viego W",
+    "Viego W",
+    "Belveth L",
+    "Belveth L",
+    "Lillia W",
+    "Belveth W",
+    "Belveth W",
+    "Viego L",
+    "Viego W",
+    "Viego W"
+   ],
+   "tourney": {
+    "games": 15,
+    "wins": 9,
+    "roles": {
+     "JUNGLE": 15
+    },
+    "champions": [
+     {
+      "champ": "MonkeyKing",
+      "games": 3,
+      "wins": 3,
+      "k": 19,
+      "d": 8,
+      "a": 41,
+      "roles": {
+       "JUNGLE": 3
+      },
+      "kda": 7.5,
+      "winRate": 1
+     },
+     {
+      "champ": "XinZhao",
+      "games": 3,
+      "wins": 2,
+      "k": 9,
+      "d": 26,
+      "a": 39,
+      "roles": {
+       "JUNGLE": 3
+      },
+      "kda": 1.85,
+      "winRate": 0.67
+     },
+     {
+      "champ": "Shaco",
+      "games": 2,
+      "wins": 2,
+      "k": 13,
+      "d": 8,
+      "a": 21,
+      "roles": {
+       "JUNGLE": 2
+      },
+      "kda": 4.25,
+      "winRate": 1
+     },
+     {
+      "champ": "Vi",
+      "games": 2,
+      "wins": 0,
+      "k": 8,
+      "d": 8,
+      "a": 4,
+      "roles": {
+       "JUNGLE": 2
+      },
+      "kda": 1.5,
+      "winRate": 0
+     },
+     {
+      "champ": "Lillia",
+      "games": 1,
+      "wins": 1,
+      "k": 2,
+      "d": 7,
+      "a": 11,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 1.86,
+      "winRate": 1
+     },
+     {
+      "champ": "Elise",
+      "games": 1,
+      "wins": 1,
+      "k": 4,
+      "d": 2,
+      "a": 5,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 4.5,
+      "winRate": 1
+     },
+     {
+      "champ": "JarvanIV",
+      "games": 1,
+      "wins": 0,
+      "k": 7,
+      "d": 5,
+      "a": 3,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 2,
+      "winRate": 0
+     },
+     {
+      "champ": "Khazix",
+      "games": 1,
+      "wins": 0,
+      "k": 6,
+      "d": 6,
+      "a": 2,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 1.33,
+      "winRate": 0
+     },
+     {
+      "champ": "Belveth",
+      "games": 1,
+      "wins": 0,
+      "k": 3,
+      "d": 3,
+      "a": 0,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 1,
+      "winRate": 0
+     }
+    ]
+   }
+  },
+  {
+   "name": "Heino",
+   "riotId": "HeinoDoe#213",
+   "role": "Mid",
+   "solo": "Master 127 LP",
+   "flex": "Diamond II 98 LP",
+   "soloWinRate": 0.49,
+   "mastery": [
+    {
+     "champ": "Katarina",
+     "level": 53,
+     "points": 558735,
+     "lastPlayed": "2026-09-27"
+    },
+    {
+     "champ": "Ekko",
+     "level": 53,
+     "points": 556397,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Sylas",
+     "level": 33,
+     "points": 328601,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Qiyana",
+     "level": 17,
+     "points": 160122,
+     "lastPlayed": "2026-09-29"
+    },
+    {
+     "champ": "XinZhao",
+     "level": 17,
+     "points": 159432,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Lissandra",
+     "level": 12,
+     "points": 104007,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "JarvanIV",
+     "level": 10,
+     "points": 81264,
+     "lastPlayed": "2026-09-27"
+    },
+    {
+     "champ": "Viego",
+     "level": 9,
+     "points": 69833,
+     "lastPlayed": "2026-09-29"
+    },
+    {
+     "champ": "Graves",
+     "level": 9,
+     "points": 67262,
+     "lastPlayed": "2026-08-10"
+    },
+    {
+     "champ": "Fizz",
+     "level": 8,
+     "points": 58477,
+     "lastPlayed": "2026-05-04"
+    },
+    {
+     "champ": "Ahri",
+     "level": 8,
+     "points": 57065,
+     "lastPlayed": "2026-09-21"
+    },
+    {
+     "champ": "Talon",
+     "level": 8,
+     "points": 53767,
+     "lastPlayed": "2026-09-29"
+    }
+   ],
+   "ranked": {
+    "games": 30,
+    "wins": 13,
+    "roles": {
+     "MIDDLE": 10,
+     "TOP": 4,
+     "JUNGLE": 13,
+     "BOTTOM": 2,
+     "UTILITY": 1
+    },
+    "champions": [
+     {
+      "champ": "Ekko",
+      "games": 6,
+      "wins": 6,
+      "k": 51,
+      "d": 16,
+      "a": 35,
+      "roles": {
+       "MIDDLE": 4,
+       "JUNGLE": 2
+      },
+      "kda": 5.38,
+      "winRate": 1
+     },
+     {
+      "champ": "Sylas",
+      "games": 3,
+      "wins": 1,
+      "k": 33,
+      "d": 27,
+      "a": 17,
+      "roles": {
+       "MIDDLE": 2,
+       "JUNGLE": 1
+      },
+      "kda": 1.85,
+      "winRate": 0.33
+     },
+     {
+      "champ": "Talon",
+      "games": 3,
+      "wins": 1,
+      "k": 32,
+      "d": 23,
+      "a": 24,
+      "roles": {
+       "JUNGLE": 3
+      },
+      "kda": 2.43,
+      "winRate": 0.33
+     },
+     {
+      "champ": "XinZhao",
+      "games": 2,
+      "wins": 2,
+      "k": 13,
+      "d": 8,
+      "a": 23,
+      "roles": {
+       "JUNGLE": 2
+      },
+      "kda": 4.5,
+      "winRate": 1
+     },
+     {
+      "champ": "Katarina",
+      "games": 2,
+      "wins": 1,
+      "k": 22,
+      "d": 12,
+      "a": 15,
+      "roles": {
+       "MIDDLE": 2
+      },
+      "kda": 3.08,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Aatrox",
+      "games": 2,
+      "wins": 0,
+      "k": 13,
+      "d": 17,
+      "a": 10,
+      "roles": {
+       "TOP": 2
+      },
+      "kda": 1.35,
+      "winRate": 0
+     },
+     {
+      "champ": "JarvanIV",
+      "games": 2,
+      "wins": 0,
+      "k": 12,
+      "d": 14,
+      "a": 11,
+      "roles": {
+       "JUNGLE": 2
+      },
+      "kda": 1.64,
+      "winRate": 0
+     },
+     {
+      "champ": "Lissandra",
+      "games": 1,
+      "wins": 1,
+      "k": 8,
+      "d": 0,
+      "a": 9,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 17,
+      "winRate": 1
+     },
+     {
+      "champ": "Diana",
+      "games": 1,
+      "wins": 1,
+      "k": 10,
+      "d": 5,
+      "a": 9,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 3.8,
+      "winRate": 1
+     },
+     {
+      "champ": "Mordekaiser",
+      "games": 1,
+      "wins": 0,
+      "k": 7,
+      "d": 2,
+      "a": 3,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 5,
+      "winRate": 0
+     },
+     {
+      "champ": "Renekton",
+      "games": 1,
+      "wins": 0,
+      "k": 5,
+      "d": 6,
+      "a": 4,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 1.5,
+      "winRate": 0
+     },
+     {
+      "champ": "Ezreal",
+      "games": 1,
+      "wins": 0,
+      "k": 13,
+      "d": 12,
+      "a": 13,
+      "roles": {
+       "BOTTOM": 1
+      },
+      "kda": 2.17,
+      "winRate": 0
+     },
+     {
+      "champ": "Vayne",
+      "games": 1,
+      "wins": 0,
+      "k": 20,
+      "d": 17,
+      "a": 7,
+      "roles": {
+       "BOTTOM": 1
+      },
+      "kda": 1.59,
+      "winRate": 0
+     },
+     {
+      "champ": "Viego",
+      "games": 1,
+      "wins": 0,
+      "k": 3,
+      "d": 10,
+      "a": 2,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 0.5,
+      "winRate": 0
+     },
+     {
+      "champ": "Qiyana",
+      "games": 1,
+      "wins": 0,
+      "k": 6,
+      "d": 11,
+      "a": 5,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 1,
+      "winRate": 0
+     },
+     {
+      "champ": "Jhin",
+      "games": 1,
+      "wins": 0,
+      "k": 2,
+      "d": 6,
+      "a": 5,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 1.17,
+      "winRate": 0
+     },
+     {
+      "champ": "Leona",
+      "games": 1,
+      "wins": 0,
+      "k": 1,
+      "d": 3,
+      "a": 3,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 1.33,
+      "winRate": 0
+     }
+    ]
+   },
+   "recent": [
+    "Lissandra W",
+    "Sylas W",
+    "Mordekaiser L",
+    "Ekko W",
+    "XinZhao W",
+    "Ekko W",
+    "Renekton L",
+    "Aatrox L",
+    "Ezreal L",
+    "Vayne L"
+   ],
+   "tourney": {
+    "games": 9,
+    "wins": 5,
+    "roles": {
+     "MIDDLE": 5,
+     "UTILITY": 2,
+     "BOTTOM": 2
+    },
+    "champions": [
+     {
+      "champ": "Ahri",
+      "games": 1,
+      "wins": 1,
+      "k": 22,
+      "d": 3,
+      "a": 8,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 10,
+      "winRate": 1
+     },
+     {
+      "champ": "Pyke",
+      "games": 1,
+      "wins": 1,
+      "k": 10,
+      "d": 4,
+      "a": 17,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 6.75,
+      "winRate": 1
+     },
+     {
+      "champ": "Neeko",
+      "games": 1,
+      "wins": 1,
+      "k": 4,
+      "d": 3,
+      "a": 21,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 8.33,
+      "winRate": 1
+     },
+     {
+      "champ": "Leblanc",
+      "games": 1,
+      "wins": 1,
+      "k": 10,
+      "d": 10,
+      "a": 17,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 2.7,
+      "winRate": 1
+     },
+     {
+      "champ": "Kassadin",
+      "games": 1,
+      "wins": 1,
+      "k": 10,
+      "d": 6,
+      "a": 5,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 2.5,
+      "winRate": 1
+     },
+     {
+      "champ": "Diana",
+      "games": 1,
+      "wins": 0,
+      "k": 8,
+      "d": 8,
+      "a": 4,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 1.5,
+      "winRate": 0
+     },
+     {
+      "champ": "Syndra",
+      "games": 1,
+      "wins": 0,
+      "k": 3,
+      "d": 2,
+      "a": 4,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 3.5,
+      "winRate": 0
+     },
+     {
+      "champ": "Kaisa",
+      "games": 1,
+      "wins": 0,
+      "k": 3,
+      "d": 7,
+      "a": 3,
+      "roles": {
+       "BOTTOM": 1
+      },
+      "kda": 0.86,
+      "winRate": 0
+     },
+     {
+      "champ": "Sivir",
+      "games": 1,
+      "wins": 0,
+      "k": 3,
+      "d": 6,
+      "a": 5,
+      "roles": {
+       "BOTTOM": 1
+      },
+      "kda": 1.33,
+      "winRate": 0
+     }
+    ]
+   }
+  },
+  {
+   "name": "EP Theyron",
+   "riotId": "MENTALITY MEN#xdd",
+   "role": "ADC",
+   "solo": "Master 286 LP",
+   "flex": "Master 160 LP",
+   "soloWinRate": 0.51,
+   "mastery": [
+    {
+     "champ": "LeeSin",
+     "level": 38,
+     "points": 386243,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Sion",
+     "level": 28,
+     "points": 274161,
+     "lastPlayed": "2026-09-04"
+    },
+    {
+     "champ": "Yasuo",
+     "level": 27,
+     "points": 273003,
+     "lastPlayed": "2026-09-30"
+    },
+    {
+     "champ": "JarvanIV",
+     "level": 22,
+     "points": 212179,
+     "lastPlayed": "2026-09-23"
+    },
+    {
+     "champ": "Jhin",
+     "level": 22,
+     "points": 210899,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Riven",
+     "level": 20,
+     "points": 201441,
+     "lastPlayed": "2026-07-21"
+    },
+    {
+     "champ": "Ezreal",
+     "level": 18,
+     "points": 174534,
+     "lastPlayed": "2026-09-30"
+    },
+    {
+     "champ": "Gragas",
+     "level": 15,
+     "points": 171382,
+     "lastPlayed": "2026-05-11"
+    },
+    {
+     "champ": "Caitlyn",
+     "level": 18,
+     "points": 165863,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Khazix",
+     "level": 17,
+     "points": 155957,
+     "lastPlayed": "2026-09-20"
+    },
+    {
+     "champ": "Viego",
+     "level": 16,
+     "points": 143879,
+     "lastPlayed": "2026-09-26"
+    },
+    {
+     "champ": "Graves",
+     "level": 16,
+     "points": 143523,
+     "lastPlayed": "2026-09-21"
+    }
+   ],
+   "ranked": {
+    "games": 30,
+    "wins": 12,
+    "roles": {
+     "BOTTOM": 8,
+     "JUNGLE": 4,
+     "MIDDLE": 16,
+     "UTILITY": 2
+    },
+    "champions": [
+     {
+      "champ": "Yasuo",
+      "games": 3,
+      "wins": 2,
+      "k": 22,
+      "d": 17,
+      "a": 19,
+      "roles": {
+       "MIDDLE": 3
+      },
+      "kda": 2.41,
+      "winRate": 0.67
+     },
+     {
+      "champ": "Ambessa",
+      "games": 3,
+      "wins": 2,
+      "k": 31,
+      "d": 17,
+      "a": 25,
+      "roles": {
+       "MIDDLE": 3
+      },
+      "kda": 3.29,
+      "winRate": 0.67
+     },
+     {
+      "champ": "Caitlyn",
+      "games": 3,
+      "wins": 1,
+      "k": 20,
+      "d": 16,
+      "a": 22,
+      "roles": {
+       "BOTTOM": 3
+      },
+      "kda": 2.63,
+      "winRate": 0.33
+     },
+     {
+      "champ": "LeeSin",
+      "games": 2,
+      "wins": 1,
+      "k": 12,
+      "d": 6,
+      "a": 13,
+      "roles": {
+       "JUNGLE": 2
+      },
+      "kda": 4.17,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Locke",
+      "games": 2,
+      "wins": 1,
+      "k": 12,
+      "d": 9,
+      "a": 6,
+      "roles": {
+       "MIDDLE": 2
+      },
+      "kda": 2,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Sylas",
+      "games": 2,
+      "wins": 1,
+      "k": 22,
+      "d": 8,
+      "a": 13,
+      "roles": {
+       "MIDDLE": 2
+      },
+      "kda": 4.38,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Jhin",
+      "games": 2,
+      "wins": 0,
+      "k": 9,
+      "d": 18,
+      "a": 13,
+      "roles": {
+       "BOTTOM": 2
+      },
+      "kda": 1.22,
+      "winRate": 0
+     },
+     {
+      "champ": "Yunara",
+      "games": 1,
+      "wins": 1,
+      "k": 7,
+      "d": 3,
+      "a": 8,
+      "roles": {
+       "BOTTOM": 1
+      },
+      "kda": 5,
+      "winRate": 1
+     },
+     {
+      "champ": "Garen",
+      "games": 1,
+      "wins": 1,
+      "k": 5,
+      "d": 2,
+      "a": 6,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 5.5,
+      "winRate": 1
+     },
+     {
+      "champ": "Alistar",
+      "games": 1,
+      "wins": 1,
+      "k": 4,
+      "d": 2,
+      "a": 30,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 17,
+      "winRate": 1
+     },
+     {
+      "champ": "Orianna",
+      "games": 1,
+      "wins": 1,
+      "k": 8,
+      "d": 0,
+      "a": 1,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 9,
+      "winRate": 1
+     },
+     {
+      "champ": "Anivia",
+      "games": 1,
+      "wins": 0,
+      "k": 5,
+      "d": 6,
+      "a": 4,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 1.5,
+      "winRate": 0
+     },
+     {
+      "champ": "Ezreal",
+      "games": 1,
+      "wins": 0,
+      "k": 11,
+      "d": 6,
+      "a": 10,
+      "roles": {
+       "BOTTOM": 1
+      },
+      "kda": 3.5,
+      "winRate": 0
+     },
+     {
+      "champ": "Galio",
+      "games": 1,
+      "wins": 0,
+      "k": 2,
+      "d": 4,
+      "a": 2,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 1,
+      "winRate": 0
+     },
+     {
+      "champ": "Viego",
+      "games": 1,
+      "wins": 0,
+      "k": 2,
+      "d": 9,
+      "a": 8,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 1.11,
+      "winRate": 0
+     },
+     {
+      "champ": "Yone",
+      "games": 1,
+      "wins": 0,
+      "k": 2,
+      "d": 11,
+      "a": 2,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 0.36,
+      "winRate": 0
+     },
+     {
+      "champ": "Zyra",
+      "games": 1,
+      "wins": 0,
+      "k": 3,
+      "d": 7,
+      "a": 3,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 0.86,
+      "winRate": 0
+     },
+     {
+      "champ": "Poppy",
+      "games": 1,
+      "wins": 0,
+      "k": 1,
+      "d": 8,
+      "a": 16,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 2.13,
+      "winRate": 0
+     },
+     {
+      "champ": "Ahri",
+      "games": 1,
+      "wins": 0,
+      "k": 1,
+      "d": 11,
+      "a": 7,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 0.73,
+      "winRate": 0
+     },
+     {
+      "champ": "Kaisa",
+      "games": 1,
+      "wins": 0,
+      "k": 8,
+      "d": 7,
+      "a": 2,
+      "roles": {
+       "BOTTOM": 1
+      },
+      "kda": 1.43,
+      "winRate": 0
+     }
+    ]
+   },
+   "recent": [
+    "Caitlyn L",
+    "Yunara W",
+    "Jhin L",
+    "LeeSin L",
+    "Yasuo L",
+    "Anivia L",
+    "Ezreal L",
+    "Ambessa W",
+    "Garen W",
+    "Ambessa W"
+   ],
+   "tourney": {
+    "games": 0,
+    "wins": 0,
+    "roles": {},
+    "champions": []
+   }
+  },
+  {
+   "name": "HennenG",
+   "riotId": "HennenG#YEET",
+   "role": "Support",
+   "solo": "Emerald I 30 LP",
+   "flex": "Diamond IV 0 LP",
+   "soloWinRate": 0.49,
+   "mastery": [
+    {
+     "champ": "Nautilus",
+     "level": 27,
+     "points": 270149,
+     "lastPlayed": "2026-09-30"
+    },
+    {
+     "champ": "Thresh",
+     "level": 16,
+     "points": 144238,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Braum",
+     "level": 13,
+     "points": 118664,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Leona",
+     "level": 13,
+     "points": 116171,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Lulu",
+     "level": 13,
+     "points": 110033,
+     "lastPlayed": "2026-09-30"
+    },
+    {
+     "champ": "Nami",
+     "level": 11,
+     "points": 89941,
+     "lastPlayed": "2026-05-26"
+    },
+    {
+     "champ": "Karma",
+     "level": 9,
+     "points": 70319,
+     "lastPlayed": "2026-09-29"
+    },
+    {
+     "champ": "Janna",
+     "level": 8,
+     "points": 59343,
+     "lastPlayed": "2026-06-28"
+    },
+    {
+     "champ": "Milio",
+     "level": 8,
+     "points": 53713,
+     "lastPlayed": "2026-09-20"
+    },
+    {
+     "champ": "Rakan",
+     "level": 7,
+     "points": 52400,
+     "lastPlayed": "2026-06-24"
+    },
+    {
+     "champ": "Pantheon",
+     "level": 7,
+     "points": 51078,
+     "lastPlayed": "2026-08-10"
+    },
+    {
+     "champ": "Caitlyn",
+     "level": 7,
+     "points": 50544,
+     "lastPlayed": "2026-10-01"
+    }
+   ],
+   "ranked": {
+    "games": 29,
+    "wins": 18,
+    "roles": {
+     "UTILITY": 28,
+     "BOTTOM": 1
+    },
+    "champions": [
+     {
+      "champ": "Leona",
+      "games": 11,
+      "wins": 7,
+      "k": 20,
+      "d": 84,
+      "a": 189,
+      "roles": {
+       "UTILITY": 11
+      },
+      "kda": 2.49,
+      "winRate": 0.64
+     },
+     {
+      "champ": "Thresh",
+      "games": 4,
+      "wins": 3,
+      "k": 4,
+      "d": 37,
+      "a": 59,
+      "roles": {
+       "UTILITY": 4
+      },
+      "kda": 1.7,
+      "winRate": 0.75
+     },
+     {
+      "champ": "Braum",
+      "games": 4,
+      "wins": 3,
+      "k": 5,
+      "d": 34,
+      "a": 92,
+      "roles": {
+       "UTILITY": 4
+      },
+      "kda": 2.85,
+      "winRate": 0.75
+     },
+     {
+      "champ": "Lulu",
+      "games": 3,
+      "wins": 1,
+      "k": 0,
+      "d": 24,
+      "a": 42,
+      "roles": {
+       "UTILITY": 3
+      },
+      "kda": 1.75,
+      "winRate": 0.33
+     },
+     {
+      "champ": "Caitlyn",
+      "games": 1,
+      "wins": 1,
+      "k": 6,
+      "d": 7,
+      "a": 3,
+      "roles": {
+       "BOTTOM": 1
+      },
+      "kda": 1.29,
+      "winRate": 1
+     },
+     {
+      "champ": "Karma",
+      "games": 1,
+      "wins": 1,
+      "k": 1,
+      "d": 7,
+      "a": 22,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 3.29,
+      "winRate": 1
+     },
+     {
+      "champ": "Renata",
+      "games": 1,
+      "wins": 1,
+      "k": 2,
+      "d": 10,
+      "a": 15,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 1.7,
+      "winRate": 1
+     },
+     {
+      "champ": "Blitzcrank",
+      "games": 1,
+      "wins": 1,
+      "k": 1,
+      "d": 6,
+      "a": 15,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 2.67,
+      "winRate": 1
+     },
+     {
+      "champ": "Poppy",
+      "games": 1,
+      "wins": 0,
+      "k": 5,
+      "d": 15,
+      "a": 20,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 1.67,
+      "winRate": 0
+     },
+     {
+      "champ": "Rell",
+      "games": 1,
+      "wins": 0,
+      "k": 2,
+      "d": 18,
+      "a": 20,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 1.22,
+      "winRate": 0
+     },
+     {
+      "champ": "Nautilus",
+      "games": 1,
+      "wins": 0,
+      "k": 3,
+      "d": 9,
+      "a": 14,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 1.89,
+      "winRate": 0
+     }
+    ]
+   },
+   "recent": [
+    "Thresh W",
+    "Leona L",
+    "Leona L",
+    "Braum W",
+    "Caitlyn W",
+    "Poppy L",
+    "Rell L",
+    "Nautilus L",
+    "Lulu L",
+    "Leona W"
+   ],
+   "tourney": {
+    "games": 15,
+    "wins": 9,
+    "roles": {
+     "UTILITY": 15
+    },
+    "champions": [
+     {
+      "champ": "Milio",
+      "games": 4,
+      "wins": 3,
+      "k": 0,
+      "d": 11,
+      "a": 38,
+      "roles": {
+       "UTILITY": 4
+      },
+      "kda": 3.45,
+      "winRate": 0.75
+     },
+     {
+      "champ": "Nautilus",
+      "games": 3,
+      "wins": 3,
+      "k": 5,
+      "d": 18,
+      "a": 46,
+      "roles": {
+       "UTILITY": 3
+      },
+      "kda": 2.83,
+      "winRate": 1
+     },
+     {
+      "champ": "Thresh",
+      "games": 2,
+      "wins": 1,
+      "k": 2,
+      "d": 7,
+      "a": 24,
+      "roles": {
+       "UTILITY": 2
+      },
+      "kda": 3.71,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Lulu",
+      "games": 2,
+      "wins": 1,
+      "k": 1,
+      "d": 17,
+      "a": 31,
+      "roles": {
+       "UTILITY": 2
+      },
+      "kda": 1.88,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Neeko",
+      "games": 1,
+      "wins": 1,
+      "k": 0,
+      "d": 6,
+      "a": 12,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 2,
+      "winRate": 1
+     },
+     {
+      "champ": "Rell",
+      "games": 1,
+      "wins": 0,
+      "k": 1,
+      "d": 11,
+      "a": 9,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 0.91,
+      "winRate": 0
+     },
+     {
+      "champ": "Alistar",
+      "games": 1,
+      "wins": 0,
+      "k": 0,
+      "d": 11,
+      "a": 4,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 0.36,
+      "winRate": 0
+     },
+     {
+      "champ": "Janna",
+      "games": 1,
+      "wins": 0,
+      "k": 1,
+      "d": 2,
+      "a": 2,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 1.5,
+      "winRate": 0
+     }
+    ]
+   }
+  }
+ ],
+ "them": [
+  {
+   "name": "Ruvex",
+   "riotId": "Ruvex#Fool",
+   "role": "Top",
+   "solo": "Diamond IV 1 LP",
+   "flex": "Emerald I 58 LP",
+   "soloWinRate": 0.49,
+   "mastery": [
+    {
+     "champ": "Yone",
+     "level": 44,
+     "points": 451111,
+     "lastPlayed": "2026-08-28"
+    },
+    {
+     "champ": "KSante",
+     "level": 33,
+     "points": 328921,
+     "lastPlayed": "2026-08-15"
+    },
+    {
+     "champ": "Ambessa",
+     "level": 19,
+     "points": 180592,
+     "lastPlayed": "2026-09-28"
+    },
+    {
+     "champ": "Yasuo",
+     "level": 18,
+     "points": 177664,
+     "lastPlayed": "2026-08-28"
+    },
+    {
+     "champ": "Aatrox",
+     "level": 14,
+     "points": 122885,
+     "lastPlayed": "2026-06-20"
+    },
+    {
+     "champ": "Gragas",
+     "level": 12,
+     "points": 100757,
+     "lastPlayed": "2026-06-11"
+    },
+    {
+     "champ": "Gnar",
+     "level": 12,
+     "points": 99272,
+     "lastPlayed": "2026-08-19"
+    },
+    {
+     "champ": "Azir",
+     "level": 11,
+     "points": 95173,
+     "lastPlayed": "2026-07-13"
+    },
+    {
+     "champ": "Renekton",
+     "level": 10,
+     "points": 86215,
+     "lastPlayed": "2026-08-04"
+    },
+    {
+     "champ": "Akali",
+     "level": 10,
+     "points": 82965,
+     "lastPlayed": "2026-08-15"
+    },
+    {
+     "champ": "Kaisa",
+     "level": 10,
+     "points": 78009,
+     "lastPlayed": "2026-08-14"
+    },
+    {
+     "champ": "LeeSin",
+     "level": 9,
+     "points": 74889,
+     "lastPlayed": "2026-08-02"
+    }
+   ],
+   "ranked": {
+    "games": 28,
+    "wins": 15,
+    "roles": {
+     "BOTTOM": 1,
+     "TOP": 26,
+     "JUNGLE": 1
+    },
+    "champions": [
+     {
+      "champ": "Yone",
+      "games": 11,
+      "wins": 9,
+      "k": 75,
+      "d": 52,
+      "a": 80,
+      "roles": {
+       "TOP": 11
+      },
+      "kda": 2.98,
+      "winRate": 0.82
+     },
+     {
+      "champ": "Ambessa",
+      "games": 9,
+      "wins": 3,
+      "k": 40,
+      "d": 64,
+      "a": 39,
+      "roles": {
+       "TOP": 9
+      },
+      "kda": 1.23,
+      "winRate": 0.33
+     },
+     {
+      "champ": "Gwen",
+      "games": 1,
+      "wins": 1,
+      "k": 4,
+      "d": 0,
+      "a": 1,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 5,
+      "winRate": 1
+     },
+     {
+      "champ": "Gnar",
+      "games": 1,
+      "wins": 1,
+      "k": 2,
+      "d": 4,
+      "a": 2,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 1,
+      "winRate": 1
+     },
+     {
+      "champ": "Renekton",
+      "games": 1,
+      "wins": 1,
+      "k": 7,
+      "d": 6,
+      "a": 6,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 2.17,
+      "winRate": 1
+     },
+     {
+      "champ": "Ashe",
+      "games": 1,
+      "wins": 0,
+      "k": 8,
+      "d": 12,
+      "a": 15,
+      "roles": {
+       "BOTTOM": 1
+      },
+      "kda": 1.92,
+      "winRate": 0
+     },
+     {
+      "champ": "KSante",
+      "games": 1,
+      "wins": 0,
+      "k": 7,
+      "d": 5,
+      "a": 5,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 2.4,
+      "winRate": 0
+     },
+     {
+      "champ": "JarvanIV",
+      "games": 1,
+      "wins": 0,
+      "k": 5,
+      "d": 7,
+      "a": 10,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 2.14,
+      "winRate": 0
+     },
+     {
+      "champ": "Vayne",
+      "games": 1,
+      "wins": 0,
+      "k": 3,
+      "d": 6,
+      "a": 2,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 0.83,
+      "winRate": 0
+     },
+     {
+      "champ": "Jax",
+      "games": 1,
+      "wins": 0,
+      "k": 12,
+      "d": 5,
+      "a": 7,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 3.8,
+      "winRate": 0
+     }
+    ]
+   },
+   "recent": [
+    "Ashe L",
+    "Ambessa W",
+    "Yone W",
+    "Yone L",
+    "Ambessa L",
+    "Yone W",
+    "Gwen W",
+    "Ambessa W",
+    "Yone W",
+    "Yone W"
+   ],
+   "tourney": {
+    "games": 15,
+    "wins": 8,
+    "roles": {
+     "TOP": 15
+    },
+    "champions": [
+     {
+      "champ": "KSante",
+      "games": 5,
+      "wins": 3,
+      "k": 13,
+      "d": 15,
+      "a": 44,
+      "roles": {
+       "TOP": 5
+      },
+      "kda": 3.8,
+      "winRate": 0.6
+     },
+     {
+      "champ": "Ambessa",
+      "games": 3,
+      "wins": 3,
+      "k": 19,
+      "d": 2,
+      "a": 22,
+      "roles": {
+       "TOP": 3
+      },
+      "kda": 20.5,
+      "winRate": 1
+     },
+     {
+      "champ": "Ornn",
+      "games": 3,
+      "wins": 2,
+      "k": 7,
+      "d": 7,
+      "a": 20,
+      "roles": {
+       "TOP": 3
+      },
+      "kda": 3.86,
+      "winRate": 0.67
+     },
+     {
+      "champ": "TahmKench",
+      "games": 1,
+      "wins": 0,
+      "k": 6,
+      "d": 6,
+      "a": 11,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 2.83,
+      "winRate": 0
+     },
+     {
+      "champ": "Renekton",
+      "games": 1,
+      "wins": 0,
+      "k": 1,
+      "d": 5,
+      "a": 3,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 0.8,
+      "winRate": 0
+     },
+     {
+      "champ": "Yone",
+      "games": 1,
+      "wins": 0,
+      "k": 1,
+      "d": 8,
+      "a": 1,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 0.25,
+      "winRate": 0
+     },
+     {
+      "champ": "Aatrox",
+      "games": 1,
+      "wins": 0,
+      "k": 1,
+      "d": 6,
+      "a": 1,
+      "roles": {
+       "TOP": 1
+      },
+      "kda": 0.33,
+      "winRate": 0
+     }
+    ]
+   }
+  },
+  {
+   "name": "Señor Flausch",
+   "riotId": "Señor Flausch#EUW",
+   "role": "Jungle",
+   "solo": "Master 648 LP",
+   "flex": "Diamond I 19 LP",
+   "soloWinRate": 0.52,
+   "mastery": [
+    {
+     "champ": "Yasuo",
+     "level": 55,
+     "points": 579662,
+     "lastPlayed": "2026-09-06"
+    },
+    {
+     "champ": "Elise",
+     "level": 45,
+     "points": 467513,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Ekko",
+     "level": 44,
+     "points": 454523,
+     "lastPlayed": "2026-09-10"
+    },
+    {
+     "champ": "Amumu",
+     "level": 43,
+     "points": 448116,
+     "lastPlayed": "2026-06-21"
+    },
+    {
+     "champ": "LeeSin",
+     "level": 35,
+     "points": 360377,
+     "lastPlayed": "2026-09-24"
+    },
+    {
+     "champ": "Thresh",
+     "level": 24,
+     "points": 234822,
+     "lastPlayed": "2026-09-06"
+    },
+    {
+     "champ": "JarvanIV",
+     "level": 23,
+     "points": 224103,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Rammus",
+     "level": 16,
+     "points": 193065,
+     "lastPlayed": "2026-08-05"
+    },
+    {
+     "champ": "Jhin",
+     "level": 18,
+     "points": 176430,
+     "lastPlayed": "2026-04-05"
+    },
+    {
+     "champ": "Viego",
+     "level": 17,
+     "points": 155830,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Vi",
+     "level": 16,
+     "points": 146796,
+     "lastPlayed": "2026-09-19"
+    },
+    {
+     "champ": "Lux",
+     "level": 15,
+     "points": 139652,
+     "lastPlayed": "2026-08-16"
+    }
+   ],
+   "ranked": {
+    "games": 30,
+    "wins": 21,
+    "roles": {
+     "JUNGLE": 29,
+     "MIDDLE": 1
+    },
+    "champions": [
+     {
+      "champ": "Elise",
+      "games": 9,
+      "wins": 7,
+      "k": 89,
+      "d": 35,
+      "a": 60,
+      "roles": {
+       "JUNGLE": 9
+      },
+      "kda": 4.26,
+      "winRate": 0.78
+     },
+     {
+      "champ": "JarvanIV",
+      "games": 9,
+      "wins": 6,
+      "k": 60,
+      "d": 41,
+      "a": 141,
+      "roles": {
+       "JUNGLE": 9
+      },
+      "kda": 4.9,
+      "winRate": 0.67
+     },
+     {
+      "champ": "XinZhao",
+      "games": 6,
+      "wins": 5,
+      "k": 61,
+      "d": 23,
+      "a": 69,
+      "roles": {
+       "JUNGLE": 6
+      },
+      "kda": 5.65,
+      "winRate": 0.83
+     },
+     {
+      "champ": "Viego",
+      "games": 2,
+      "wins": 2,
+      "k": 29,
+      "d": 12,
+      "a": 30,
+      "roles": {
+       "JUNGLE": 2
+      },
+      "kda": 4.92,
+      "winRate": 1
+     },
+     {
+      "champ": "Sylas",
+      "games": 2,
+      "wins": 1,
+      "k": 13,
+      "d": 16,
+      "a": 18,
+      "roles": {
+       "JUNGLE": 2
+      },
+      "kda": 1.94,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Ahri",
+      "games": 1,
+      "wins": 0,
+      "k": 2,
+      "d": 15,
+      "a": 12,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 0.93,
+      "winRate": 0
+     },
+     {
+      "champ": "LeeSin",
+      "games": 1,
+      "wins": 0,
+      "k": 3,
+      "d": 6,
+      "a": 2,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 0.83,
+      "winRate": 0
+     }
+    ]
+   },
+   "recent": [
+    "JarvanIV W",
+    "Viego W",
+    "Elise L",
+    "Ahri L",
+    "Elise W",
+    "JarvanIV W",
+    "XinZhao W",
+    "JarvanIV L",
+    "Elise L",
+    "XinZhao L"
+   ],
+   "tourney": {
+    "games": 15,
+    "wins": 8,
+    "roles": {
+     "JUNGLE": 15
+    },
+    "champions": [
+     {
+      "champ": "JarvanIV",
+      "games": 6,
+      "wins": 4,
+      "k": 28,
+      "d": 19,
+      "a": 104,
+      "roles": {
+       "JUNGLE": 6
+      },
+      "kda": 6.95,
+      "winRate": 0.67
+     },
+     {
+      "champ": "XinZhao",
+      "games": 2,
+      "wins": 2,
+      "k": 7,
+      "d": 1,
+      "a": 27,
+      "roles": {
+       "JUNGLE": 2
+      },
+      "kda": 34,
+      "winRate": 1
+     },
+     {
+      "champ": "Vi",
+      "games": 2,
+      "wins": 1,
+      "k": 3,
+      "d": 9,
+      "a": 17,
+      "roles": {
+       "JUNGLE": 2
+      },
+      "kda": 2.22,
+      "winRate": 0.5
+     },
+     {
+      "champ": "MonkeyKing",
+      "games": 2,
+      "wins": 1,
+      "k": 11,
+      "d": 9,
+      "a": 13,
+      "roles": {
+       "JUNGLE": 2
+      },
+      "kda": 2.67,
+      "winRate": 0.5
+     },
+     {
+      "champ": "LeeSin",
+      "games": 2,
+      "wins": 0,
+      "k": 12,
+      "d": 9,
+      "a": 24,
+      "roles": {
+       "JUNGLE": 2
+      },
+      "kda": 4,
+      "winRate": 0
+     },
+     {
+      "champ": "Elise",
+      "games": 1,
+      "wins": 0,
+      "k": 5,
+      "d": 2,
+      "a": 4,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 4.5,
+      "winRate": 0
+     }
+    ]
+   }
+  },
+  {
+   "name": "WoFu Ven",
+   "riotId": "WoFu Ven#EUW",
+   "role": "Mid",
+   "solo": "Diamond II 97 LP",
+   "flex": "Diamond I 24 LP",
+   "soloWinRate": 0.51,
+   "mastery": [
+    {
+     "champ": "Vayne",
+     "level": 51,
+     "points": 531001,
+     "lastPlayed": "2026-09-27"
+    },
+    {
+     "champ": "Yasuo",
+     "level": 40,
+     "points": 413483,
+     "lastPlayed": "2026-09-13"
+    },
+    {
+     "champ": "Zed",
+     "level": 34,
+     "points": 342309,
+     "lastPlayed": "2026-09-27"
+    },
+    {
+     "champ": "Kaisa",
+     "level": 27,
+     "points": 291925,
+     "lastPlayed": "2026-05-17"
+    },
+    {
+     "champ": "Riven",
+     "level": 28,
+     "points": 285700,
+     "lastPlayed": "2026-09-27"
+    },
+    {
+     "champ": "Twitch",
+     "level": 27,
+     "points": 277993,
+     "lastPlayed": "2026-04-06"
+    },
+    {
+     "champ": "LeeSin",
+     "level": 26,
+     "points": 257473,
+     "lastPlayed": "2026-08-14"
+    },
+    {
+     "champ": "Ezreal",
+     "level": 23,
+     "points": 241475,
+     "lastPlayed": "2026-09-25"
+    },
+    {
+     "champ": "Lucian",
+     "level": 20,
+     "points": 205588,
+     "lastPlayed": "2026-04-25"
+    },
+    {
+     "champ": "Sion",
+     "level": 20,
+     "points": 188583,
+     "lastPlayed": "2026-03-27"
+    },
+    {
+     "champ": "Caitlyn",
+     "level": 16,
+     "points": 185646,
+     "lastPlayed": "2026-07-03"
+    },
+    {
+     "champ": "Ekko",
+     "level": 18,
+     "points": 172650,
+     "lastPlayed": "2026-08-01"
+    }
+   ],
+   "ranked": {
+    "games": 30,
+    "wins": 14,
+    "roles": {
+     "BOTTOM": 1,
+     "MIDDLE": 19,
+     "JUNGLE": 9,
+     "UTILITY": 1
+    },
+    "champions": [
+     {
+      "champ": "Yasuo",
+      "games": 5,
+      "wins": 3,
+      "k": 42,
+      "d": 51,
+      "a": 32,
+      "roles": {
+       "MIDDLE": 5
+      },
+      "kda": 1.45,
+      "winRate": 0.6
+     },
+     {
+      "champ": "Shaco",
+      "games": 4,
+      "wins": 2,
+      "k": 39,
+      "d": 30,
+      "a": 26,
+      "roles": {
+       "JUNGLE": 4
+      },
+      "kda": 2.17,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Locke",
+      "games": 3,
+      "wins": 2,
+      "k": 28,
+      "d": 24,
+      "a": 13,
+      "roles": {
+       "MIDDLE": 3
+      },
+      "kda": 1.71,
+      "winRate": 0.67
+     },
+     {
+      "champ": "Cassiopeia",
+      "games": 2,
+      "wins": 1,
+      "k": 19,
+      "d": 24,
+      "a": 8,
+      "roles": {
+       "MIDDLE": 2
+      },
+      "kda": 1.13,
+      "winRate": 0.5
+     },
+     {
+      "champ": "LeeSin",
+      "games": 2,
+      "wins": 1,
+      "k": 16,
+      "d": 12,
+      "a": 22,
+      "roles": {
+       "JUNGLE": 2
+      },
+      "kda": 3.17,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Anivia",
+      "games": 2,
+      "wins": 0,
+      "k": 6,
+      "d": 15,
+      "a": 9,
+      "roles": {
+       "MIDDLE": 2
+      },
+      "kda": 1,
+      "winRate": 0
+     },
+     {
+      "champ": "Vayne",
+      "games": 1,
+      "wins": 1,
+      "k": 16,
+      "d": 3,
+      "a": 7,
+      "roles": {
+       "BOTTOM": 1
+      },
+      "kda": 7.67,
+      "winRate": 1
+     },
+     {
+      "champ": "Veigar",
+      "games": 1,
+      "wins": 1,
+      "k": 4,
+      "d": 4,
+      "a": 4,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 2,
+      "winRate": 1
+     },
+     {
+      "champ": "Orianna",
+      "games": 1,
+      "wins": 1,
+      "k": 6,
+      "d": 1,
+      "a": 7,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 13,
+      "winRate": 1
+     },
+     {
+      "champ": "Brand",
+      "games": 1,
+      "wins": 1,
+      "k": 2,
+      "d": 13,
+      "a": 11,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 1,
+      "winRate": 1
+     },
+     {
+      "champ": "Ziggs",
+      "games": 1,
+      "wins": 1,
+      "k": 10,
+      "d": 2,
+      "a": 4,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 7,
+      "winRate": 1
+     },
+     {
+      "champ": "MonkeyKing",
+      "games": 1,
+      "wins": 0,
+      "k": 8,
+      "d": 7,
+      "a": 18,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 3.71,
+      "winRate": 0
+     },
+     {
+      "champ": "Viktor",
+      "games": 1,
+      "wins": 0,
+      "k": 8,
+      "d": 14,
+      "a": 8,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 1.14,
+      "winRate": 0
+     },
+     {
+      "champ": "Ezreal",
+      "games": 1,
+      "wins": 0,
+      "k": 6,
+      "d": 8,
+      "a": 6,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 1.5,
+      "winRate": 0
+     },
+     {
+      "champ": "Graves",
+      "games": 1,
+      "wins": 0,
+      "k": 16,
+      "d": 7,
+      "a": 4,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 2.86,
+      "winRate": 0
+     },
+     {
+      "champ": "Zed",
+      "games": 1,
+      "wins": 0,
+      "k": 16,
+      "d": 12,
+      "a": 7,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 1.92,
+      "winRate": 0
+     },
+     {
+      "champ": "Sylas",
+      "games": 1,
+      "wins": 0,
+      "k": 19,
+      "d": 12,
+      "a": 5,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 2,
+      "winRate": 0
+     },
+     {
+      "champ": "Zoe",
+      "games": 1,
+      "wins": 0,
+      "k": 1,
+      "d": 7,
+      "a": 4,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 0.71,
+      "winRate": 0
+     }
+    ]
+   },
+   "recent": [
+    "Vayne W",
+    "Locke W",
+    "Veigar W",
+    "Shaco L",
+    "Yasuo W",
+    "Cassiopeia L",
+    "MonkeyKing L",
+    "Viktor L",
+    "Yasuo W",
+    "Cassiopeia W"
+   ],
+   "tourney": {
+    "games": 15,
+    "wins": 8,
+    "roles": {
+     "MIDDLE": 15
+    },
+    "champions": [
+     {
+      "champ": "Anivia",
+      "games": 3,
+      "wins": 2,
+      "k": 22,
+      "d": 7,
+      "a": 30,
+      "roles": {
+       "MIDDLE": 3
+      },
+      "kda": 7.43,
+      "winRate": 0.67
+     },
+     {
+      "champ": "Viktor",
+      "games": 3,
+      "wins": 1,
+      "k": 12,
+      "d": 13,
+      "a": 19,
+      "roles": {
+       "MIDDLE": 3
+      },
+      "kda": 2.38,
+      "winRate": 0.33
+     },
+     {
+      "champ": "Xerath",
+      "games": 1,
+      "wins": 1,
+      "k": 0,
+      "d": 0,
+      "a": 3,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 3,
+      "winRate": 1
+     },
+     {
+      "champ": "Diana",
+      "games": 1,
+      "wins": 1,
+      "k": 6,
+      "d": 7,
+      "a": 12,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 2.57,
+      "winRate": 1
+     },
+     {
+      "champ": "Ziggs",
+      "games": 1,
+      "wins": 1,
+      "k": 11,
+      "d": 0,
+      "a": 9,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 20,
+      "winRate": 1
+     },
+     {
+      "champ": "Veigar",
+      "games": 1,
+      "wins": 1,
+      "k": 3,
+      "d": 1,
+      "a": 4,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 7,
+      "winRate": 1
+     },
+     {
+      "champ": "Akali",
+      "games": 1,
+      "wins": 1,
+      "k": 10,
+      "d": 3,
+      "a": 6,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 5.33,
+      "winRate": 1
+     },
+     {
+      "champ": "Swain",
+      "games": 1,
+      "wins": 0,
+      "k": 3,
+      "d": 8,
+      "a": 10,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 1.63,
+      "winRate": 0
+     },
+     {
+      "champ": "Syndra",
+      "games": 1,
+      "wins": 0,
+      "k": 8,
+      "d": 5,
+      "a": 5,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 2.6,
+      "winRate": 0
+     },
+     {
+      "champ": "Mel",
+      "games": 1,
+      "wins": 0,
+      "k": 3,
+      "d": 3,
+      "a": 2,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 1.67,
+      "winRate": 0
+     },
+     {
+      "champ": "Sion",
+      "games": 1,
+      "wins": 0,
+      "k": 1,
+      "d": 6,
+      "a": 4,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 0.83,
+      "winRate": 0
+     }
+    ]
+   }
+  },
+  {
+   "name": "Don Namaste",
+   "riotId": "Don Namaste#2407",
+   "role": "ADC",
+   "solo": "Master 640 LP",
+   "flex": "Master 35 LP",
+   "soloWinRate": 0.51,
+   "mastery": [
+    {
+     "champ": "Thresh",
+     "level": 106,
+     "points": 1180482,
+     "lastPlayed": "2026-09-28"
+    },
+    {
+     "champ": "Jinx",
+     "level": 95,
+     "points": 1020192,
+     "lastPlayed": "2026-09-25"
+    },
+    {
+     "champ": "Kalista",
+     "level": 65,
+     "points": 691163,
+     "lastPlayed": "2026-09-28"
+    },
+    {
+     "champ": "Vayne",
+     "level": 56,
+     "points": 609186,
+     "lastPlayed": "2026-06-20"
+    },
+    {
+     "champ": "Kaisa",
+     "level": 55,
+     "points": 579997,
+     "lastPlayed": "2026-09-27"
+    },
+    {
+     "champ": "Lucian",
+     "level": 53,
+     "points": 554885,
+     "lastPlayed": "2026-08-27"
+    },
+    {
+     "champ": "MasterYi",
+     "level": 42,
+     "points": 476095,
+     "lastPlayed": "2026-04-23"
+    },
+    {
+     "champ": "Jhin",
+     "level": 42,
+     "points": 429608,
+     "lastPlayed": "2026-09-26"
+    },
+    {
+     "champ": "Tristana",
+     "level": 39,
+     "points": 396488,
+     "lastPlayed": "2026-09-27"
+    },
+    {
+     "champ": "Caitlyn",
+     "level": 36,
+     "points": 366892,
+     "lastPlayed": "2026-07-07"
+    },
+    {
+     "champ": "LeeSin",
+     "level": 29,
+     "points": 337002,
+     "lastPlayed": "2025-08-08"
+    },
+    {
+     "champ": "Ezreal",
+     "level": 33,
+     "points": 330100,
+     "lastPlayed": "2026-07-21"
+    }
+   ],
+   "ranked": {
+    "games": 30,
+    "wins": 16,
+    "roles": {
+     "BOTTOM": 22,
+     "UTILITY": 4,
+     "TOP": 2,
+     "JUNGLE": 1,
+     "MIDDLE": 1
+    },
+    "champions": [
+     {
+      "champ": "Kalista",
+      "games": 6,
+      "wins": 3,
+      "k": 74,
+      "d": 39,
+      "a": 36,
+      "roles": {
+       "BOTTOM": 6
+      },
+      "kda": 2.82,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Jinx",
+      "games": 5,
+      "wins": 5,
+      "k": 59,
+      "d": 19,
+      "a": 46,
+      "roles": {
+       "BOTTOM": 5
+      },
+      "kda": 5.53,
+      "winRate": 1
+     },
+     {
+      "champ": "Kaisa",
+      "games": 4,
+      "wins": 2,
+      "k": 54,
+      "d": 22,
+      "a": 30,
+      "roles": {
+       "BOTTOM": 4
+      },
+      "kda": 3.82,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Lulu",
+      "games": 2,
+      "wins": 1,
+      "k": 1,
+      "d": 12,
+      "a": 30,
+      "roles": {
+       "UTILITY": 2
+      },
+      "kda": 2.58,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Jhin",
+      "games": 2,
+      "wins": 1,
+      "k": 21,
+      "d": 7,
+      "a": 8,
+      "roles": {
+       "BOTTOM": 2
+      },
+      "kda": 4.14,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Tristana",
+      "games": 2,
+      "wins": 0,
+      "k": 25,
+      "d": 24,
+      "a": 8,
+      "roles": {
+       "BOTTOM": 2
+      },
+      "kda": 1.38,
+      "winRate": 0
+     },
+     {
+      "champ": "Jax",
+      "games": 2,
+      "wins": 0,
+      "k": 5,
+      "d": 16,
+      "a": 2,
+      "roles": {
+       "TOP": 2
+      },
+      "kda": 0.44,
+      "winRate": 0
+     },
+     {
+      "champ": "Yunara",
+      "games": 2,
+      "wins": 0,
+      "k": 10,
+      "d": 14,
+      "a": 6,
+      "roles": {
+       "BOTTOM": 2
+      },
+      "kda": 1.14,
+      "winRate": 0
+     },
+     {
+      "champ": "Zeri",
+      "games": 1,
+      "wins": 1,
+      "k": 11,
+      "d": 11,
+      "a": 9,
+      "roles": {
+       "BOTTOM": 1
+      },
+      "kda": 1.82,
+      "winRate": 1
+     },
+     {
+      "champ": "Thresh",
+      "games": 1,
+      "wins": 1,
+      "k": 1,
+      "d": 4,
+      "a": 21,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 5.5,
+      "winRate": 1
+     },
+     {
+      "champ": "Karma",
+      "games": 1,
+      "wins": 1,
+      "k": 2,
+      "d": 9,
+      "a": 23,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 2.78,
+      "winRate": 1
+     },
+     {
+      "champ": "JarvanIV",
+      "games": 1,
+      "wins": 1,
+      "k": 4,
+      "d": 6,
+      "a": 24,
+      "roles": {
+       "JUNGLE": 1
+      },
+      "kda": 4.67,
+      "winRate": 1
+     },
+     {
+      "champ": "Viktor",
+      "games": 1,
+      "wins": 0,
+      "k": 5,
+      "d": 6,
+      "a": 5,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 1.67,
+      "winRate": 0
+     }
+    ]
+   },
+   "recent": [
+    "Zeri W",
+    "Kalista W",
+    "Thresh W",
+    "Karma W",
+    "Kaisa L",
+    "Lulu L",
+    "Tristana L",
+    "Lulu W",
+    "Jhin W",
+    "Jhin L"
+   ],
+   "tourney": {
+    "games": 15,
+    "wins": 8,
+    "roles": {
+     "BOTTOM": 15
+    },
+    "champions": [
+     {
+      "champ": "Varus",
+      "games": 6,
+      "wins": 2,
+      "k": 47,
+      "d": 31,
+      "a": 40,
+      "roles": {
+       "BOTTOM": 6
+      },
+      "kda": 2.81,
+      "winRate": 0.33
+     },
+     {
+      "champ": "Kalista",
+      "games": 2,
+      "wins": 2,
+      "k": 29,
+      "d": 4,
+      "a": 7,
+      "roles": {
+       "BOTTOM": 2
+      },
+      "kda": 9,
+      "winRate": 1
+     },
+     {
+      "champ": "Ashe",
+      "games": 2,
+      "wins": 2,
+      "k": 23,
+      "d": 5,
+      "a": 26,
+      "roles": {
+       "BOTTOM": 2
+      },
+      "kda": 9.8,
+      "winRate": 1
+     },
+     {
+      "champ": "Jinx",
+      "games": 2,
+      "wins": 1,
+      "k": 15,
+      "d": 6,
+      "a": 8,
+      "roles": {
+       "BOTTOM": 2
+      },
+      "kda": 3.83,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Kaisa",
+      "games": 2,
+      "wins": 1,
+      "k": 22,
+      "d": 7,
+      "a": 9,
+      "roles": {
+       "BOTTOM": 2
+      },
+      "kda": 4.43,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Jhin",
+      "games": 1,
+      "wins": 0,
+      "k": 11,
+      "d": 5,
+      "a": 7,
+      "roles": {
+       "BOTTOM": 1
+      },
+      "kda": 3.6,
+      "winRate": 0
+     }
+    ]
+   }
+  },
+  {
+   "name": "Lord Steve",
+   "riotId": "LordSteve#EUW",
+   "role": "Support",
+   "solo": "Master 1071 LP",
+   "flex": "Master 25 LP",
+   "soloWinRate": 0.52,
+   "mastery": [
+    {
+     "champ": "Rakan",
+     "level": 51,
+     "points": 528446,
+     "lastPlayed": "2026-09-28"
+    },
+    {
+     "champ": "Thresh",
+     "level": 39,
+     "points": 396619,
+     "lastPlayed": "2026-06-22"
+    },
+    {
+     "champ": "Nautilus",
+     "level": 37,
+     "points": 383026,
+     "lastPlayed": "2026-09-13"
+    },
+    {
+     "champ": "LeeSin",
+     "level": 32,
+     "points": 338561,
+     "lastPlayed": "2026-03-07"
+    },
+    {
+     "champ": "Blitzcrank",
+     "level": 27,
+     "points": 276397,
+     "lastPlayed": "2026-09-28"
+    },
+    {
+     "champ": "Braum",
+     "level": 27,
+     "points": 268046,
+     "lastPlayed": "2026-09-25"
+    },
+    {
+     "champ": "Rell",
+     "level": 22,
+     "points": 215580,
+     "lastPlayed": "2026-10-01"
+    },
+    {
+     "champ": "Bard",
+     "level": 21,
+     "points": 206710,
+     "lastPlayed": "2026-09-25"
+    },
+    {
+     "champ": "Lulu",
+     "level": 21,
+     "points": 196887,
+     "lastPlayed": "2026-09-17"
+    },
+    {
+     "champ": "Nami",
+     "level": 20,
+     "points": 190225,
+     "lastPlayed": "2026-09-12"
+    },
+    {
+     "champ": "Alistar",
+     "level": 20,
+     "points": 185830,
+     "lastPlayed": "2026-09-11"
+    },
+    {
+     "champ": "Karma",
+     "level": 16,
+     "points": 177815,
+     "lastPlayed": "2026-01-23"
+    }
+   ],
+   "ranked": {
+    "games": 30,
+    "wins": 17,
+    "roles": {
+     "UTILITY": 29,
+     "MIDDLE": 1
+    },
+    "champions": [
+     {
+      "champ": "Rell",
+      "games": 14,
+      "wins": 8,
+      "k": 17,
+      "d": 44,
+      "a": 242,
+      "roles": {
+       "UTILITY": 14
+      },
+      "kda": 5.89,
+      "winRate": 0.57
+     },
+     {
+      "champ": "Leona",
+      "games": 4,
+      "wins": 3,
+      "k": 8,
+      "d": 17,
+      "a": 41,
+      "roles": {
+       "UTILITY": 4
+      },
+      "kda": 2.88,
+      "winRate": 0.75
+     },
+     {
+      "champ": "Rakan",
+      "games": 4,
+      "wins": 1,
+      "k": 6,
+      "d": 9,
+      "a": 39,
+      "roles": {
+       "UTILITY": 4
+      },
+      "kda": 5,
+      "winRate": 0.25
+     },
+     {
+      "champ": "Bard",
+      "games": 3,
+      "wins": 2,
+      "k": 8,
+      "d": 9,
+      "a": 51,
+      "roles": {
+       "UTILITY": 3
+      },
+      "kda": 6.56,
+      "winRate": 0.67
+     },
+     {
+      "champ": "Braum",
+      "games": 2,
+      "wins": 1,
+      "k": 2,
+      "d": 4,
+      "a": 36,
+      "roles": {
+       "UTILITY": 2
+      },
+      "kda": 9.5,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Blitzcrank",
+      "games": 1,
+      "wins": 1,
+      "k": 2,
+      "d": 7,
+      "a": 22,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 3.43,
+      "winRate": 1
+     },
+     {
+      "champ": "Lulu",
+      "games": 1,
+      "wins": 1,
+      "k": 1,
+      "d": 3,
+      "a": 23,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 8,
+      "winRate": 1
+     },
+     {
+      "champ": "Ahri",
+      "games": 1,
+      "wins": 0,
+      "k": 3,
+      "d": 5,
+      "a": 3,
+      "roles": {
+       "MIDDLE": 1
+      },
+      "kda": 1.2,
+      "winRate": 0
+     }
+    ]
+   },
+   "recent": [
+    "Rell L",
+    "Rell W",
+    "Rell W",
+    "Rell L",
+    "Blitzcrank W",
+    "Rell W",
+    "Rakan L",
+    "Rell L",
+    "Rell W",
+    "Leona L"
+   ],
+   "tourney": {
+    "games": 15,
+    "wins": 8,
+    "roles": {
+     "UTILITY": 15
+    },
+    "champions": [
+     {
+      "champ": "Nami",
+      "games": 4,
+      "wins": 2,
+      "k": 7,
+      "d": 14,
+      "a": 65,
+      "roles": {
+       "UTILITY": 4
+      },
+      "kda": 5.14,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Nautilus",
+      "games": 3,
+      "wins": 2,
+      "k": 2,
+      "d": 16,
+      "a": 64,
+      "roles": {
+       "UTILITY": 3
+      },
+      "kda": 4.13,
+      "winRate": 0.67
+     },
+     {
+      "champ": "Braum",
+      "games": 3,
+      "wins": 2,
+      "k": 5,
+      "d": 11,
+      "a": 41,
+      "roles": {
+       "UTILITY": 3
+      },
+      "kda": 4.18,
+      "winRate": 0.67
+     },
+     {
+      "champ": "Lulu",
+      "games": 2,
+      "wins": 1,
+      "k": 4,
+      "d": 11,
+      "a": 32,
+      "roles": {
+       "UTILITY": 2
+      },
+      "kda": 3.27,
+      "winRate": 0.5
+     },
+     {
+      "champ": "Neeko",
+      "games": 1,
+      "wins": 1,
+      "k": 0,
+      "d": 5,
+      "a": 16,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 3.2,
+      "winRate": 1
+     },
+     {
+      "champ": "Bard",
+      "games": 1,
+      "wins": 0,
+      "k": 1,
+      "d": 5,
+      "a": 11,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 2.4,
+      "winRate": 0
+     },
+     {
+      "champ": "Rell",
+      "games": 1,
+      "wins": 0,
+      "k": 0,
+      "d": 8,
+      "a": 2,
+      "roles": {
+       "UTILITY": 1
+      },
+      "kda": 0.25,
+      "winRate": 0
+     }
+    ]
+   }
+  }
+ ],
+ "tourneyGames": [
+  {
+   "id": "EUW1_7909840596",
+   "t": 1783280762005,
+   "duration": 2551,
+   "side": "them",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "TahmKench",
+     "pos": "TOP",
+     "k": 6,
+     "d": 6,
+     "a": 11
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "Vi",
+     "pos": "JUNGLE",
+     "k": 3,
+     "d": 7,
+     "a": 12
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Swain",
+     "pos": "MIDDLE",
+     "k": 3,
+     "d": 8,
+     "a": 10
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Jhin",
+     "pos": "BOTTOM",
+     "k": 11,
+     "d": 5,
+     "a": 7
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Nautilus",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 7,
+     "a": 18
+    }
+   ],
+   "teamBans": [
+    "Sett",
+    "Sylas",
+    "Seraphine",
+    "Xerath",
+    "Lissandra"
+   ],
+   "enemy": [
+    {
+     "riotId": "Blaidd#Top",
+     "champ": "Olaf",
+     "pos": "TOP",
+     "k": 12,
+     "d": 5,
+     "a": 13
+    },
+    {
+     "riotId": "Rednael#EUW",
+     "champ": "Nocturne",
+     "pos": "JUNGLE",
+     "k": 7,
+     "d": 5,
+     "a": 16
+    },
+    {
+     "riotId": "Shruikan#BeSC",
+     "champ": "Malphite",
+     "pos": "MIDDLE",
+     "k": 5,
+     "d": 3,
+     "a": 19
+    },
+    {
+     "riotId": "DbW#0815",
+     "champ": "Ashe",
+     "pos": "BOTTOM",
+     "k": 6,
+     "d": 4,
+     "a": 13
+    },
+    {
+     "riotId": "Coco Goat#BeSC",
+     "champ": "Maokai",
+     "pos": "UTILITY",
+     "k": 3,
+     "d": 7,
+     "a": 14
+    }
+   ],
+   "enemyBans": [
+    "Bard",
+    "Elise",
+    "Kaisa",
+    "Mordekaiser",
+    "DrMundo"
+   ]
+  },
+  {
+   "id": "EUW1_7909776600",
+   "t": 1783277252928,
+   "duration": 1780,
+   "side": "them",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "Ornn",
+     "pos": "TOP",
+     "k": 4,
+     "d": 1,
+     "a": 11
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "XinZhao",
+     "pos": "JUNGLE",
+     "k": 3,
+     "d": 1,
+     "a": 11
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Anivia",
+     "pos": "MIDDLE",
+     "k": 3,
+     "d": 2,
+     "a": 3
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Kalista",
+     "pos": "BOTTOM",
+     "k": 13,
+     "d": 2,
+     "a": 3
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Braum",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 1,
+     "a": 17
+    }
+   ],
+   "teamBans": [
+    "Sett",
+    "Sylas",
+    "Seraphine",
+    "Ashe",
+    "Caitlyn"
+   ],
+   "enemy": [
+    {
+     "riotId": "Blaidd#Top",
+     "champ": "Ambessa",
+     "pos": "TOP",
+     "k": 3,
+     "d": 6,
+     "a": 2
+    },
+    {
+     "riotId": "Rednael#EUW",
+     "champ": "MonkeyKing",
+     "pos": "JUNGLE",
+     "k": 0,
+     "d": 5,
+     "a": 4
+    },
+    {
+     "riotId": "Shruikan#BeSC",
+     "champ": "Vladimir",
+     "pos": "MIDDLE",
+     "k": 4,
+     "d": 2,
+     "a": 1
+    },
+    {
+     "riotId": "DbW#0815",
+     "champ": "Sivir",
+     "pos": "BOTTOM",
+     "k": 0,
+     "d": 4,
+     "a": 4
+    },
+    {
+     "riotId": "Coco Goat#BeSC",
+     "champ": "Poppy",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 7,
+     "a": 4
+    }
+   ],
+   "enemyBans": [
+    "Bard",
+    "Elise",
+    "Akshan",
+    "Renata",
+    "Rell"
+   ]
+  },
+  {
+   "id": "EUW1_7909688826",
+   "t": 1783274356919,
+   "duration": 2606,
+   "side": "them",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "KSante",
+     "pos": "TOP",
+     "k": 3,
+     "d": 8,
+     "a": 10
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "JarvanIV",
+     "pos": "JUNGLE",
+     "k": 5,
+     "d": 6,
+     "a": 14
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Syndra",
+     "pos": "MIDDLE",
+     "k": 8,
+     "d": 5,
+     "a": 5
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Varus",
+     "pos": "BOTTOM",
+     "k": 6,
+     "d": 7,
+     "a": 8
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Nami",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 5,
+     "a": 14
+    }
+   ],
+   "teamBans": [
+    "Sett",
+    "Sylas",
+    "Seraphine",
+    "Caitlyn",
+    "Smolder"
+   ],
+   "enemy": [
+    {
+     "riotId": "Blaidd#Top",
+     "champ": "Renekton",
+     "pos": "TOP",
+     "k": 1,
+     "d": 8,
+     "a": 17
+    },
+    {
+     "riotId": "Adrian Mutu#AC10",
+     "champ": "Amumu",
+     "pos": "JUNGLE",
+     "k": 5,
+     "d": 6,
+     "a": 23
+    },
+    {
+     "riotId": "Shruikan#BeSC",
+     "champ": "Viktor",
+     "pos": "MIDDLE",
+     "k": 8,
+     "d": 3,
+     "a": 16
+    },
+    {
+     "riotId": "DbW#0815",
+     "champ": "Ziggs",
+     "pos": "BOTTOM",
+     "k": 15,
+     "d": 4,
+     "a": 9
+    },
+    {
+     "riotId": "Coco Goat#BeSC",
+     "champ": "Rakan",
+     "pos": "UTILITY",
+     "k": 2,
+     "d": 2,
+     "a": 22
+    }
+   ],
+   "enemyBans": [
+    "Bard",
+    "Elise",
+    "Vi",
+    "Jinx",
+    "Yunara"
+   ]
+  },
+  {
+   "id": "EUW1_7907582033",
+   "t": 1783103377437,
+   "duration": 1462,
+   "side": "them",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Geass#PEL",
+     "champ": "Camille",
+     "pos": "TOP",
+     "k": 4,
+     "d": 7,
+     "a": 3
+    },
+    {
+     "riotId": "BilalElKhannouss#VfB",
+     "champ": "Graves",
+     "pos": "JUNGLE",
+     "k": 3,
+     "d": 10,
+     "a": 5
+    },
+    {
+     "riotId": "Drubadopa#xdd",
+     "champ": "Galio",
+     "pos": "MIDDLE",
+     "k": 1,
+     "d": 5,
+     "a": 3
+    },
+    {
+     "riotId": "Fludched#FNC",
+     "champ": "Brand",
+     "pos": "BOTTOM",
+     "k": 3,
+     "d": 9,
+     "a": 3
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Nami",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 7,
+     "a": 6
+    }
+   ],
+   "teamBans": [
+    "Poppy",
+    "Anivia",
+    "Senna",
+    "Alistar",
+    "Nautilus"
+   ],
+   "enemy": [
+    {
+     "riotId": "Qu35t#fatty",
+     "champ": "Olaf",
+     "pos": "TOP",
+     "k": 11,
+     "d": 3,
+     "a": 3
+    },
+    {
+     "riotId": "ihatePinguins#EUW",
+     "champ": "Morgana",
+     "pos": "JUNGLE",
+     "k": 0,
+     "d": 3,
+     "a": 20
+    },
+    {
+     "riotId": "GUCCI OBΔMΔ#EUW",
+     "champ": "Syndra",
+     "pos": "MIDDLE",
+     "k": 17,
+     "d": 0,
+     "a": 7
+    },
+    {
+     "riotId": "stelkenW#EUW",
+     "champ": "Yunara",
+     "pos": "BOTTOM",
+     "k": 8,
+     "d": 3,
+     "a": 12
+    },
+    {
+     "riotId": "GUCCI WELS#EUW",
+     "champ": "Rakan",
+     "pos": "UTILITY",
+     "k": 2,
+     "d": 3,
+     "a": 22
+    }
+   ],
+   "enemyBans": [
+    "Zyra",
+    "Nocturne",
+    "Mel",
+    "Corki",
+    "JarvanIV"
+   ]
+  },
+  {
+   "id": "EUW1_7907537577",
+   "t": 1783101072799,
+   "duration": 1679,
+   "side": "them",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Geass#PEL",
+     "champ": "Sion",
+     "pos": "TOP",
+     "k": 2,
+     "d": 6,
+     "a": 1
+    },
+    {
+     "riotId": "BilalElKhannouss#VfB",
+     "champ": "Naafiri",
+     "pos": "JUNGLE",
+     "k": 1,
+     "d": 9,
+     "a": 5
+    },
+    {
+     "riotId": "Drubadopa#xdd",
+     "champ": "Orianna",
+     "pos": "MIDDLE",
+     "k": 2,
+     "d": 6,
+     "a": 5
+    },
+    {
+     "riotId": "Fludched#FNC",
+     "champ": "Varus",
+     "pos": "BOTTOM",
+     "k": 4,
+     "d": 9,
+     "a": 2
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Braum",
+     "pos": "UTILITY",
+     "k": 2,
+     "d": 9,
+     "a": 5
+    }
+   ],
+   "teamBans": [
+    "Anivia",
+    "Poppy",
+    "Senna",
+    "Bard",
+    "Gnar"
+   ],
+   "enemy": [
+    {
+     "riotId": "Qu35t#fatty",
+     "champ": "Ornn",
+     "pos": "TOP",
+     "k": 2,
+     "d": 3,
+     "a": 12
+    },
+    {
+     "riotId": "ihatePinguins#EUW",
+     "champ": "Sylas",
+     "pos": "JUNGLE",
+     "k": 5,
+     "d": 2,
+     "a": 21
+    },
+    {
+     "riotId": "GUCCI OBΔMΔ#EUW",
+     "champ": "Aurora",
+     "pos": "MIDDLE",
+     "k": 10,
+     "d": 2,
+     "a": 4
+    },
+    {
+     "riotId": "stelkenW#EUW",
+     "champ": "Jinx",
+     "pos": "BOTTOM",
+     "k": 21,
+     "d": 2,
+     "a": 5
+    },
+    {
+     "riotId": "GUCCI WELS#EUW",
+     "champ": "Rell",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 2,
+     "a": 30
+    }
+   ],
+   "enemyBans": [
+    "Zyra",
+    "Nocturne",
+    "Mel",
+    "Rakan",
+    "Leona"
+   ]
+  },
+  {
+   "id": "EUW1_7904697225",
+   "t": 1782848273207,
+   "duration": 1605,
+   "side": "us",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Gwen",
+     "pos": "TOP",
+     "k": 2,
+     "d": 5,
+     "a": 2
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "Vi",
+     "pos": "JUNGLE",
+     "k": 7,
+     "d": 3,
+     "a": 3
+    },
+    {
+     "riotId": "HeinoDoe#213",
+     "champ": "Diana",
+     "pos": "MIDDLE",
+     "k": 8,
+     "d": 8,
+     "a": 4
+    },
+    {
+     "riotId": "Alwmsonsson#EUW",
+     "champ": "Draven",
+     "pos": "BOTTOM",
+     "k": 4,
+     "d": 8,
+     "a": 2
+    },
+    {
+     "riotId": "HennenG#YEET",
+     "champ": "Rell",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 11,
+     "a": 9
+    }
+   ],
+   "teamBans": [
+    "Shen",
+    "Viktor",
+    "KogMaw",
+    "Malzahar",
+    "Mel"
+   ],
+   "enemy": [
+    {
+     "riotId": "Bandit Dragon#6969",
+     "champ": "Vladimir",
+     "pos": "TOP",
+     "k": 1,
+     "d": 6,
+     "a": 2
+    },
+    {
+     "riotId": "rafyn#48609",
+     "champ": "Skarner",
+     "pos": "JUNGLE",
+     "k": 2,
+     "d": 5,
+     "a": 22
+    },
+    {
+     "riotId": "Shigeru#시게루",
+     "champ": "Sion",
+     "pos": "MIDDLE",
+     "k": 5,
+     "d": 4,
+     "a": 12
+    },
+    {
+     "riotId": "Paxii#EUW",
+     "champ": "Tristana",
+     "pos": "BOTTOM",
+     "k": 27,
+     "d": 4,
+     "a": 3
+    },
+    {
+     "riotId": "Stonby#247",
+     "champ": "Yuumi",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 4,
+     "a": 30
+    }
+   ],
+   "enemyBans": [
+    "Ekko",
+    "Shaco",
+    "Katarina",
+    "Leblanc",
+    "Kayle"
+   ]
+  },
+  {
+   "id": "EUW1_7904645636",
+   "t": 1782845754418,
+   "duration": 1780,
+   "side": "us",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Irelia",
+     "pos": "TOP",
+     "k": 0,
+     "d": 9,
+     "a": 2
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "JarvanIV",
+     "pos": "JUNGLE",
+     "k": 7,
+     "d": 5,
+     "a": 3
+    },
+    {
+     "riotId": "HeinoDoe#213",
+     "champ": "Syndra",
+     "pos": "MIDDLE",
+     "k": 3,
+     "d": 2,
+     "a": 4
+    },
+    {
+     "riotId": "Alwmsonsson#EUW",
+     "champ": "Smolder",
+     "pos": "BOTTOM",
+     "k": 3,
+     "d": 4,
+     "a": 3
+    },
+    {
+     "riotId": "HennenG#YEET",
+     "champ": "Thresh",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 5,
+     "a": 7
+    }
+   ],
+   "teamBans": [
+    "Shen",
+    "Viktor",
+    "Ashe",
+    "Locke",
+    "Darius"
+   ],
+   "enemy": [
+    {
+     "riotId": "Bandit Dragon#6969",
+     "champ": "Garen",
+     "pos": "TOP",
+     "k": 8,
+     "d": 2,
+     "a": 5
+    },
+    {
+     "riotId": "rafyn#48609",
+     "champ": "Pantheon",
+     "pos": "JUNGLE",
+     "k": 8,
+     "d": 2,
+     "a": 10
+    },
+    {
+     "riotId": "Shigeru#시게루",
+     "champ": "Orianna",
+     "pos": "MIDDLE",
+     "k": 2,
+     "d": 5,
+     "a": 9
+    },
+    {
+     "riotId": "Paxii#EUW",
+     "champ": "Yunara",
+     "pos": "BOTTOM",
+     "k": 7,
+     "d": 1,
+     "a": 9
+    },
+    {
+     "riotId": "Stonby#247",
+     "champ": "Braum",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 4,
+     "a": 19
+    }
+   ],
+   "enemyBans": [
+    "Ekko",
+    "Shaco",
+    "Katarina",
+    "Leblanc",
+    "Jax"
+   ]
+  },
+  {
+   "id": "EUW1_7904586749",
+   "t": 1782843117084,
+   "duration": 1793,
+   "side": "us",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Fiora",
+     "pos": "TOP",
+     "k": 4,
+     "d": 9,
+     "a": 5
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "XinZhao",
+     "pos": "JUNGLE",
+     "k": 3,
+     "d": 3,
+     "a": 11
+    },
+    {
+     "riotId": "HeinoDoe#213",
+     "champ": "Ahri",
+     "pos": "MIDDLE",
+     "k": 22,
+     "d": 3,
+     "a": 8
+    },
+    {
+     "riotId": "Alwmsonsson#EUW",
+     "champ": "Corki",
+     "pos": "BOTTOM",
+     "k": 6,
+     "d": 5,
+     "a": 10
+    },
+    {
+     "riotId": "HennenG#YEET",
+     "champ": "Nautilus",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 10,
+     "a": 19
+    }
+   ],
+   "teamBans": [
+    "Shen",
+    "Braum",
+    "Tristana",
+    "Gragas",
+    "Darius"
+   ],
+   "enemy": [
+    {
+     "riotId": "Bandit Dragon#6969",
+     "champ": "Malphite",
+     "pos": "TOP",
+     "k": 6,
+     "d": 5,
+     "a": 8
+    },
+    {
+     "riotId": "rafyn#48609",
+     "champ": "MonkeyKing",
+     "pos": "JUNGLE",
+     "k": 4,
+     "d": 8,
+     "a": 7
+    },
+    {
+     "riotId": "Shigeru#시게루",
+     "champ": "Azir",
+     "pos": "MIDDLE",
+     "k": 1,
+     "d": 8,
+     "a": 8
+    },
+    {
+     "riotId": "Paxii#EUW",
+     "champ": "Ezreal",
+     "pos": "BOTTOM",
+     "k": 10,
+     "d": 6,
+     "a": 12
+    },
+    {
+     "riotId": "Stonby#247",
+     "champ": "Elise",
+     "pos": "UTILITY",
+     "k": 9,
+     "d": 8,
+     "a": 11
+    }
+   ],
+   "enemyBans": [
+    "Ekko",
+    "Shaco",
+    "Katarina",
+    "Leblanc",
+    "Kayle"
+   ]
+  },
+  {
+   "id": "EUW1_7894858391",
+   "t": 1782066892113,
+   "duration": 1960,
+   "side": "us",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Sion",
+     "pos": "TOP",
+     "k": 2,
+     "d": 6,
+     "a": 14
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "MonkeyKing",
+     "pos": "JUNGLE",
+     "k": 7,
+     "d": 4,
+     "a": 12
+    },
+    {
+     "riotId": "WNBL#MAYBE",
+     "champ": "Orianna",
+     "pos": "MIDDLE",
+     "k": 11,
+     "d": 5,
+     "a": 13
+    },
+    {
+     "riotId": "Kolbe#1608",
+     "champ": "Corki",
+     "pos": "BOTTOM",
+     "k": 13,
+     "d": 3,
+     "a": 14
+    },
+    {
+     "riotId": "HeinoDoe#213",
+     "champ": "Pyke",
+     "pos": "UTILITY",
+     "k": 10,
+     "d": 4,
+     "a": 17
+    }
+   ],
+   "teamBans": [
+    "Cassiopeia",
+    "Shen",
+    "Aatrox",
+    "Viktor"
+   ],
+   "enemy": [
+    {
+     "riotId": "FortniteGamer123#Hello",
+     "champ": "Trundle",
+     "pos": "TOP",
+     "k": 4,
+     "d": 10,
+     "a": 7
+    },
+    {
+     "riotId": "Erwin#Tired",
+     "champ": "Zac",
+     "pos": "JUNGLE",
+     "k": 1,
+     "d": 9,
+     "a": 11
+    },
+    {
+     "riotId": "PRM Bhresh#Team7",
+     "champ": "Veigar",
+     "pos": "MIDDLE",
+     "k": 8,
+     "d": 7,
+     "a": 5
+    },
+    {
+     "riotId": "RadiantTeapot#8888",
+     "champ": "KogMaw",
+     "pos": "BOTTOM",
+     "k": 9,
+     "d": 9,
+     "a": 3
+    },
+    {
+     "riotId": "K3njirou#0805",
+     "champ": "Milio",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 8,
+     "a": 16
+    }
+   ],
+   "enemyBans": [
+    "Lissandra",
+    "JarvanIV",
+    "Ahri",
+    "Belveth",
+    "Syndra"
+   ]
+  },
+  {
+   "id": "EUW1_7894824859",
+   "t": 1782065443786,
+   "duration": 2089,
+   "side": "them",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "Renekton",
+     "pos": "TOP",
+     "k": 1,
+     "d": 5,
+     "a": 3
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "JarvanIV",
+     "pos": "JUNGLE",
+     "k": 3,
+     "d": 4,
+     "a": 8
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Viktor",
+     "pos": "MIDDLE",
+     "k": 3,
+     "d": 6,
+     "a": 2
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Jinx",
+     "pos": "BOTTOM",
+     "k": 7,
+     "d": 5,
+     "a": 5
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Bard",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 5,
+     "a": 11
+    }
+   ],
+   "teamBans": [
+    "Karma",
+    "Hwei",
+    "Twitch",
+    "Darius",
+    "Yone"
+   ],
+   "enemy": [
+    {
+     "riotId": "RQM Baxca#RQM",
+     "champ": "Ambessa",
+     "pos": "TOP",
+     "k": 4,
+     "d": 2,
+     "a": 10
+    },
+    {
+     "riotId": "RQM yoshii#RQM",
+     "champ": "MonkeyKing",
+     "pos": "JUNGLE",
+     "k": 3,
+     "d": 2,
+     "a": 10
+    },
+    {
+     "riotId": "RQM Pinsel#RQM",
+     "champ": "Syndra",
+     "pos": "MIDDLE",
+     "k": 8,
+     "d": 5,
+     "a": 4
+    },
+    {
+     "riotId": "RQM Speedy#313",
+     "champ": "Ashe",
+     "pos": "BOTTOM",
+     "k": 6,
+     "d": 6,
+     "a": 13
+    },
+    {
+     "riotId": "RQM White Lotus#RQM",
+     "champ": "Seraphine",
+     "pos": "UTILITY",
+     "k": 4,
+     "d": 0,
+     "a": 18
+    }
+   ],
+   "enemyBans": [
+    "Kalista",
+    "Zed",
+    "Yasuo",
+    "Milio",
+    "Lulu"
+   ]
+  },
+  {
+   "id": "EUW1_7894802126",
+   "t": 1782064050408,
+   "duration": 1928,
+   "side": "us",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Quinn",
+     "pos": "TOP",
+     "k": 10,
+     "d": 6,
+     "a": 10
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "Shaco",
+     "pos": "JUNGLE",
+     "k": 7,
+     "d": 2,
+     "a": 20
+    },
+    {
+     "riotId": "WNBL#MAYBE",
+     "champ": "Leblanc",
+     "pos": "MIDDLE",
+     "k": 4,
+     "d": 5,
+     "a": 18
+    },
+    {
+     "riotId": "Kolbe#1608",
+     "champ": "Draven",
+     "pos": "BOTTOM",
+     "k": 12,
+     "d": 2,
+     "a": 12
+    },
+    {
+     "riotId": "HeinoDoe#213",
+     "champ": "Neeko",
+     "pos": "UTILITY",
+     "k": 4,
+     "d": 3,
+     "a": 21
+    }
+   ],
+   "teamBans": [
+    "Shen",
+    "Ashe",
+    "Nocturne",
+    "Sylas",
+    "Viktor"
+   ],
+   "enemy": [
+    {
+     "riotId": "FortniteGamer123#Hello",
+     "champ": "Jax",
+     "pos": "TOP",
+     "k": 5,
+     "d": 5,
+     "a": 3
+    },
+    {
+     "riotId": "Erwin#Tired",
+     "champ": "LeeSin",
+     "pos": "JUNGLE",
+     "k": 5,
+     "d": 12,
+     "a": 5
+    },
+    {
+     "riotId": "PRM Bhresh#Team7",
+     "champ": "Galio",
+     "pos": "MIDDLE",
+     "k": 4,
+     "d": 9,
+     "a": 9
+    },
+    {
+     "riotId": "RadiantTeapot#8888",
+     "champ": "Senna",
+     "pos": "BOTTOM",
+     "k": 2,
+     "d": 6,
+     "a": 8
+    },
+    {
+     "riotId": "K3njirou#0805",
+     "champ": "Soraka",
+     "pos": "UTILITY",
+     "k": 2,
+     "d": 5,
+     "a": 11
+    }
+   ],
+   "enemyBans": [
+    "Lissandra",
+    "Seraphine",
+    "JarvanIV",
+    "Kennen",
+    "Ahri"
+   ]
+  },
+  {
+   "id": "EUW1_7894492661",
+   "t": 1782048576959,
+   "duration": 1559,
+   "side": "them",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "Ornn",
+     "pos": "TOP",
+     "k": 3,
+     "d": 2,
+     "a": 8
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "XinZhao",
+     "pos": "JUNGLE",
+     "k": 4,
+     "d": 0,
+     "a": 16
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Anivia",
+     "pos": "MIDDLE",
+     "k": 7,
+     "d": 1,
+     "a": 8
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Kalista",
+     "pos": "BOTTOM",
+     "k": 16,
+     "d": 2,
+     "a": 4
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Braum",
+     "pos": "UTILITY",
+     "k": 2,
+     "d": 1,
+     "a": 19
+    }
+   ],
+   "teamBans": [
+    "Darius",
+    "Thresh",
+    "Ezreal",
+    "Gragas",
+    "Syndra"
+   ],
+   "enemy": [
+    {
+     "riotId": "LCian#EUW",
+     "champ": "Yone",
+     "pos": "TOP",
+     "k": 3,
+     "d": 6,
+     "a": 0
+    },
+    {
+     "riotId": "BehaartesSchiggy#EID",
+     "champ": "Sejuani",
+     "pos": "JUNGLE",
+     "k": 1,
+     "d": 6,
+     "a": 2
+    },
+    {
+     "riotId": "MegaJuicer#SLY",
+     "champ": "Xerath",
+     "pos": "MIDDLE",
+     "k": 1,
+     "d": 5,
+     "a": 2
+    },
+    {
+     "riotId": "Blurix#EID",
+     "champ": "Jinx",
+     "pos": "BOTTOM",
+     "k": 1,
+     "d": 8,
+     "a": 1
+    },
+    {
+     "riotId": "Enne#Bruh",
+     "champ": "Karma",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 7,
+     "a": 4
+    }
+   ],
+   "enemyBans": [
+    "Kaisa",
+    "Bard",
+    "Elise",
+    "Sylas",
+    "Leblanc"
+   ]
+  },
+  {
+   "id": "EUW1_7894443502",
+   "t": 1782046010775,
+   "duration": 1841,
+   "side": "them",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "KSante",
+     "pos": "TOP",
+     "k": 3,
+     "d": 1,
+     "a": 3
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "JarvanIV",
+     "pos": "JUNGLE",
+     "k": 5,
+     "d": 3,
+     "a": 21
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Viktor",
+     "pos": "MIDDLE",
+     "k": 6,
+     "d": 4,
+     "a": 12
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Varus",
+     "pos": "BOTTOM",
+     "k": 13,
+     "d": 2,
+     "a": 8
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Nami",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 2,
+     "a": 22
+    }
+   ],
+   "teamBans": [
+    "Darius",
+    "Thresh",
+    "Ezreal",
+    "Garen",
+    "Gragas"
+   ],
+   "enemy": [
+    {
+     "riotId": "LCian#EUW",
+     "champ": "Poppy",
+     "pos": "TOP",
+     "k": 2,
+     "d": 3,
+     "a": 3
+    },
+    {
+     "riotId": "BehaartesSchiggy#EID",
+     "champ": "Nocturne",
+     "pos": "JUNGLE",
+     "k": 4,
+     "d": 8,
+     "a": 7
+    },
+    {
+     "riotId": "MegaJuicer#SLY",
+     "champ": "Lissandra",
+     "pos": "MIDDLE",
+     "k": 2,
+     "d": 8,
+     "a": 7
+    },
+    {
+     "riotId": "Blurix#EID",
+     "champ": "Caitlyn",
+     "pos": "BOTTOM",
+     "k": 3,
+     "d": 3,
+     "a": 4
+    },
+    {
+     "riotId": "Enne#Bruh",
+     "champ": "Milio",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 6,
+     "a": 8
+    }
+   ],
+   "enemyBans": [
+    "Elise",
+    "Kaisa",
+    "Bard",
+    "Ambessa",
+    "Braum"
+   ]
+  },
+  {
+   "id": "EUW1_7889627865",
+   "t": 1781636544159,
+   "duration": 1360,
+   "side": "them",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "KSante",
+     "pos": "TOP",
+     "k": 2,
+     "d": 3,
+     "a": 3
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "Vi",
+     "pos": "JUNGLE",
+     "k": 0,
+     "d": 2,
+     "a": 5
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Xerath",
+     "pos": "MIDDLE",
+     "k": 0,
+     "d": 0,
+     "a": 3
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Jinx",
+     "pos": "BOTTOM",
+     "k": 8,
+     "d": 1,
+     "a": 3
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Lulu",
+     "pos": "UTILITY",
+     "k": 3,
+     "d": 0,
+     "a": 8
+    }
+   ],
+   "teamBans": [
+    "Olaf",
+    "Tristana",
+    "Illaoi",
+    "Gwen",
+    "Malphite"
+   ],
+   "enemy": [
+    {
+     "riotId": "ABL NAT#ABL",
+     "champ": "DrMundo",
+     "pos": "TOP",
+     "k": 2,
+     "d": 4,
+     "a": 3
+    },
+    {
+     "riotId": "ABL Àshes#Kek",
+     "champ": "XinZhao",
+     "pos": "JUNGLE",
+     "k": 2,
+     "d": 2,
+     "a": 2
+    },
+    {
+     "riotId": "ABL Undo#fraud",
+     "champ": "Cassiopeia",
+     "pos": "MIDDLE",
+     "k": 0,
+     "d": 1,
+     "a": 2
+    },
+    {
+     "riotId": "ABL Pinienkern#fraud",
+     "champ": "Lucian",
+     "pos": "BOTTOM",
+     "k": 2,
+     "d": 2,
+     "a": 2
+    },
+    {
+     "riotId": "ABL gcj#fraud",
+     "champ": "Milio",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 4,
+     "a": 4
+    }
+   ],
+   "enemyBans": [
+    "Zed",
+    "Caitlyn",
+    "Bard",
+    "Viktor",
+    "Akali"
+   ]
+  },
+  {
+   "id": "EUW1_7889538447",
+   "t": 1781634009713,
+   "duration": 2149,
+   "side": "them",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "Ambessa",
+     "pos": "TOP",
+     "k": 4,
+     "d": 1,
+     "a": 9
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "JarvanIV",
+     "pos": "JUNGLE",
+     "k": 6,
+     "d": 1,
+     "a": 20
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Diana",
+     "pos": "MIDDLE",
+     "k": 6,
+     "d": 7,
+     "a": 12
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Ashe",
+     "pos": "BOTTOM",
+     "k": 7,
+     "d": 3,
+     "a": 14
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Nami",
+     "pos": "UTILITY",
+     "k": 4,
+     "d": 0,
+     "a": 23
+    }
+   ],
+   "teamBans": [
+    "Olaf",
+    "Illaoi",
+    "Tristana",
+    "Sett",
+    "Volibear"
+   ],
+   "enemy": [
+    {
+     "riotId": "ABL NAT#ABL",
+     "champ": "Renekton",
+     "pos": "TOP",
+     "k": 1,
+     "d": 5,
+     "a": 4
+    },
+    {
+     "riotId": "ABL Àshes#Kek",
+     "champ": "LeeSin",
+     "pos": "JUNGLE",
+     "k": 5,
+     "d": 5,
+     "a": 4
+    },
+    {
+     "riotId": "ABL Undo#fraud",
+     "champ": "Syndra",
+     "pos": "MIDDLE",
+     "k": 4,
+     "d": 3,
+     "a": 5
+    },
+    {
+     "riotId": "ABL Pinienkern#fraud",
+     "champ": "Senna",
+     "pos": "BOTTOM",
+     "k": 1,
+     "d": 4,
+     "a": 8
+    },
+    {
+     "riotId": "ABL gcj#fraud",
+     "champ": "Nautilus",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 10,
+     "a": 9
+    }
+   ],
+   "enemyBans": [
+    "Zed",
+    "Caitlyn",
+    "Braum",
+    "Seraphine",
+    "Jax"
+   ]
+  },
+  {
+   "id": "EUW1_7888587278",
+   "t": 1781551265570,
+   "duration": 1626,
+   "side": "us",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Yorick",
+     "pos": "TOP",
+     "k": 1,
+     "d": 7,
+     "a": 3
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "Khazix",
+     "pos": "JUNGLE",
+     "k": 6,
+     "d": 6,
+     "a": 2
+    },
+    {
+     "riotId": "WNBL#MAYBE",
+     "champ": "Syndra",
+     "pos": "MIDDLE",
+     "k": 2,
+     "d": 6,
+     "a": 1
+    },
+    {
+     "riotId": "HeinoDoe#213",
+     "champ": "Kaisa",
+     "pos": "BOTTOM",
+     "k": 3,
+     "d": 7,
+     "a": 3
+    },
+    {
+     "riotId": "HennenG#YEET",
+     "champ": "Alistar",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 11,
+     "a": 4
+    }
+   ],
+   "teamBans": [
+    "Shen",
+    "Sion",
+    "Malphite",
+    "Ezreal",
+    "Senna"
+   ],
+   "enemy": [
+    {
+     "riotId": "DerLuitschi#EUW",
+     "champ": "Urgot",
+     "pos": "TOP",
+     "k": 9,
+     "d": 1,
+     "a": 6
+    },
+    {
+     "riotId": "SixSpeckGamer#EUW",
+     "champ": "Sylas",
+     "pos": "JUNGLE",
+     "k": 4,
+     "d": 4,
+     "a": 15
+    },
+    {
+     "riotId": "Morti#BWC",
+     "champ": "Xerath",
+     "pos": "MIDDLE",
+     "k": 12,
+     "d": 2,
+     "a": 10
+    },
+    {
+     "riotId": "Phraze#777",
+     "champ": "Jhin",
+     "pos": "BOTTOM",
+     "k": 10,
+     "d": 3,
+     "a": 10
+    },
+    {
+     "riotId": "BaboDirect#EUW",
+     "champ": "Bard",
+     "pos": "UTILITY",
+     "k": 2,
+     "d": 2,
+     "a": 18
+    }
+   ],
+   "enemyBans": [
+    "Shaco",
+    "Ahri",
+    "Nautilus",
+    "Olaf",
+    "Fiora"
+   ]
+  },
+  {
+   "id": "EUW1_7888523904",
+   "t": 1781548910590,
+   "duration": 1883,
+   "side": "us",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Kayle",
+     "pos": "TOP",
+     "k": 2,
+     "d": 7,
+     "a": 2
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "XinZhao",
+     "pos": "JUNGLE",
+     "k": 1,
+     "d": 11,
+     "a": 8
+    },
+    {
+     "riotId": "WNBL#MAYBE",
+     "champ": "Lissandra",
+     "pos": "MIDDLE",
+     "k": 5,
+     "d": 8,
+     "a": 4
+    },
+    {
+     "riotId": "HeinoDoe#213",
+     "champ": "Sivir",
+     "pos": "BOTTOM",
+     "k": 3,
+     "d": 6,
+     "a": 5
+    },
+    {
+     "riotId": "HennenG#YEET",
+     "champ": "Lulu",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 9,
+     "a": 8
+    }
+   ],
+   "teamBans": [
+    "Shen",
+    "Senna",
+    "Ashe",
+    "Sylas",
+    "Illaoi"
+   ],
+   "enemy": [
+    {
+     "riotId": "DerLuitschi#EUW",
+     "champ": "Ornn",
+     "pos": "TOP",
+     "k": 8,
+     "d": 1,
+     "a": 17
+    },
+    {
+     "riotId": "SixSpeckGamer#EUW",
+     "champ": "JarvanIV",
+     "pos": "JUNGLE",
+     "k": 11,
+     "d": 3,
+     "a": 24
+    },
+    {
+     "riotId": "Morti#BWC",
+     "champ": "Viktor",
+     "pos": "MIDDLE",
+     "k": 9,
+     "d": 2,
+     "a": 13
+    },
+    {
+     "riotId": "Phraze#777",
+     "champ": "Jinx",
+     "pos": "BOTTOM",
+     "k": 10,
+     "d": 4,
+     "a": 11
+    },
+    {
+     "riotId": "BaboDirect#EUW",
+     "champ": "Thresh",
+     "pos": "UTILITY",
+     "k": 3,
+     "d": 1,
+     "a": 25
+    }
+   ],
+   "enemyBans": [
+    "Shaco",
+    "Ahri",
+    "Braum",
+    "MonkeyKing",
+    "Fiora"
+   ]
+  },
+  {
+   "id": "EUW1_7803512096",
+   "t": 1774809520463,
+   "duration": 1656,
+   "side": "them",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "Ornn",
+     "pos": "TOP",
+     "k": 0,
+     "d": 4,
+     "a": 1
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "LeeSin",
+     "pos": "JUNGLE",
+     "k": 4,
+     "d": 4,
+     "a": 4
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Mel",
+     "pos": "MIDDLE",
+     "k": 3,
+     "d": 3,
+     "a": 2
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Varus",
+     "pos": "BOTTOM",
+     "k": 1,
+     "d": 5,
+     "a": 1
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Rell",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 8,
+     "a": 2
+    }
+   ],
+   "teamBans": [
+    "Kennen",
+    "Zac",
+    "Ambessa",
+    "Vex",
+    "Viktor"
+   ],
+   "enemy": [
+    {
+     "riotId": "Lone Messiah#Dokja",
+     "champ": "Gragas",
+     "pos": "TOP",
+     "k": 2,
+     "d": 1,
+     "a": 9
+    },
+    {
+     "riotId": "MorninStar#VIGO",
+     "champ": "Zaahen",
+     "pos": "JUNGLE",
+     "k": 3,
+     "d": 2,
+     "a": 9
+    },
+    {
+     "riotId": "Rebbels#1717",
+     "champ": "Orianna",
+     "pos": "MIDDLE",
+     "k": 8,
+     "d": 3,
+     "a": 7
+    },
+    {
+     "riotId": "TSVH Belletrist#ADC",
+     "champ": "Sivir",
+     "pos": "BOTTOM",
+     "k": 9,
+     "d": 1,
+     "a": 8
+    },
+    {
+     "riotId": "Chunkyboiii#123",
+     "champ": "Thresh",
+     "pos": "UTILITY",
+     "k": 2,
+     "d": 1,
+     "a": 16
+    }
+   ],
+   "enemyBans": [
+    "JarvanIV",
+    "Elise",
+    "KSante",
+    "Anivia",
+    "Ziggs"
+   ]
+  },
+  {
+   "id": "EUW1_7803420910",
+   "t": 1774806770140,
+   "duration": 2794,
+   "side": "them",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "KSante",
+     "pos": "TOP",
+     "k": 5,
+     "d": 2,
+     "a": 20
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "LeeSin",
+     "pos": "JUNGLE",
+     "k": 8,
+     "d": 5,
+     "a": 20
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Anivia",
+     "pos": "MIDDLE",
+     "k": 12,
+     "d": 4,
+     "a": 19
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Varus",
+     "pos": "BOTTOM",
+     "k": 13,
+     "d": 6,
+     "a": 9
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Lulu",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 11,
+     "a": 24
+    }
+   ],
+   "teamBans": [
+    "Zac",
+    "Zaahen",
+    "Kennen",
+    "Braum",
+    "Vex"
+   ],
+   "enemy": [
+    {
+     "riotId": "Lone Messiah#Dokja",
+     "champ": "Ambessa",
+     "pos": "TOP",
+     "k": 3,
+     "d": 8,
+     "a": 10
+    },
+    {
+     "riotId": "MorninStar#VIGO",
+     "champ": "MonkeyKing",
+     "pos": "JUNGLE",
+     "k": 3,
+     "d": 10,
+     "a": 12
+    },
+    {
+     "riotId": "Rebbels#1717",
+     "champ": "Mel",
+     "pos": "MIDDLE",
+     "k": 14,
+     "d": 7,
+     "a": 7
+    },
+    {
+     "riotId": "TSVH Belletrist#ADC",
+     "champ": "Sivir",
+     "pos": "BOTTOM",
+     "k": 7,
+     "d": 7,
+     "a": 15
+    },
+    {
+     "riotId": "Chunkyboiii#123",
+     "champ": "Alistar",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 7,
+     "a": 23
+    }
+   ],
+   "enemyBans": [
+    "JarvanIV",
+    "Elise",
+    "Poppy",
+    "Ziggs",
+    "Karma"
+   ]
+  },
+  {
+   "id": "EUW1_7803339214",
+   "t": 1774803063538,
+   "duration": 2310,
+   "side": "them",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "KSante",
+     "pos": "TOP",
+     "k": 0,
+     "d": 1,
+     "a": 8
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "MonkeyKing",
+     "pos": "JUNGLE",
+     "k": 8,
+     "d": 4,
+     "a": 9
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Ziggs",
+     "pos": "MIDDLE",
+     "k": 11,
+     "d": 0,
+     "a": 9
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Varus",
+     "pos": "BOTTOM",
+     "k": 9,
+     "d": 3,
+     "a": 10
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Neeko",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 5,
+     "a": 16
+    }
+   ],
+   "teamBans": [
+    "Kennen",
+    "Zac",
+    "Zaahen",
+    "DrMundo",
+    "Syndra"
+   ],
+   "enemy": [
+    {
+     "riotId": "Lone Messiah#Dokja",
+     "champ": "Ambessa",
+     "pos": "TOP",
+     "k": 2,
+     "d": 7,
+     "a": 3
+    },
+    {
+     "riotId": "MorninStar#VIGO",
+     "champ": "RekSai",
+     "pos": "JUNGLE",
+     "k": 4,
+     "d": 5,
+     "a": 5
+    },
+    {
+     "riotId": "Rebbels#1717",
+     "champ": "Viktor",
+     "pos": "MIDDLE",
+     "k": 6,
+     "d": 3,
+     "a": 3
+    },
+    {
+     "riotId": "TSVH Belletrist#ADC",
+     "champ": "Ashe",
+     "pos": "BOTTOM",
+     "k": 0,
+     "d": 9,
+     "a": 8
+    },
+    {
+     "riotId": "Chunkyboiii#123",
+     "champ": "Braum",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 4,
+     "a": 9
+    }
+   ],
+   "enemyBans": [
+    "JarvanIV",
+    "Elise",
+    "Poppy",
+    "Renekton",
+    "Orianna"
+   ]
+  },
+  {
+   "id": "EUW1_7802166792",
+   "t": 1774722396099,
+   "duration": 1487,
+   "side": "them",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "Ambessa",
+     "pos": "TOP",
+     "k": 7,
+     "d": 1,
+     "a": 5
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "JarvanIV",
+     "pos": "JUNGLE",
+     "k": 1,
+     "d": 3,
+     "a": 17
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Veigar",
+     "pos": "MIDDLE",
+     "k": 3,
+     "d": 1,
+     "a": 4
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Kaisa",
+     "pos": "BOTTOM",
+     "k": 15,
+     "d": 2,
+     "a": 6
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Nautilus",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 3,
+     "a": 19
+    }
+   ],
+   "teamBans": [
+    "Karma",
+    "Ahri",
+    "Janna",
+    "Sion",
+    "Ashe"
+   ],
+   "enemy": [
+    {
+     "riotId": "Marhalm#PHX",
+     "champ": "DrMundo",
+     "pos": "TOP",
+     "k": 2,
+     "d": 3,
+     "a": 0
+    },
+    {
+     "riotId": "xCymex#PHX",
+     "champ": "Graves",
+     "pos": "JUNGLE",
+     "k": 4,
+     "d": 5,
+     "a": 2
+    },
+    {
+     "riotId": "whatever#next",
+     "champ": "Mel",
+     "pos": "MIDDLE",
+     "k": 1,
+     "d": 4,
+     "a": 1
+    },
+    {
+     "riotId": "Rock#PHX",
+     "champ": "Xayah",
+     "pos": "BOTTOM",
+     "k": 2,
+     "d": 5,
+     "a": 3
+    },
+    {
+     "riotId": "Strenia#PHX",
+     "champ": "Braum",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 9,
+     "a": 4
+    }
+   ],
+   "enemyBans": [
+    "Yasuo",
+    "Akali",
+    "Jinx",
+    "Viktor",
+    "Xerath"
+   ]
+  },
+  {
+   "id": "EUW1_7802103362",
+   "t": 1774719794864,
+   "duration": 1565,
+   "side": "them",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "Ambessa",
+     "pos": "TOP",
+     "k": 8,
+     "d": 0,
+     "a": 8
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "JarvanIV",
+     "pos": "JUNGLE",
+     "k": 8,
+     "d": 2,
+     "a": 24
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Akali",
+     "pos": "MIDDLE",
+     "k": 10,
+     "d": 3,
+     "a": 6
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Ashe",
+     "pos": "BOTTOM",
+     "k": 16,
+     "d": 2,
+     "a": 12
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Nautilus",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 6,
+     "a": 27
+    }
+   ],
+   "teamBans": [
+    "Karma",
+    "Ahri",
+    "Janna",
+    "Sion",
+    "Taliyah"
+   ],
+   "enemy": [
+    {
+     "riotId": "Marhalm#PHX",
+     "champ": "Gragas",
+     "pos": "TOP",
+     "k": 0,
+     "d": 7,
+     "a": 3
+    },
+    {
+     "riotId": "xCymex#PHX",
+     "champ": "MonkeyKing",
+     "pos": "JUNGLE",
+     "k": 4,
+     "d": 9,
+     "a": 2
+    },
+    {
+     "riotId": "whatever#next",
+     "champ": "Orianna",
+     "pos": "MIDDLE",
+     "k": 3,
+     "d": 7,
+     "a": 6
+    },
+    {
+     "riotId": "Rock#PHX",
+     "champ": "Caitlyn",
+     "pos": "BOTTOM",
+     "k": 5,
+     "d": 10,
+     "a": 3
+    },
+    {
+     "riotId": "Strenia#PHX",
+     "champ": "Milio",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 10,
+     "a": 9
+    }
+   ],
+   "enemyBans": [
+    "Yone",
+    "Yasuo",
+    "Jinx",
+    "Viktor",
+    "Sylas"
+   ]
+  },
+  {
+   "id": "EUW1_7801916102",
+   "t": 1774711472303,
+   "duration": 1775,
+   "side": "them",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "Yone",
+     "pos": "TOP",
+     "k": 1,
+     "d": 8,
+     "a": 1
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "Elise",
+     "pos": "JUNGLE",
+     "k": 5,
+     "d": 2,
+     "a": 4
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Sion",
+     "pos": "MIDDLE",
+     "k": 1,
+     "d": 6,
+     "a": 4
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Kaisa",
+     "pos": "BOTTOM",
+     "k": 7,
+     "d": 5,
+     "a": 3
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Rell",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 8,
+     "a": 11
+    }
+   ],
+   "teamBans": [
+    "Darius",
+    "Mel",
+    "Braum",
+    "AurelionSol",
+    "Olaf"
+   ],
+   "enemy": [
+    {
+     "riotId": "Gimbyo#EUW",
+     "champ": "KSante",
+     "pos": "TOP",
+     "k": 11,
+     "d": 2,
+     "a": 7
+    },
+    {
+     "riotId": "DK Goodplayer01#00000",
+     "champ": "RekSai",
+     "pos": "JUNGLE",
+     "k": 3,
+     "d": 4,
+     "a": 7
+    },
+    {
+     "riotId": "Hederk#EUW",
+     "champ": "Taliyah",
+     "pos": "MIDDLE",
+     "k": 8,
+     "d": 1,
+     "a": 9
+    },
+    {
+     "riotId": "Deakrix#0001",
+     "champ": "Caitlyn",
+     "pos": "BOTTOM",
+     "k": 3,
+     "d": 5,
+     "a": 10
+    },
+    {
+     "riotId": "Harakiri#2403",
+     "champ": "Bard",
+     "pos": "UTILITY",
+     "k": 3,
+     "d": 2,
+     "a": 18
+    }
+   ],
+   "enemyBans": [
+    "JarvanIV",
+    "Vi",
+    "Ambessa",
+    "Anivia",
+    "Orianna"
+   ]
+  },
+  {
+   "id": "EUW1_7801858816",
+   "t": 1774708573592,
+   "duration": 1656,
+   "side": "them",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Ruvex#Fool",
+     "champ": "Aatrox",
+     "pos": "TOP",
+     "k": 1,
+     "d": 6,
+     "a": 1
+    },
+    {
+     "riotId": "Señor Flausch#EUW",
+     "champ": "MonkeyKing",
+     "pos": "JUNGLE",
+     "k": 3,
+     "d": 5,
+     "a": 4
+    },
+    {
+     "riotId": "WoFu Ven#EUW",
+     "champ": "Viktor",
+     "pos": "MIDDLE",
+     "k": 3,
+     "d": 3,
+     "a": 5
+    },
+    {
+     "riotId": "Don Namaste#2407",
+     "champ": "Varus",
+     "pos": "BOTTOM",
+     "k": 5,
+     "d": 8,
+     "a": 4
+    },
+    {
+     "riotId": "LordSteve#EUW",
+     "champ": "Neeko",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 5,
+     "a": 8
+    }
+   ],
+   "teamBans": [
+    "Darius",
+    "Mel",
+    "Corki",
+    "DrMundo",
+    "Aurora"
+   ],
+   "enemy": [
+    {
+     "riotId": "Gimbyo#EUW",
+     "champ": "KSante",
+     "pos": "TOP",
+     "k": 4,
+     "d": 3,
+     "a": 2
+    },
+    {
+     "riotId": "DK Goodplayer01#00000",
+     "champ": "Olaf",
+     "pos": "JUNGLE",
+     "k": 6,
+     "d": 5,
+     "a": 4
+    },
+    {
+     "riotId": "Hederk#EUW",
+     "champ": "AurelionSol",
+     "pos": "MIDDLE",
+     "k": 7,
+     "d": 0,
+     "a": 9
+    },
+    {
+     "riotId": "Deakrix#0001",
+     "champ": "Sivir",
+     "pos": "BOTTOM",
+     "k": 9,
+     "d": 1,
+     "a": 8
+    },
+    {
+     "riotId": "Harakiri#2403",
+     "champ": "Braum",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 4,
+     "a": 17
+    }
+   ],
+   "enemyBans": [
+    "JarvanIV",
+    "Poppy",
+    "Kaisa",
+    "Yasuo",
+    "Anivia"
+   ]
+  },
+  {
+   "id": "EUW1_7712309636",
+   "t": 1769983426364,
+   "duration": 2786,
+   "side": "us",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Chogath",
+     "pos": "TOP",
+     "k": 17,
+     "d": 10,
+     "a": 10
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "XinZhao",
+     "pos": "JUNGLE",
+     "k": 5,
+     "d": 12,
+     "a": 20
+    },
+    {
+     "riotId": "rajid#bait",
+     "champ": "Leblanc",
+     "pos": "MIDDLE",
+     "k": 10,
+     "d": 10,
+     "a": 17
+    },
+    {
+     "riotId": "Kolbe#1608",
+     "champ": "Yunara",
+     "pos": "BOTTOM",
+     "k": 10,
+     "d": 4,
+     "a": 13
+    },
+    {
+     "riotId": "HennenG420#EUW",
+     "champ": "Lulu",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 8,
+     "a": 23
+    }
+   ],
+   "teamBans": [
+    "Ashe",
+    "Varus",
+    "Malphite",
+    "Cassiopeia",
+    "Syndra"
+   ],
+   "enemy": [
+    {
+     "riotId": "Froschi Yilmaz#187",
+     "champ": "Gnar",
+     "pos": "TOP",
+     "k": 4,
+     "d": 8,
+     "a": 22
+    },
+    {
+     "riotId": "The Rhayn#EUW",
+     "champ": "DrMundo",
+     "pos": "JUNGLE",
+     "k": 6,
+     "d": 7,
+     "a": 24
+    },
+    {
+     "riotId": "Dexter Morgan#BUY",
+     "champ": "Veigar",
+     "pos": "MIDDLE",
+     "k": 7,
+     "d": 8,
+     "a": 11
+    },
+    {
+     "riotId": "ªºˇˉ#EUW",
+     "champ": "Caitlyn",
+     "pos": "BOTTOM",
+     "k": 24,
+     "d": 10,
+     "a": 5
+    },
+    {
+     "riotId": "Keine Mehr#EUW",
+     "champ": "Braum",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 10,
+     "a": 28
+    }
+   ],
+   "enemyBans": [
+    "Ekko",
+    "Katarina",
+    "Nautilus",
+    "Kassadin",
+    "Sylas"
+   ]
+  },
+  {
+   "id": "EUW1_7712201123",
+   "t": 1769979810978,
+   "duration": 1965,
+   "side": "us",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Trundle",
+     "pos": "TOP",
+     "k": 3,
+     "d": 6,
+     "a": 1
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "Shaco",
+     "pos": "JUNGLE",
+     "k": 6,
+     "d": 6,
+     "a": 1
+    },
+    {
+     "riotId": "rajid#bait",
+     "champ": "Kassadin",
+     "pos": "MIDDLE",
+     "k": 10,
+     "d": 6,
+     "a": 5
+    },
+    {
+     "riotId": "Kolbe#1608",
+     "champ": "Aphelios",
+     "pos": "BOTTOM",
+     "k": 5,
+     "d": 7,
+     "a": 4
+    },
+    {
+     "riotId": "HennenG420#EUW",
+     "champ": "Nautilus",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 7,
+     "a": 8
+    }
+   ],
+   "teamBans": [
+    "Varus",
+    "Anivia",
+    "Malphite",
+    "JarvanIV",
+    "Syndra"
+   ],
+   "enemy": [
+    {
+     "riotId": "Froschi Yilmaz#187",
+     "champ": "Shen",
+     "pos": "TOP",
+     "k": 4,
+     "d": 3,
+     "a": 14
+    },
+    {
+     "riotId": "The Rhayn#EUW",
+     "champ": "DrMundo",
+     "pos": "JUNGLE",
+     "k": 9,
+     "d": 2,
+     "a": 11
+    },
+    {
+     "riotId": "Dexter Morgan#BUY",
+     "champ": "Ahri",
+     "pos": "MIDDLE",
+     "k": 4,
+     "d": 7,
+     "a": 7
+    },
+    {
+     "riotId": "ªºˇˉ#EUW",
+     "champ": "Smolder",
+     "pos": "BOTTOM",
+     "k": 15,
+     "d": 7,
+     "a": 11
+    },
+    {
+     "riotId": "Keine Mehr#EUW",
+     "champ": "Nami",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 6,
+     "a": 24
+    }
+   ],
+   "enemyBans": [
+    "Katarina",
+    "Ekko",
+    "Yunara",
+    "Sylas",
+    "Ryze"
+   ]
+  },
+  {
+   "id": "EUW1_7691078392",
+   "t": 1768756834618,
+   "duration": 1263,
+   "side": "us",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Kayle",
+     "pos": "TOP",
+     "k": 0,
+     "d": 5,
+     "a": 0
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "Belveth",
+     "pos": "JUNGLE",
+     "k": 3,
+     "d": 3,
+     "a": 0
+    },
+    {
+     "riotId": "rajid#bait",
+     "champ": "Leblanc",
+     "pos": "MIDDLE",
+     "k": 1,
+     "d": 4,
+     "a": 2
+    },
+    {
+     "riotId": "Kolbe#1608",
+     "champ": "Yunara",
+     "pos": "BOTTOM",
+     "k": 0,
+     "d": 3,
+     "a": 2
+    },
+    {
+     "riotId": "HennenG420#EUW",
+     "champ": "Janna",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 2,
+     "a": 2
+    }
+   ],
+   "teamBans": [
+    "Malphite",
+    "Gwen",
+    "Yasuo",
+    "Cassiopeia",
+    "Taric"
+   ],
+   "enemy": [
+    {
+     "riotId": "Preggi D Low#EUW",
+     "champ": "Renekton",
+     "pos": "TOP",
+     "k": 2,
+     "d": 0,
+     "a": 1
+    },
+    {
+     "riotId": "Sadain#EUW",
+     "champ": "Diana",
+     "pos": "JUNGLE",
+     "k": 7,
+     "d": 1,
+     "a": 4
+    },
+    {
+     "riotId": "Cooper#FF15",
+     "champ": "Yone",
+     "pos": "MIDDLE",
+     "k": 4,
+     "d": 3,
+     "a": 6
+    },
+    {
+     "riotId": "Psyto#GOTY",
+     "champ": "Nilah",
+     "pos": "BOTTOM",
+     "k": 2,
+     "d": 0,
+     "a": 5
+    },
+    {
+     "riotId": "Deomi#DEOMI",
+     "champ": "Seraphine",
+     "pos": "UTILITY",
+     "k": 2,
+     "d": 1,
+     "a": 5
+    }
+   ],
+   "enemyBans": [
+    "Fiora",
+    "Ekko",
+    "Milio",
+    "Jax",
+    "Sylas"
+   ]
+  },
+  {
+   "id": "EUW1_7690937255",
+   "t": 1768752612094,
+   "duration": 1760,
+   "side": "us",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Gwen",
+     "pos": "TOP",
+     "k": 10,
+     "d": 6,
+     "a": 4
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "MonkeyKing",
+     "pos": "JUNGLE",
+     "k": 6,
+     "d": 3,
+     "a": 15
+    },
+    {
+     "riotId": "rajid#bait",
+     "champ": "Sylas",
+     "pos": "MIDDLE",
+     "k": 13,
+     "d": 4,
+     "a": 9
+    },
+    {
+     "riotId": "Kolbe#1608",
+     "champ": "Aphelios",
+     "pos": "BOTTOM",
+     "k": 7,
+     "d": 2,
+     "a": 8
+    },
+    {
+     "riotId": "HennenG420#EUW",
+     "champ": "Thresh",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 2,
+     "a": 17
+    }
+   ],
+   "teamBans": [
+    "Malphite",
+    "Braum",
+    "Ashe",
+    "Ornn",
+    "Ryze"
+   ],
+   "enemy": [
+    {
+     "riotId": "ThePazzel#EUW",
+     "champ": "Sion",
+     "pos": "TOP",
+     "k": 0,
+     "d": 7,
+     "a": 7
+    },
+    {
+     "riotId": "GG QuasarQualle#QQ27",
+     "champ": "XinZhao",
+     "pos": "JUNGLE",
+     "k": 1,
+     "d": 9,
+     "a": 10
+    },
+    {
+     "riotId": "Koala#Beast",
+     "champ": "Syndra",
+     "pos": "MIDDLE",
+     "k": 8,
+     "d": 10,
+     "a": 6
+    },
+    {
+     "riotId": "Lönni#SKIM",
+     "champ": "Caitlyn",
+     "pos": "BOTTOM",
+     "k": 8,
+     "d": 6,
+     "a": 4
+    },
+    {
+     "riotId": "Daddy Driveby#EUW",
+     "champ": "Morgana",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 5,
+     "a": 14
+    }
+   ],
+   "enemyBans": [
+    "Fiora",
+    "Smolder",
+    "Katarina",
+    "Ekko",
+    "Irelia"
+   ]
+  },
+  {
+   "id": "EUW1_7690808621",
+   "t": 1768748443343,
+   "duration": 2237,
+   "side": "us",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Fiora",
+     "pos": "TOP",
+     "k": 13,
+     "d": 3,
+     "a": 3
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "MonkeyKing",
+     "pos": "JUNGLE",
+     "k": 6,
+     "d": 1,
+     "a": 14
+    },
+    {
+     "riotId": "rajid#bait",
+     "champ": "Lissandra",
+     "pos": "MIDDLE",
+     "k": 11,
+     "d": 4,
+     "a": 15
+    },
+    {
+     "riotId": "Kolbe#1608",
+     "champ": "Lucian",
+     "pos": "BOTTOM",
+     "k": 2,
+     "d": 4,
+     "a": 10
+    },
+    {
+     "riotId": "HennenG420#EUW",
+     "champ": "Neeko",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 6,
+     "a": 12
+    }
+   ],
+   "teamBans": [
+    "Jayce",
+    "Qiyana",
+    "Braum",
+    "Lulu",
+    "Volibear"
+   ],
+   "enemy": [
+    {
+     "riotId": "R4G Kinzokuryu#Jean",
+     "champ": "DrMundo",
+     "pos": "TOP",
+     "k": 0,
+     "d": 7,
+     "a": 3
+    },
+    {
+     "riotId": "Auturos#EUW",
+     "champ": "JarvanIV",
+     "pos": "JUNGLE",
+     "k": 4,
+     "d": 7,
+     "a": 9
+    },
+    {
+     "riotId": "R4G Sasko#MID",
+     "champ": "Akali",
+     "pos": "MIDDLE",
+     "k": 6,
+     "d": 7,
+     "a": 1
+    },
+    {
+     "riotId": "R4G Cracky#ADC",
+     "champ": "Jinx",
+     "pos": "BOTTOM",
+     "k": 4,
+     "d": 4,
+     "a": 6
+    },
+    {
+     "riotId": "Ecaes#USA",
+     "champ": "Velkoz",
+     "pos": "UTILITY",
+     "k": 4,
+     "d": 7,
+     "a": 6
+    }
+   ],
+   "enemyBans": [
+    "Yunara",
+    "Ekko",
+    "Belveth",
+    "Nami",
+    "Gwen"
+   ]
+  },
+  {
+   "id": "EUW1_7690697586",
+   "t": 1768743656213,
+   "duration": 1764,
+   "side": "us",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Gwen",
+     "pos": "TOP",
+     "k": 7,
+     "d": 8,
+     "a": 3
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "Lillia",
+     "pos": "JUNGLE",
+     "k": 2,
+     "d": 7,
+     "a": 11
+    },
+    {
+     "riotId": "rajid#bait",
+     "champ": "Qiyana",
+     "pos": "MIDDLE",
+     "k": 5,
+     "d": 8,
+     "a": 11
+    },
+    {
+     "riotId": "Kolbe#1608",
+     "champ": "Smolder",
+     "pos": "BOTTOM",
+     "k": 4,
+     "d": 4,
+     "a": 6
+    },
+    {
+     "riotId": "HennenG420#EUW",
+     "champ": "Milio",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 5,
+     "a": 11
+    }
+   ],
+   "teamBans": [
+    "Malphite",
+    "Mel",
+    "Jinx",
+    "Ashe",
+    "Caitlyn"
+   ],
+   "enemy": [
+    {
+     "riotId": "INT SlimCactus#GNAR",
+     "champ": "Ornn",
+     "pos": "TOP",
+     "k": 4,
+     "d": 6,
+     "a": 14
+    },
+    {
+     "riotId": "INT KleinZiiro#LMAO",
+     "champ": "Ivern",
+     "pos": "JUNGLE",
+     "k": 3,
+     "d": 3,
+     "a": 23
+    },
+    {
+     "riotId": "INT KleinRaki#HDF",
+     "champ": "Xerath",
+     "pos": "MIDDLE",
+     "k": 13,
+     "d": 4,
+     "a": 12
+    },
+    {
+     "riotId": "INT KleinJulia#EUW",
+     "champ": "MissFortune",
+     "pos": "BOTTOM",
+     "k": 10,
+     "d": 2,
+     "a": 9
+    },
+    {
+     "riotId": "INT KleinMerliη#420",
+     "champ": "Braum",
+     "pos": "UTILITY",
+     "k": 2,
+     "d": 3,
+     "a": 19
+    }
+   ],
+   "enemyBans": [
+    "Yunara",
+    "Vi",
+    "Fiora",
+    "Kayle",
+    "Jax"
+   ]
+  },
+  {
+   "id": "EUW1_7689422212",
+   "t": 1768669626537,
+   "duration": 1140,
+   "side": "us",
+   "win": false,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Fiora",
+     "pos": "TOP",
+     "k": 1,
+     "d": 5,
+     "a": 1
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "Vi",
+     "pos": "JUNGLE",
+     "k": 1,
+     "d": 5,
+     "a": 1
+    },
+    {
+     "riotId": "rajid#bait",
+     "champ": "Katarina",
+     "pos": "MIDDLE",
+     "k": 1,
+     "d": 4,
+     "a": 1
+    },
+    {
+     "riotId": "Kolbe#1608",
+     "champ": "Yunara",
+     "pos": "BOTTOM",
+     "k": 1,
+     "d": 4,
+     "a": 1
+    },
+    {
+     "riotId": "HennenG420#EUW",
+     "champ": "Milio",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 2,
+     "a": 2
+    }
+   ],
+   "teamBans": [
+    "Aatrox",
+    "Urgot",
+    "Lucian",
+    "Cassiopeia",
+    "MonkeyKing"
+   ],
+   "enemy": [
+    {
+     "riotId": "Major Bob#GOAT",
+     "champ": "Malphite",
+     "pos": "TOP",
+     "k": 6,
+     "d": 1,
+     "a": 5
+    },
+    {
+     "riotId": "Polybe#MPLDS",
+     "champ": "Morgana",
+     "pos": "JUNGLE",
+     "k": 2,
+     "d": 1,
+     "a": 8
+    },
+    {
+     "riotId": "Lunfer#ROCKY",
+     "champ": "Gragas",
+     "pos": "MIDDLE",
+     "k": 6,
+     "d": 1,
+     "a": 2
+    },
+    {
+     "riotId": "Germs#Tacos",
+     "champ": "Aphelios",
+     "pos": "BOTTOM",
+     "k": 6,
+     "d": 1,
+     "a": 5
+    },
+    {
+     "riotId": "leotaf#EUW",
+     "champ": "Thresh",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 0,
+     "a": 9
+    }
+   ],
+   "enemyBans": [
+    "Belveth",
+    "Quinn",
+    "Ekko",
+    "Ahri",
+    "Leblanc"
+   ]
+  },
+  {
+   "id": "EUW1_7689316285",
+   "t": 1768665893307,
+   "duration": 1520,
+   "side": "us",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Fiora",
+     "pos": "TOP",
+     "k": 5,
+     "d": 0,
+     "a": 4
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "Elise",
+     "pos": "JUNGLE",
+     "k": 4,
+     "d": 2,
+     "a": 5
+    },
+    {
+     "riotId": "rajid#bait",
+     "champ": "Leblanc",
+     "pos": "MIDDLE",
+     "k": 5,
+     "d": 0,
+     "a": 5
+    },
+    {
+     "riotId": "Kolbe#1608",
+     "champ": "Yunara",
+     "pos": "BOTTOM",
+     "k": 5,
+     "d": 0,
+     "a": 1
+    },
+    {
+     "riotId": "HennenG420#EUW",
+     "champ": "Milio",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 0,
+     "a": 6
+    }
+   ],
+   "teamBans": [
+    "Ahri",
+    "Mordekaiser",
+    "Lucian",
+    "Sett",
+    "Mel"
+   ],
+   "enemy": [
+    {
+     "riotId": "TCA Arctic Wolf#Shego",
+     "champ": "Olaf",
+     "pos": "TOP",
+     "k": 0,
+     "d": 5,
+     "a": 1
+    },
+    {
+     "riotId": "m24z#Dawg",
+     "champ": "XinZhao",
+     "pos": "JUNGLE",
+     "k": 0,
+     "d": 4,
+     "a": 1
+    },
+    {
+     "riotId": "Huibu#UwU",
+     "champ": "Orianna",
+     "pos": "MIDDLE",
+     "k": 1,
+     "d": 3,
+     "a": 1
+    },
+    {
+     "riotId": "DoLuNaY#zeri",
+     "champ": "Xayah",
+     "pos": "BOTTOM",
+     "k": 1,
+     "d": 4,
+     "a": 0
+    },
+    {
+     "riotId": "Californium#098",
+     "champ": "Braum",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 3,
+     "a": 0
+    }
+   ],
+   "enemyBans": [
+    "Ekko",
+    "Sylas",
+    "Aphelios",
+    "Jax",
+    "Malphite"
+   ]
+  },
+  {
+   "id": "EUW1_7689204818",
+   "t": 1768661436886,
+   "duration": 1533,
+   "side": "us",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Fiora",
+     "pos": "TOP",
+     "k": 8,
+     "d": 3,
+     "a": 6
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "Vi",
+     "pos": "JUNGLE",
+     "k": 3,
+     "d": 6,
+     "a": 10
+    },
+    {
+     "riotId": "rajid#bait",
+     "champ": "Ahri",
+     "pos": "MIDDLE",
+     "k": 12,
+     "d": 1,
+     "a": 8
+    },
+    {
+     "riotId": "Kolbe#1608",
+     "champ": "Aphelios",
+     "pos": "BOTTOM",
+     "k": 5,
+     "d": 2,
+     "a": 11
+    },
+    {
+     "riotId": "HennenG420#EUW",
+     "champ": "Milio",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 4,
+     "a": 19
+    }
+   ],
+   "teamBans": [
+    "Braum",
+    "Poppy",
+    "Gwen",
+    "Viktor",
+    "Malzahar"
+   ],
+   "enemy": [
+    {
+     "riotId": "PRQ Gnarbage#EU1",
+     "champ": "Renekton",
+     "pos": "TOP",
+     "k": 3,
+     "d": 5,
+     "a": 2
+    },
+    {
+     "riotId": "PRQ BlackSouls#4873",
+     "champ": "Skarner",
+     "pos": "JUNGLE",
+     "k": 6,
+     "d": 6,
+     "a": 4
+    },
+    {
+     "riotId": "PRQ Kryox#PRQ",
+     "champ": "Sylas",
+     "pos": "MIDDLE",
+     "k": 6,
+     "d": 6,
+     "a": 1
+    },
+    {
+     "riotId": "PRQ umajan#PRQ",
+     "champ": "Jinx",
+     "pos": "BOTTOM",
+     "k": 1,
+     "d": 7,
+     "a": 5
+    },
+    {
+     "riotId": "PRQ Scorpy#GER",
+     "champ": "Rell",
+     "pos": "UTILITY",
+     "k": 0,
+     "d": 4,
+     "a": 8
+    }
+   ],
+   "enemyBans": [
+    "Smolder",
+    "Yunara",
+    "Nautilus",
+    "Ekko",
+    "Illaoi"
+   ]
+  },
+  {
+   "id": "EUW1_7689109882",
+   "t": 1768656763326,
+   "duration": 1085,
+   "side": "us",
+   "win": true,
+   "team": [
+    {
+     "riotId": "Schwänze#EUW",
+     "champ": "Irelia",
+     "pos": "TOP",
+     "k": 6,
+     "d": 2,
+     "a": 6
+    },
+    {
+     "riotId": "Smette#xDD",
+     "champ": "JarvanIV",
+     "pos": "JUNGLE",
+     "k": 6,
+     "d": 3,
+     "a": 22
+    },
+    {
+     "riotId": "rajid#bait",
+     "champ": "Sylas",
+     "pos": "MIDDLE",
+     "k": 15,
+     "d": 0,
+     "a": 6
+    },
+    {
+     "riotId": "Kolbe#1608",
+     "champ": "Yunara",
+     "pos": "BOTTOM",
+     "k": 9,
+     "d": 0,
+     "a": 13
+    },
+    {
+     "riotId": "HennenG420#EUW",
+     "champ": "Nautilus",
+     "pos": "UTILITY",
+     "k": 4,
+     "d": 1,
+     "a": 19
+    }
+   ],
+   "teamBans": [
+    "Gwen",
+    "Braum",
+    "Ashe",
+    "Poppy",
+    "Cassiopeia"
+   ],
+   "enemy": [
+    {
+     "riotId": "Streamskill#EUW",
+     "champ": "Aatrox",
+     "pos": "TOP",
+     "k": 2,
+     "d": 5,
+     "a": 1
+    },
+    {
+     "riotId": "Bajojo18#4444",
+     "champ": "Lillia",
+     "pos": "JUNGLE",
+     "k": 1,
+     "d": 7,
+     "a": 0
+    },
+    {
+     "riotId": "Kaktusgrun#11111",
+     "champ": "Gragas",
+     "pos": "MIDDLE",
+     "k": 1,
+     "d": 7,
+     "a": 0
+    },
+    {
+     "riotId": "QDmiQ#1870",
+     "champ": "Twitch",
+     "pos": "BOTTOM",
+     "k": 1,
+     "d": 10,
+     "a": 1
+    },
+    {
+     "riotId": "trill12121#EUW",
+     "champ": "Malphite",
+     "pos": "UTILITY",
+     "k": 1,
+     "d": 11,
+     "a": 1
+    }
+   ],
+   "enemyBans": [
+    "Katarina",
+    "Quinn",
+    "Smolder",
+    "Jax",
+    "Fiora"
+   ]
+  }
+ ]
+}
