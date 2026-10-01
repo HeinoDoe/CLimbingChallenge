@@ -7,7 +7,7 @@ A points competition for the squad's ranked games in League of Legends. **Solo/D
 - **Tagesrückblick:** about 5 highlights from the previous day, written automatically after midnight
 - where everyone stands in rank, how far they moved since the start or this week, and rank over time
 - a players table and a feed of everyone's latest games
-- a Prime League tab with our draft pool, comps and a scouting tool
+- a Prime League tab with game day draft plans for each opponent, our draft pool, comps and a scouting tool
 
 It runs for free on GitHub. A background timer fetches data from the Riot API once an hour, scores it and saves it into this repository. The website is a static page on GitHub Pages that only displays that saved file. Your API key stays in a GitHub secret and never reaches the website.
 
@@ -44,6 +44,16 @@ Only ranked games played between the start and end date count. Remakes don't cou
 After every finished day (midnight in `challenge.timeZone`), the update writes a **Tagesrückblick** with up to 5 highlights for that day, picked in this order: day winner (Solo/Duo points), pentakills, a new leader, the biggest LP loss, promotions and demotions, the best and worst game, the Flex day winner, quadrakills, streaks of 4+, the biggest grinder, and who didn't play. The first day starts at the challenge start, not midnight.
 
 Reviews are kept in `docs/data.json`. A day is only written once every game is processed, so a day with games still loading waits for the next run. The logic lives in `scripts/review.mjs` (tests in `scripts/review.test.mjs`).
+
+## Prime League game days
+
+The Prime League tab has a **Game days** section (days 1–6). Everything about a game day lives in `docs/prime/gamedays.json`: our roster, each day's date and opponent roster, and the written draft plan (bans, picks and counters per role, comps, draft order, game plan).
+
+To prepare a new game day:
+
+1. Add the date and the opponent's five Riot IDs and roles to that day in `docs/prime/gamedays.json`, and push.
+2. Run **Actions → Scout opponent** with the day number. It uses the `RIOT_API_KEY` secret to pull both rosters' ranks, last 30 ranked games, top mastery and last 15 tournament games (Prime League games are tournament-code games, so their past team drafts and bans show up), and saves `docs/prime/scout-day<N>.json`.
+3. Write the `plan` for that day (or ask Claude to). The page shows the scouting tables as soon as the scout file exists, and the plan once it's in `gamedays.json`.
 
 ## Run it locally
 
@@ -132,9 +142,13 @@ scripts/challenge.test.mjs      scoring tests (npm test)
 scripts/review.mjs              the daily review highlights
 scripts/review.test.mjs         daily review tests (npm test)
 scripts/make-sample.mjs         builds docs/data.sample.json (npm run sample)
+scripts/scout.mjs               scouts both rosters of a Prime League game day
 scripts/serve.mjs               local web server for docs/
 .github/workflows/update.yml    runs one update and saves the result
 .github/workflows/timer.yml     starts the update once an hour
+.github/workflows/scout.yml     "Scout opponent": runs scripts/scout.mjs for a game day
+docs/prime/gamedays.json        Prime League game days: opponents and draft plans
+docs/prime/scout-day<N>.json    scouting data for a game day (written by the scout)
 docs/index.html                 the website
 docs/data.json                  the data (written by the script, don't edit)
 docs/data.sample.json           sample data for ?demo=1

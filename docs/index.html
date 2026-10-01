@@ -201,6 +201,26 @@
   .card h3 { margin-top: 0; }
   .card ul { margin: 0; padding-left: 18px; }
   .scout textarea { width: 100%; max-width: 560px; min-height: 110px; font: 15px var(--body); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
+  /* Game days */
+  .gd-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; }
+  .gd-when { font: 700 22px var(--display); }
+  .gd-links a { margin-right: 14px; font-weight: 600; }
+  .cchip { display: inline-flex; align-items: center; gap: 6px; margin: 2px 10px 2px 0; font-size: 14px; white-space: nowrap; }
+  .cchip small { color: var(--muted); }
+  .picklist { list-style: none; margin: 0; padding: 0; }
+  .picklist li { padding: 7px 0; border-bottom: 1px dashed var(--line); }
+  .picklist li p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+  .prime .card table { min-width: 0; }
+  .ctr td { padding: 5px 6px; vertical-align: middle; }
+  .ctr td:first-child { width: 42%; }
+  .wl { display: inline-block; font: 700 13px var(--display); padding: 1px 7px; border-radius: 3px; color: #fff; }
+  .wl.w { background: var(--up); } .wl.l { background: var(--down); }
+  .bans img { filter: grayscale(1); opacity: .6; }
+  .lineup { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 10px; }
+  .lineup span { text-align: center; font-size: 11px; color: var(--muted); line-height: 1.3; }
+  .tip { background: var(--bg); border-left: 3px solid #C9A13B; padding: 6px 10px; margin-top: 10px; font-size: 14px; }
+  .gd-empty { background: var(--panel); border: 1px dashed var(--line); border-radius: 6px; padding: 18px; max-width: 640px; color: var(--muted); }
+
   .btn { display: inline-block; font: 600 15px var(--body); background: var(--ink); color: var(--bg); border: 0; border-radius: 999px; padding: 8px 18px; cursor: pointer; text-decoration: none; margin-top: 8px; }
 
   @media (max-width: 860px) { .wall-grid { grid-template-columns: minmax(0, 1fr); } }
@@ -227,7 +247,9 @@
 
 <div class="wrap prime" id="tab-prime" hidden>
   <h2>Prime League playbook</h2>
-  <p class="lede">Champion pools, comps and synergies from our draft pool sheet (op.gg data from 24 September 2026), plus live ranks and a scouting tool.</p>
+  <p class="lede">Game day plans for each opponent, plus our champion pools, comps and synergies from the draft pool sheet (op.gg data from 24 September 2026).</p>
+
+  <section style="margin-top:24px" id="gamedays"></section>
 
   <section style="margin-top:24px">
     <h2>What the sheet says</h2>
@@ -915,12 +937,136 @@ document.getElementById('scoutbtn').addEventListener('click', () => {
   window.open(opggMulti(ids), '_blank', 'noopener');
 });
 
+// ---------- Prime League game days (docs/prime/gamedays.json + scout-day<N>.json) ----------
+// gamedays.json holds the opponents and the written draft plans; scout-day<N>.json comes
+// from the "Scout opponent" workflow (scripts/scout.mjs).
+const gd = { cfg: null, scout: {}, day: null };
+const ROLES = ['Top', 'Jungle', 'Mid', 'ADC', 'Support'];
+const POS_SHORT = { TOP: 'Top', JUNGLE: 'Jg', MIDDLE: 'Mid', BOTTOM: 'ADC', UTILITY: 'Sup' };
+const md = t => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+const cchip = (c, extra = '') => `<span class="cchip">${champIcon(c, 24)}<span>${esc(champName(c))}${extra ? ` <small>${extra}</small>` : ''}</span></span>`;
+const idKey = id => id.toLowerCase().replace(/\s+/g, '');
+
+async function loadGamedays() {
+  try { gd.cfg = await fetch('prime/gamedays.json?t=' + Date.now()).then(r => r.json()); } catch { return; }
+  const next = gd.cfg.gamedays.find(g => g.date && Date.parse(g.date) > Date.now() - 6 * 3600_000);
+  gd.day = (next || gd.cfg.gamedays[0]).day;
+  renderGamedays();
+}
+async function scoutOf(day) {
+  if (!(day in gd.scout)) gd.scout[day] = await fetch(`prime/scout-day${day}.json?t=${Date.now()}`).then(r => (r.ok ? r.json() : null)).catch(() => null);
+  return gd.scout[day];
+}
+
+async function renderGamedays() {
+  const el = document.getElementById('gamedays');
+  const g = gd.cfg.gamedays.find(x => x.day === gd.day);
+  const tabs = `<div class="seg" role="group" aria-label="Game day" style="margin:4px 0 18px;flex-wrap:wrap">${gd.cfg.gamedays.map(x =>
+    `<button type="button" data-day="${x.day}" aria-pressed="${x.day === gd.day}">Day ${x.day}</button>`).join('')}</div>`;
+  const when = g.date ? new Date(g.date).toLocaleString('de-DE', { timeZone: 'Europe/Berlin', weekday: 'long', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' Uhr' : 'Date TBA';
+  const soon = g.date && Date.parse(g.date) > Date.now() ? ` · in ${countdownText(Date.parse(g.date))}` : '';
+  let body;
+  if (!g.opponent?.players?.length) {
+    body = `<div class="gd-empty">Opponent not set yet. Add the date and their roster to <code>docs/prime/gamedays.json</code>, then run <b>Actions → Scout opponent</b> with day ${g.day} (or just ask Claude to set it up).</div>`;
+  } else {
+    const scout = await scoutOf(g.day);
+    body = renderGameday(g, scout);
+  }
+  el.innerHTML = `<h2>Game days</h2>${tabs}
+    <div class="gd-head"><h2 style="margin:0">Day ${g.day}${g.opponent?.name ? `: vs ${esc(g.opponent.name)}` : ''}</h2><span class="gd-when">${esc(when)}${soon}</span></div>
+    ${body}`;
+  el.querySelectorAll('button[data-day]').forEach(b => b.addEventListener('click', () => { gd.day = Number(b.dataset.day); renderGamedays(); }));
+}
+
+function renderGameday(g, scout) {
+  const plan = g.plan, them = g.opponent.players, us = gd.cfg.ourTeam;
+  const links = `<p class="gd-links"><a href="${opggMulti(them.map(p => p.riotId))}" target="_blank" rel="noopener">Their team on op.gg</a><a href="${opggMulti(us.map(p => p.riotId))}" target="_blank" rel="noopener">Our team on op.gg</a></p>`;
+  const out = [links];
+
+  if (plan?.insights) out.push(`<section style="margin-top:20px" class="review"><h3 style="font:700 24px var(--display);margin:0 0 10px">Scouting in 5 points</h3><ol>${plan.insights.map(h => `<li><span class="ic">${h.icon}</span><span>${md(h.text)}</span></li>`).join('')}</ol></section>`);
+
+  // Their roster from the scout run
+  if (scout) {
+    const byId = Object.fromEntries(scout.them.map(p => [idKey(p.riotId), p]));
+    const rows = them.map(pl => {
+      const s = byId[idKey(pl.riotId)];
+      if (!s || s.error) return `<tr><td>${esc(pl.role)}</td><td><b>${esc(pl.name)}</b></td><td colspan="4">${esc(s?.error || 'not scouted yet')}</td></tr>`;
+      const tour = s.tourney.champions.slice(0, 4).map(c => cchip(c.champ, `${c.wins}-${c.games - c.wins}`)).join('') || '<span style="color:var(--muted)">–</span>';
+      const ranked = s.ranked.champions.slice(0, 4).map(c => cchip(c.champ, `${c.games}g ${Math.round(c.winRate * 100)}%`)).join('');
+      const mast = s.mastery.slice(0, 3).map(m => cchip(m.champ, `${Math.round(m.points / 1000)}k`)).join('');
+      return `<tr><td>${esc(pl.role)}</td><td><a href="${opggName(pl.riotId)}" target="_blank" rel="noopener"><b>${esc(pl.name)}</b></a><br><span style="color:var(--muted);font-size:13px">${esc(s.solo)}</span></td>
+        <td>${tour}</td><td>${ranked}</td><td>${mast}</td></tr>`;
+    }).join('');
+    out.push(`<section style="margin-top:28px"><h3 style="font:700 24px var(--display);margin:0 0 4px">Their players</h3>
+      <p class="lede" style="margin-bottom:8px">Prime League = each player's tournament games (W-L), including ones with other rosters. Ranked = last 30 Solo/Flex games.</p>
+      <div class="table-scroll"><table><thead><tr><th>Role</th><th>Player</th><th>Prime League picks</th><th>Recent ranked</th><th>Top mastery</th></tr></thead><tbody>${rows}</tbody></table></div></section>`);
+
+    const theirIds = new Set(them.map(p => idKey(p.riotId)));
+    const order = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'];
+    const games = scout.tourneyGames.filter(t => t.team.filter(x => theirIds.has(idKey(x.riotId))).length >= 4);
+    if (games.length) {
+      const wins = games.filter(t => t.win).length;
+      out.push(`<section style="margin-top:28px"><h3 style="font:700 24px var(--display);margin:0 0 4px">Their team drafts</h3>
+        <p class="lede" style="margin-bottom:8px">${games.length} Prime League games as a five-stack: ${wins} wins, ${games.length - wins} losses.</p>
+        <div class="table-scroll"><table><thead><tr><th>Date</th><th></th><th>Their lineup (Top → Sup)</th><th>Their bans</th><th>Opponent</th></tr></thead><tbody>${games.map(t => {
+          const line = [...t.team].sort((a, b) => order.indexOf(a.pos) - order.indexOf(b.pos));
+          return `<tr><td style="white-space:nowrap">${new Date(t.t).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric', year: '2-digit' })}<br><span style="color:var(--muted);font-size:13px">${Math.round(t.duration / 60)} min</span></td>
+            <td><span class="wl ${t.win ? 'w' : 'l'}">${t.win ? 'W' : 'L'}</span></td>
+            <td style="white-space:nowrap">${line.map(x => `<span title="${esc(champName(x.champ))} ${x.k}/${x.d}/${x.a}">${champIcon(x.champ, 30)}</span>`).join(' ')}</td>
+            <td class="bans" style="white-space:nowrap">${t.teamBans.map(b => `<span title="${esc(champName(b))}">${champIcon(b, 22)}</span>`).join(' ')}</td>
+            <td style="white-space:nowrap">${t.enemy.map(x => `<span title="${esc(champName(x.champ))}">${champIcon(x.champ, 22)}</span>`).join(' ')}</td></tr>`;
+        }).join('')}</tbody></table></div></section>`);
+    }
+  } else {
+    out.push(`<p class="footnote">No scouting data yet. Run <b>Actions → Scout opponent</b> with day ${g.day}.</p>`);
+  }
+
+  if (!plan) { out.push('<p class="footnote">Draft plan follows.</p>'); return out.join(''); }
+
+  // Bans
+  const banList = list => `<ul class="picklist">${list.map(b => `<li>${cchip(b.champ)}<p>${md(b.why)}</p></li>`).join('')}</ul>`;
+  out.push(`<section style="margin-top:28px"><h3 style="font:700 24px var(--display);margin:0 0 10px">Bans</h3><div class="cards">
+    <div class="card"><h3>Phase 1</h3>${banList(plan.bans.phase1)}</div>
+    <div class="card"><h3>Phase 2 (whatever is still open)</h3>${banList(plan.bans.phase2)}</div>
+    <div class="card"><h3>Expect against us</h3><p style="margin:0">${md(plan.bans.expect)}</p></div></div></section>`);
+
+  // Per role
+  out.push(`<section style="margin-top:28px"><h3 style="font:700 24px var(--display);margin:0 0 10px">Picks per role</h3><div class="cards">${plan.roles.map(r => `
+    <div class="card"><h3>${esc(r.role)} · ${esc(r.player)} <span style="color:var(--muted);font-weight:500">vs ${esc(r.vs)}</span></h3>
+      <p class="footnote" style="margin:0 0 6px">${md(r.about)}</p>
+      <ul class="picklist">${r.picks.map(pk => `<li>${cchip(pk.champ)}<p>${md(pk.why)}</p></li>`).join('')}</ul>
+      ${r.counters?.length ? `<table class="ctr" style="margin-top:10px"><thead><tr><th>If they pick</th><th>We answer</th></tr></thead><tbody>${r.counters.map(c => `<tr><td>${c.if.map(x => champIcon(x, 22)).join(' ')} <span style="font-size:13px">${c.if.map(x => esc(champName(x))).join(' / ')}</span></td><td>${c.then.map(x => cchip(x)).join('')}</td></tr>`).join('')}</tbody></table>` : ''}
+      ${r.tip ? `<div class="tip">${md(r.tip)}</div>` : ''}
+    </div>`).join('')}</div></section>`);
+
+  // Comps
+  const ourByRole = Object.fromEntries(us.map(p => [p.role, p.name]));
+  out.push(`<section style="margin-top:28px"><h3 style="font:700 24px var(--display);margin:0 0 10px">Comps</h3><div class="cards">${plan.comps.map(c => `
+    <div class="card"><h3>${esc(c.name)}</h3><p class="footnote" style="margin:0">${esc(c.sub)}</p>
+      <div class="lineup">${c.lineup.map((ch, i) => `<span title="${esc(champName(ch))}">${champIcon(ch, 40)}<br>${esc(ourByRole[ROLES[i]] || ROLES[i])}</span>`).join('')}</div>
+      <p style="margin:0 0 6px"><b>How it wins:</b> ${md(c.win)}</p>
+      <p style="margin:0 0 6px"><b>Why us:</b> ${md(c.why)}</p>
+      <p style="margin:0"><b>Watch out:</b> ${md(c.risk)}</p></div>`).join('')}</div>
+    ${plan.fearless ? `<p class="footnote">${md(plan.fearless)}</p>` : ''}</section>`);
+
+  // Draft order + game plan
+  out.push(`<section style="margin-top:28px"><h3 style="font:700 24px var(--display);margin:0 0 10px">Draft order</h3><div class="cards">
+    <div class="card"><h3>Blue side</h3><ol style="margin:0">${plan.draftOrder.blue.map(x => `<li>${md(x)}</li>`).join('')}</ol></div>
+    <div class="card"><h3>Red side</h3><ol style="margin:0">${plan.draftOrder.red.map(x => `<li>${md(x)}</li>`).join('')}</ol></div></div></section>`);
+  out.push(`<section style="margin-top:28px"><h3 style="font:700 24px var(--display);margin:0 0 10px">Game plan</h3><div class="cards">${plan.gamePlan.map(ph => `
+    <div class="card"><h3>${esc(ph.phase)}</h3><ul>${ph.points.map(x => `<li>${md(x)}</li>`).join('')}</ul></div>`).join('')}</div></section>`);
+
+  out.push(`<p class="footnote" style="margin-top:20px">Scouted ${scout ? new Date(scout.generatedAt).toLocaleDateString('de-DE') : plan.scoutedOn} via the Riot API: last 30 ranked and last 15 tournament games per player. Sources: ${plan.sources.map(x => `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.label)}</a>`).join(' · ')}</p>`);
+  return out.join('');
+}
+
 async function main() {
   const demo = new URLSearchParams(location.search).has('demo');
   try {
     const v = await fetch('https://ddragon.leagueoflegends.com/api/versions.json').then(r => r.json());
     if (Array.isArray(v) && v[0]) ddVersion = v[0];
   } catch { /* keep fallback version */ }
+  loadGamedays();
   try {
     data = await fetch((demo ? 'data.sample.json' : 'data.json') + '?t=' + Date.now()).then(r => { if (!r.ok) throw new Error(); return r.json(); });
   } catch {
