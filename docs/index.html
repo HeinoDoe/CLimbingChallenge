@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Climbing Challenge</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧗</text></svg>">
+<link rel="icon" href="img/dive-logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
@@ -26,8 +26,8 @@
     --on-accent: #1B1210;   /* text on top of the accent colour */
   }
   /* Team logo */
-  .logo { height: 46px; width: auto; vertical-align: middle; margin-right: 10px; filter: drop-shadow(0 2px 4px rgb(0 0 0 / .2)); }
-  .gd-logo { height: 84px; width: auto; float: right; margin: 0 0 8px 16px; }
+  .logo { height: 46px; width: auto; vertical-align: middle; margin-right: 10px; border-radius: 10px; box-shadow: 0 2px 8px rgb(0 0 0 / .35); }
+  .gd-logo { height: 84px; width: auto; float: right; margin: 0 0 8px 16px; border-radius: 14px; box-shadow: 0 2px 10px rgb(0 0 0 / .35); }
   @media (max-width: 640px) { .logo { height: 34px; } .gd-logo { height: 56px; } }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -296,7 +296,7 @@
 <body>
 <div class="wrap topbar">
   <div class="topbar-row">
-    <p class="greet"><img class="logo" src="img/dive-logo.png" alt="DIVE" onerror="this.remove()">Na ihr Lappen 👋</p>
+    <p class="greet"><img class="logo" src="img/dive-logo.jpg" alt="DIVE" onerror="this.remove()">Na ihr Lappen 👋</p>
     <nav class="tabs" aria-label="Pages">
       <a href="#ladder" data-tab="ladder" aria-current="page">Solo/Duo</a>
       <a href="#flex" data-tab="flex">Flex</a>
@@ -1050,7 +1050,7 @@ async function renderGamedays() {
     const scout = await scoutOf(g.day);
     body = renderGameday(g, scout);
   }
-  el.innerHTML = `${tabs}<img class="gd-logo" src="img/dive-logo.png" alt="DIVE" onerror="this.remove()">
+  el.innerHTML = `${tabs}<img class="gd-logo" src="img/dive-logo.jpg" alt="DIVE" onerror="this.remove()">
     <div class="gd-head"><h1 style="font-size:clamp(30px,4.5vw,48px)">Game day ${g.day}${g.opponent?.name ? `: vs ${esc(g.opponent.name)}` : ''}</h1><span class="gd-when">${esc(when)}${soon}</span></div>
     ${body}`;
   el.querySelectorAll('button[data-day]').forEach(b => b.addEventListener('click', () => { gd.day = Number(b.dataset.day); renderGamedays(); }));
