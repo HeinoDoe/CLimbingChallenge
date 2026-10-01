@@ -71,7 +71,7 @@ export function reviewDay(players, ch, win, a, b) {
   // 1. Day winner (Solo/Duo points)
   const top = best(solo.filter((r) => r.games.length || r.lp), (r) => r.points);
   if (top && top.points > 0) {
-    add('📈', `Tagessieger: ${name(top.p)} mit ${signed(top.points)} Punkten (${top.lp == null ? '±0' : signed(top.lp)} LP, ${top.games.length} Games).`);
+    add('📈', `Tagessieger: ${name(top.p)} mit ${signed(top.points)} Punkten (${top.lp == null ? '±0' : signed(top.lp)} LP, ${top.games.length} ${top.games.length === 1 ? 'Game' : 'Games'}).`);
   }
   // 2. Pentakills (each one is worth a line)
   for (const g of all.filter((g) => g.penta).slice(0, 2)) add('💥', `PENTAKILL! ${name(g.p)} hat auf ${champName(g.champ)} alle fünf weggeräumt.`);
