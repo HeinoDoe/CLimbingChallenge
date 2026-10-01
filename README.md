@@ -35,7 +35,7 @@ Most games · Highest win rate · Highest KDA · Lowest KDA · Best vision score
 
 Win rate, both KDA awards, vision and deaths per game need at least `minGames` (20) games. **One-trick:** each player's best champion by win rate (with at least 10 games on it); the two players with the highest such win rate get +10 each, and anyone tied at the cut-off does too.
 
-**Weekly bounties** (`challenge.bounties`): a side quest per week. The first player to win games on `target` different champions between `start` and `end` gets `points` right away (players who reach it in the same game share it). Week 1: 10 different champions, +20, until Sunday 4.10. The bounty card sits above the news; The daily Discord post shows its progress. To add next week's bounty, add another entry with a new `id`, `start` and `end`.
+**Weekly bounties** (`challenge.bounties`): a side quest per week. The first player to win games on `target` different champions between `start` and `end` gets `points` right away (players who reach it in the same game share it). Week 1: 10 different champions, +20, until Sunday 4.10. The bounty card sits above the news, and the daily Discord post shows its progress. To add next week's bounty, add another entry with a new `id`, `start` and `end`.
 
 Only ranked games played between the start and end date count. Remakes don't count.
 
