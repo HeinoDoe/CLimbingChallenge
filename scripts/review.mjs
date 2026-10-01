@@ -33,7 +33,7 @@ function lpBetween(ranked, a, b) {
 }
 
 const kda = (g) => (g.k + g.a) / Math.max(1, g.d);
-const champName = (c) => ({ MonkeyKing: 'Wukong', Belveth: "Bel'Veth", Khazix: "Kha'Zix", Chogath: "Cho'Gath", JarvanIV: 'Jarvan IV', KSante: "K'Sante", Kaisa: "Kai'Sa", Velkoz: "Vel'Koz", RekSai: "Rek'Sai", KogMaw: "Kog'Maw", MissFortune: 'Miss Fortune', MasterYi: 'Master Yi', TwistedFate: 'Twisted Fate', LeeSin: 'Lee Sin', XinZhao: 'Xin Zhao', DrMundo: 'Dr. Mundo', TahmKench: 'Tahm Kench', AurelionSol: 'Aurelion Sol', Leblanc: 'LeBlanc', Nunu: 'Nunu & Willump', Renata: 'Renata Glasc' }[c] || c);
+export const champName = (c) => ({ MonkeyKing: 'Wukong', Belveth: "Bel'Veth", Khazix: "Kha'Zix", Chogath: "Cho'Gath", JarvanIV: 'Jarvan IV', KSante: "K'Sante", Kaisa: "Kai'Sa", Velkoz: "Vel'Koz", RekSai: "Rek'Sai", KogMaw: "Kog'Maw", MissFortune: 'Miss Fortune', MasterYi: 'Master Yi', TwistedFate: 'Twisted Fate', LeeSin: 'Lee Sin', XinZhao: 'Xin Zhao', DrMundo: 'Dr. Mundo', TahmKench: 'Tahm Kench', AurelionSol: 'Aurelion Sol', Leblanc: 'LeBlanc', Nunu: 'Nunu & Willump', Renata: 'Renata Glasc' }[c] || c);
 const signed = (v) => (v > 0 ? `+${v}` : `${v}`);
 const best = (rows, f) => rows.reduce((top, r) => (top == null || f(r) > f(top) ? r : top), null);
 

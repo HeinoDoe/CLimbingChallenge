@@ -3,8 +3,9 @@
 // Runs on GitHub Actions (see .github/workflows/update.yml) or locally with
 // `npm run update`. Needs Node 18+.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { STATS_VERSION, MODES, activeWindow, emptyMode, addMatch, scoreModes } from './challenge.mjs';
+import { STATS_VERSION, MODES, activeWindow, emptyMode, addMatch, scoreModes, trackPlaces, dayOf } from './challenge.mjs';
 import { buildReviews } from './review.mjs';
+import { buildNotifications, queue } from './notify.mjs';
 
 // Locally the key comes from a .env file next to package.json (never committed).
 try {
@@ -195,6 +196,9 @@ try {
   const kept = previous.reviewsKey === STATS_KEY ? previous.reviews || [] : [];
   const complete = players.every((p) => !p.error && !p.pendingMatches);
   const reviews = complete ? buildReviews(players, CH, WIN, Date.now(), kept) : kept;
+  // Places at the end of each day, for the ▲/▼ since yesterday in the leaderboard.
+  const tz = CH.timeZone || 'Europe/Berlin';
+  const places = trackPlaces(players, previous.placesKey === STATS_KEY ? previous.places || {} : {}, dayOf(Date.now(), tz));
   const data = {
     squadName: cfg.squadName,
     platform: PLATFORM,
@@ -203,11 +207,15 @@ try {
     awards,
     reviews,
     reviewsKey: STATS_KEY,
+    places,
+    placesKey: STATS_KEY,
     updatedAt: new Date().toISOString(),
     players,
   };
   await mkdir(new URL('.', DATA_URL), { recursive: true });
   await writeFile(DATA_URL, JSON.stringify(data));
+  // Discord: new daily review, pentakills, new leader (sent by the workflow's last step).
+  try { await queue(buildNotifications(previous, data, { siteUrl: cfg.siteUrl, timeZone: tz })); } catch (e) { console.log(`Discord queue: ${e.message}`); }
   console.log(`Done: ${calls} API calls.`);
 } catch (e) {
   console.error(e.message);

@@ -241,3 +241,16 @@ export function scoreModes(players, ch, win, now) {
   }
   return awards;
 }
+
+// ---------- Movement since yesterday ----------
+// snaps = { "YYYY-MM-DD": { solo: { key: place }, flex: {...} } }, the places at the last
+// update of each day. Sets p.points[mode].prevPlace from the latest earlier day and
+// stores today's places. Returns the updated snapshots (last 30 days).
+export function trackPlaces(players, snaps, today) {
+  const yesterday = Object.keys(snaps).filter((d) => d < today).sort().at(-1);
+  for (const mode of Object.values(MODES)) {
+    for (const p of players) p.points[mode].prevPlace = yesterday ? snaps[yesterday][mode]?.[p.key] ?? null : null;
+  }
+  const out = { ...snaps, [today]: Object.fromEntries(Object.values(MODES).map((m) => [m, Object.fromEntries(players.map((p) => [p.key, p.points[m].place]))])) };
+  return Object.fromEntries(Object.entries(out).sort(([a], [b]) => a.localeCompare(b)).slice(-30));
+}

@@ -106,6 +106,17 @@
   .st { border-top: 2px solid var(--line); }
   .st-head, .st-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) 64px 112px; gap: 8px; align-items: center; }
   .provpts { font: 600 14px var(--body); margin-left: 4px; }
+  .mv { font: 700 13px var(--body); white-space: nowrap; cursor: help; }
+  .mv.up { color: var(--up); } .mv.down { color: var(--down); }
+  /* Prime League result */
+  .result { background: var(--panel); border: 1px solid var(--line); border-left: 6px solid var(--muted); border-radius: 8px; padding: 12px 16px; margin-top: 10px; }
+  .result.win { border-left-color: var(--up); } .result.loss { border-left-color: var(--down); }
+  .result-big { font: 700 30px var(--display); margin-right: 12px; }
+  .rgame { padding: 8px 0 2px; border-top: 1px dashed var(--line); margin-top: 8px; }
+  .rteams { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 6px 0; }
+  .rteams > div { display: flex; gap: 4px; }
+  .rteams .vs { color: var(--muted); font-weight: 700; }
+  .rp { display: inline-flex; flex-direction: column; align-items: center; font-size: 11px; color: var(--muted); }
   .st-head { font: 600 14px var(--body); color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line); }
   .st-head span:nth-child(n+3), .st-row .n { text-align: right; }
   .st-row { width: 100%; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 5px 8px; font: inherit; color: inherit; text-align: left; cursor: pointer; }
@@ -175,6 +186,7 @@
     .st-row .pl img { width: clamp(28px, 4.4vh, 42px); height: clamp(28px, 4.4vh, 42px); }
     .st-row .pl b { font-size: clamp(17px, 2.5vh, 24px); }
     .st-row .bdg { font-size: clamp(14px, 2vh, 19px); }
+    .mv { font-size: clamp(13px, 1.8vh, 16px); }
     .awchip { font-size: clamp(11px, 1.6vh, 14px); padding: 0 5px; }
     .st-row .n { font-size: clamp(17px, 2.4vh, 23px); line-height: 1.1; }
     .st-row .pl b { line-height: 1.2; }
@@ -586,7 +598,7 @@ function renderShell() {
 
     <div class="fold">
       <section style="margin-top:0">
-        <div class="st-title"><h2>Leaderboard</h2><span class="hint">Tap a name for details</span></div>
+        <div class="st-title"><h2>Leaderboard</h2><span class="hint">Tap a name for details · ▲▼ places since yesterday</span></div>
         <div class="st" id="standings-solo"></div>
         <p class="footnote">${awardsFinal() ? '' : `Faded +points: end awards they'd get if it ended now, added on ${endDay()} `}<i>${quip('standings')}</i></p>
         <p class="how mob">${howToScore('Solo/Duo')}</p>
@@ -673,13 +685,15 @@ function renderStandings(mode) {
   const body = rows.map(({ p, i, P }) => {
     const id = `${mode}-${p.key}`, open = state.open.has(id);
     const medal = spread && P.place <= 3 ? ['🥇', '🥈', '🥉'][P.place - 1] : (P.place ?? '');
+    const d = P.prevPlace == null ? 0 : P.prevPlace - P.place; // places gained since yesterday
+    const mv = d ? `<span class="mv ${d > 0 ? 'up' : 'down'}" title="${Math.abs(d)} place${Math.abs(d) > 1 ? 's' : ''} ${d > 0 ? 'up' : 'down'} since yesterday">${d > 0 ? '▲' : '▼'}${Math.abs(d)}</span>` : '';
     const prov = !final && P.awardsProvisional ? `<span class="prov provpts" title="+${P.awardsProvisional} from end awards if it ended now. Added on ${endDay()}.">+${P.awardsProvisional}</span>` : '';
     const leading = awardsOf(mode).filter(a => P.awards?.[a.key]?.leader);
     const chips = leading.length ? `<span class="awchips">${leading.map(a => `<span class="awchip ${final ? 'won' : ''}" title="${esc(a.title)}${final ? '' : ': currently leading, not final yet'}">${chipLabel(a)}</span>`).join('')}</span>` : '';
     return `<button type="button" class="st-row ${P.place === 1 && spread ? 'first' : ''}" data-id="${esc(id)}" aria-expanded="${open}">
         <span class="pos">${medal}</span>
         <span class="who"><span class="pl">${p.profileIconId != null ? `<img src="${iconImg(p.profileIconId)}" alt="" style="border-color:${colorOf(i)}" onerror="this.style.visibility='hidden'">` : ''}
-          <span style="min-width:0"><span class="nm"><b>${esc(nameOf(p))}</b>${badges(p, P)}${chips}<span class="chev">›</span></span>${p.error ? `<span class="err" style="display:block">${esc(p.error)}</span>` : ''}</span></span></span>
+          <span style="min-width:0"><span class="nm"><b>${esc(nameOf(p))}</b>${mv}${badges(p, P)}${chips}<span class="chev">›</span></span>${p.error ? `<span class="err" style="display:block">${esc(p.error)}</span>` : ''}</span></span></span>
         <span class="nums">
           <span class="n ${P.lp > 0 ? 'up' : P.lp < 0 ? 'down' : ''}" style="color:${P.lp > 0 ? 'var(--up)' : P.lp < 0 ? 'var(--down)' : 'inherit'}"><small>LP</small>${P.lp == null ? '–' : signed(P.lp)}</span>
         </span>
@@ -1050,6 +1064,7 @@ const idKey = id => id.toLowerCase().replace(/\s+/g, '');
 
 async function loadGamedays() {
   try { gd.cfg = await fetch('prime/gamedays.json?t=' + Date.now()).then(r => r.json()); } catch { return; }
+  gd.results = await fetch('prime/results.json?t=' + Date.now()).then(r => (r.ok ? r.json() : null)).catch(() => null);
   const next = gd.cfg.gamedays.find(g => g.date && Date.parse(g.date) > Date.now() - 6 * 3600_000);
   gd.day = (next || gd.cfg.gamedays[0]).day;
   renderGamedays();
@@ -1083,6 +1098,20 @@ function renderGameday(g, scout) {
   const plan = g.plan, them = g.opponent.players, us = gd.cfg.ourTeam;
   const links = `<p class="gd-links" style="margin:6px 0 0"><a href="${opggMulti(them.map(p => p.riotId))}" target="_blank" rel="noopener">Their team on op.gg</a><a href="${opggMulti(us.map(p => p.riotId))}" target="_blank" rel="noopener">Our team on op.gg</a></p>`;
   const out = [];
+
+  // ---- Result, once our games are found (scripts/results.mjs) ----
+  const res = gd.results?.days?.[g.day];
+  if (res?.games?.length) {
+    const w = res.games.filter(x => x.win).length, l = res.games.length - w;
+    const planned = new Set([...(plan?.roles || []).flatMap(r => r.picks.map(pk => pk.champ)), ...(plan?.comps || []).flatMap(c => c.lineup)]);
+    const side = list => `<div>${list.map(pl => `<span class="rp" title="${esc(pl.name)}: ${esc(champName(pl.champ))}">${champIcon(pl.champ, 36)}<small>${pl.k}/${pl.d}/${pl.a}</small></span>`).join('')}</div>`;
+    out.push(`<div class="result ${w > l ? 'win' : w < l ? 'loss' : ''}">
+      <span class="result-big">${res.games.length === 1 ? (w ? '✅ Win' : '❌ Loss') : `${w}–${l}`}</span><span class="hint">${res.final ? 'Final result' : 'Games still being checked'}</span>
+      ${res.games.map((x, i) => `<div class="rgame"><span class="wl ${x.win ? 'w' : 'l'}">${x.win ? 'W' : 'L'}</span> <b>Game ${i + 1}</b> · ${Math.round(x.duration / 60)} min · ${x.side} side
+        <div class="rteams">${side(x.us)}<span class="vs">vs</span>${side(x.them)}</div>
+        <div class="hint">${plan ? `${x.us.filter(pl => planned.has(pl.champ)).length}/5 picks from the plan · ` : ''}our bans: ${x.ourBans.map(b => champIcon(b, 18)).join(' ') || '–'} · their bans: ${x.theirBans.map(b => champIcon(b, 18)).join(' ') || '–'}</div></div>`).join('')}
+    </div>`);
+  }
 
   // ---- At a glance: the plan, our lineup, their likely picks, bans ----
   if (plan) {

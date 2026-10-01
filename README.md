@@ -55,6 +55,24 @@ To prepare a new game day:
 2. Run **Actions → Scout opponent** with the day number. It uses the `RIOT_API_KEY` secret to pull both rosters' ranks, last 30 ranked games, top mastery and last 15 tournament games (Prime League games are tournament-code games, so their past team drafts and bans show up), and saves `docs/prime/scout-day<N>.json`.
 3. Write the `plan` for that day (or ask Claude to). The page shows the scouting tables as soon as the scout file exists, and the plan once it's in `gamedays.json`.
 
+**Results** come in by themselves: from the game day's start time, every hourly update looks for our tournament games (2 hours before to 10 hours after the start) and saves the result, both lineups with KDA and the bans to `docs/prime/results.json` (`scripts/results.mjs`). The game day page then shows the result above the plan, including how many of our picks came from it.
+
+## Discord posts
+
+The update posts to one Discord channel through a webhook:
+
+- the **Tagesrückblick** after each finished day, with the top 3 and last place (and ▲/▼ since yesterday)
+- every new **pentakill**
+- a **new leader** in the Solo/Duo standings
+- every **Prime League game** we play on a game day (result, both lineups with KDA)
+
+A webhook only ever posts into the channel it was created in. To set it up for the General chat:
+
+1. In Discord, hover the **#general** channel → ⚙️ **Edit Channel** → **Integrations** → **Webhooks** → **New Webhook**. Name it (e.g. "Climbing Challenge"), then **Copy Webhook URL**. You need the "Manage Webhooks" permission on the server.
+2. On GitHub: **Settings → Secrets and variables → Actions → New repository secret**, name `DISCORD_WEBHOOK_URL`, paste the URL.
+
+Without the secret nothing is posted. The webhook URL lets anyone post into that channel, so keep it only in the GitHub secret. Logic: `scripts/notify.mjs` (tests in `scripts/notify.test.mjs`). Posts are only sent after the new data is saved, and nothing is posted after a reset (when all games are counted again).
+
 ## Run it locally
 
 You need [Node.js](https://nodejs.org) 18 or newer. There are no packages to install.
@@ -141,6 +159,10 @@ scripts/challenge.mjs           the scoring: dates, per-game stats, LP, achievem
 scripts/challenge.test.mjs      scoring tests (npm test)
 scripts/review.mjs              the daily review highlights
 scripts/review.test.mjs         daily review tests (npm test)
+scripts/notify.mjs              Discord posts (built in the update, sent by the workflow)
+scripts/notify.test.mjs         tests for Discord posts, results and ▲/▼ places
+scripts/results.mjs             finds our Prime League games and saves the results
+scripts/riot.mjs                small Riot API client used by scout.mjs and results.mjs
 scripts/make-sample.mjs         builds docs/data.sample.json (npm run sample)
 scripts/scout.mjs               scouts both rosters of a Prime League game day
 scripts/serve.mjs               local web server for docs/
@@ -149,6 +171,7 @@ scripts/serve.mjs               local web server for docs/
 .github/workflows/scout.yml     "Scout opponent": runs scripts/scout.mjs for a game day
 docs/prime/gamedays.json        Prime League game days: opponents and draft plans
 docs/prime/scout-day<N>.json    scouting data for a game day (written by the scout)
+docs/prime/results.json         our Prime League results (written by the update)
 docs/index.html                 the website
 docs/data.json                  the data (written by the script, don't edit)
 docs/data.sample.json           sample data for ?demo=1

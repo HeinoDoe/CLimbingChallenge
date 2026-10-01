@@ -6,16 +6,8 @@
 //   node scripts/scout.mjs 1        scout game day 1
 // Runs on GitHub Actions (.github/workflows/scout.yml) with the RIOT_API_KEY secret.
 import { readFile, writeFile } from 'node:fs/promises';
+import { KEY, riot, stats } from './riot.mjs';
 
-try {
-  const env = await readFile(new URL('../.env', import.meta.url), 'utf8');
-  for (const line of env.split(/\r?\n/)) {
-    const m = line.match(/^\s*([A-Z_]+)\s*=\s*(.*?)\s*$/);
-    if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^["']|["']$/g, '');
-  }
-} catch { /* no .env, e.g. on GitHub Actions */ }
-
-const KEY = process.env.RIOT_API_KEY;
 const DAY = Number(process.argv[2]);
 if (!KEY) { console.error('Missing RIOT_API_KEY.'); process.exit(1); }
 if (!DAY) { console.error('Usage: node scripts/scout.mjs <game day number>'); process.exit(1); }
@@ -27,30 +19,6 @@ if (!gameday?.opponent?.players?.length) { console.error(`Game day ${DAY} has no
 
 const RANKED = 30;   // recent ranked games per player
 const TOURNEY = 15;  // recent tournament games per player
-
-// ---------- Riot API with the same limits as update.mjs (100 requests / 2 min) ----------
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const stamps = [];
-async function throttle() {
-  for (;;) {
-    const now = Date.now();
-    while (stamps.length && now - stamps[0] > 121_000) stamps.shift();
-    if (stamps.length < 95 && stamps.filter((s) => now - s < 1_050).length < 18) { stamps.push(now); return; }
-    await sleep(stamps.length >= 95 ? 121_000 - (now - stamps[0]) + 50 : 1_100);
-  }
-}
-let calls = 0;
-async function riot(url, attempt = 0) {
-  await throttle();
-  calls++;
-  const res = await fetch(url, { headers: { 'X-Riot-Token': KEY } });
-  if (res.status === 429 && attempt < 6) { await sleep((Number(res.headers.get('retry-after')) || 10) * 1000 + 250); return riot(url, attempt + 1); }
-  if (res.status >= 500 && attempt < 3) { await sleep(2000 * (attempt + 1)); return riot(url, attempt + 1); }
-  if (res.status === 404) return null;
-  if (res.status === 401 || res.status === 403) throw new Error(`Riot refused the API key (HTTP ${res.status}).`);
-  if (!res.ok) throw new Error(`HTTP ${res.status} from ${url.split('?')[0]}`);
-  return res.json();
-}
 
 // Champion ids -> names for mastery (Data Dragon).
 const version = (await (await fetch('https://ddragon.leagueoflegends.com/api/versions.json')).json())[0];
@@ -139,4 +107,4 @@ const out = {
   tourneyGames: [...tourneyGames.values()].sort((a, b) => b.t - a.t),
 };
 await writeFile(new URL(`../docs/prime/scout-day${DAY}.json`, import.meta.url), JSON.stringify(out, null, 1));
-console.log(`Done: ${calls} API calls, ${matchCache.size} matches.`);
+console.log(`Done: ${stats.calls} API calls, ${matchCache.size} matches.`);
