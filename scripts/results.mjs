@@ -1,11 +1,10 @@
 // Prime League results: once a game day has started, looks for our tournament games in
 // a window around its start time and saves both lineups (with KDA), bans and the result
 // to docs/prime/results.json. A day is checked every run until 12 hours after its start.
-// Runs in the hourly update workflow after update.mjs; new games are queued for Discord.
+// Runs in the hourly update workflow after update.mjs; the day's games go into the daily Discord post.
 import { readFile, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { KEY, riot, puuidOf, idKey, stats } from './riot.mjs';
-import { queue, resultEmbed } from './notify.mjs';
 
 const POS = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'];
 const BEFORE = 2 * 3600_000;   // games can start a bit early
@@ -39,7 +38,6 @@ export function extractGame(m, ourTeam, theirTeam, champById = {}) {
 async function main() {
   if (!KEY) { console.log('No RIOT_API_KEY, skipping Prime League results.'); return; }
   const cfg = JSON.parse(await readFile(new URL('../docs/prime/gamedays.json', import.meta.url), 'utf8'));
-  const squad = JSON.parse(await readFile(new URL('../squad.config.json', import.meta.url), 'utf8'));
   const FILE = new URL('../docs/prime/results.json', import.meta.url);
   let results = { days: {} };
   try { results = JSON.parse(await readFile(FILE, 'utf8')); } catch { /* first result */ }
@@ -52,7 +50,6 @@ async function main() {
   const champs = (await (await fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion.json`)).json()).data;
   const champById = Object.fromEntries(Object.values(champs).map((c) => [Number(c.key), c.id]));
 
-  const posts = [];
   for (const g of due) {
     const start = Date.parse(g.date);
     const day = (results.days[g.day] ??= { final: false, games: [] });
@@ -69,7 +66,6 @@ async function main() {
       const game = m && extractGame(m, cfg.ourTeam, g.opponent.players, champById);
       if (!game) continue;
       day.games.push(game);
-      posts.push(resultEmbed(g.day, g.opponent.name, game, squad.siteUrl));
       console.log(`Game day ${g.day}: ${game.win ? 'win' : 'loss'} (${id})`);
     }
     day.games.sort((a, b) => a.t - b.t);
@@ -77,7 +73,6 @@ async function main() {
     if (now > start + FINAL_AFTER) day.final = true;
   }
   await writeFile(FILE, JSON.stringify(results, null, 1));
-  await queue(posts);
   console.log(`Results checked: ${stats.calls} API calls.`);
 }
 

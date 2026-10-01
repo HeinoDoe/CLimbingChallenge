@@ -216,8 +216,12 @@ try {
   };
   await mkdir(new URL('.', DATA_URL), { recursive: true });
   await writeFile(DATA_URL, JSON.stringify(data));
-  // Discord: new daily review, pentakills, new leader (sent by the workflow's last step).
-  try { await queue(buildNotifications(previous, data, { siteUrl: cfg.siteUrl, timeZone: tz })); } catch (e) { console.log(`Discord queue: ${e.message}`); }
+  // Discord: the daily post once a day is finished (sent by the workflow's last step).
+  try {
+    const results = await readFile(new URL('../docs/prime/results.json', import.meta.url), 'utf8').then(JSON.parse).catch(() => null);
+    const gamedays = await readFile(new URL('../docs/prime/gamedays.json', import.meta.url), 'utf8').then((t) => JSON.parse(t).gamedays).catch(() => []);
+    await queue(buildNotifications(previous, data, { siteUrl: cfg.siteUrl, timeZone: tz, results, gamedays }));
+  } catch (e) { console.log(`Discord queue: ${e.message}`); }
   console.log(`Done: ${calls} API calls.`);
 } catch (e) {
   console.error(e.message);

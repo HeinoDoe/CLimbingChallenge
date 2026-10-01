@@ -1,6 +1,6 @@
-// Discord posts. update.mjs and results.mjs queue Discord embeds in notify.json; the last
-// step of the update workflow runs this file, which sends them with the
-// DISCORD_WEBHOOK_URL secret (without the secret nothing is sent).
+// Discord: one post per day. update.mjs queues the daily post in notify.json once a day
+// is finished; the last step of the update workflow runs this file, which sends it with
+// the DISCORD_WEBHOOK_URL secret (without the secret nothing is sent).
 //
 //   node scripts/notify.mjs          send everything in notify.json, then empty it
 //   node scripts/notify.mjs --test   send one test post built from the current data.json
@@ -11,7 +11,6 @@ import { champName } from './review.mjs';
 const QUEUE = new URL('../notify.json', import.meta.url);
 export const COLOR = 0xF08A3A; // ember, like the site
 const MEDALS = ['🥇', '🥈', '🥉'];
-const MODE_NAME = { solo: 'Solo/Duo', flex: 'Flex' };
 
 const dayLabel = (ms, timeZone) => new Date(ms).toLocaleDateString('de-DE', { timeZone, weekday: 'long', day: 'numeric', month: 'numeric' });
 const move = (P) => (P.prevPlace == null || P.prevPlace === P.place ? '' : P.prevPlace > P.place ? ` ▲${P.prevPlace - P.place}` : ` ▼${P.place - P.prevPlace}`);
@@ -26,65 +25,43 @@ export function leaderboardText(players, mode = 'solo') {
   return out.join('\n') || '–';
 }
 
-// Embeds for what changed between two data.json versions: new daily reviews (with the
-// leaderboard), new pentakills and a new Solo/Duo leader. Nothing after a reset
-// (different reviewsKey), because then every game is counted again from scratch.
-export function buildNotifications(prev, next, { siteUrl = '', timeZone = 'Europe/Berlin' } = {}) {
-  if (!prev?.reviewsKey || prev.reviewsKey !== next.reviewsKey) return [];
-  const embeds = [];
-
-  const had = new Set((prev.reviews || []).map((r) => r.date));
-  for (const r of (next.reviews || []).filter((x) => !had.has(x.date))) {
-    embeds.push({
-      title: `📰 Tagesrückblick · ${dayLabel(r.startMs, timeZone)}`, url: siteUrl, color: COLOR,
-      description: r.highlights.map((h) => `${h.icon} ${h.text}`).join('\n'),
-      fields: [{ name: '🏆 Leaderboard Solo/Duo', value: leaderboardText(next.players, 'solo') }],
+// The one Discord post per day: the Tagesrückblick with the leaderboard, the bounty that
+// ran that day and our Prime League games of that day (from docs/prime/results.json).
+// Pentakills and a new leader are already highlights of the review, so nothing else is
+// posted on its own.
+export function dailyEmbed(r, data, { siteUrl = '', timeZone = 'Europe/Berlin', results = null, gamedays = [] } = {}) {
+  const names = new Map((data.players || []).map((p) => [p.key, p.name]));
+  const fields = [{ name: '🏆 Leaderboard Solo/Duo', value: leaderboardText(data.players || [], 'solo') }];
+  const b = (data.bounties || []).filter((x) => x.startMs < r.endMs && x.endMs > r.startMs).sort((x, y) => y.startMs - x.startMs)[0];
+  if (b) {
+    const lead = b.progress.filter((x) => x.value > 0).slice(0, 3).map((x) => `**${names.get(x.key)}** ${x.value}/${b.target}`).join(' · ');
+    fields.push({
+      name: `🎯 Wochen-Bounty: ${b.title} (+${b.points})`,
+      value: b.status === 'won' ? `Geschafft von ${b.winners.map((k) => `**${names.get(k)}**`).join(' und ')}!`
+        : b.status === 'expired' ? 'Vorbei, niemand hat es geschafft.'
+        : `${lead || 'Noch niemand dran.'} · läuft bis ${dayLabel(b.endMs - 1, timeZone)}`,
     });
   }
-
-  const before = new Map((prev.players || []).map((p) => [p.key, p]));
-  for (const p of next.players || []) {
-    for (const mode of ['solo', 'flex']) {
-      const seen = new Set((before.get(p.key)?.modes?.[mode]?.log || []).filter((g) => g.penta).map((g) => g.t));
-      for (const g of (p.modes?.[mode]?.log || []).filter((x) => x.penta && !seen.has(x.t))) {
-        embeds.push({ title: '💥 PENTAKILL!', url: siteUrl, color: COLOR, description: `**${p.name}** hat auf ${champName(g.champ)} alle fünf weggeräumt (${g.k}/${g.d}/${g.a}, ${MODE_NAME[mode]}).` });
-      }
-    }
+  const opponent = (day) => gamedays.find((g) => String(g.day) === String(day))?.opponent?.name;
+  const games = Object.entries(results?.days || {}).flatMap(([day, d]) => (d.games || []).filter((g) => g.t >= r.startMs && g.t < r.endMs).map((g) => ({ day, g })));
+  if (games.length) {
+    fields.push({
+      name: '⚔️ Prime League',
+      value: games.map(({ day, g }) => `${g.win ? '✅ Sieg' : '❌ Niederlage'} · Spieltag ${day}${opponent(day) ? ` vs ${opponent(day)}` : ''} · ${g.us.map((x) => champName(x.champ)).join(', ')}`).join('\n'),
+    });
   }
-
-  // Weekly bounties: announce when one goes live, celebrate when someone completes it.
-  const names = new Map((next.players || []).map((p) => [p.key, p.name]));
-  const prevB = new Map((prev.bounties || []).map((b) => [b.id, b]));
-  for (const b of next.bounties || []) {
-    const old = prevB.get(b.id);
-    if (b.status === 'open' && (!old || old.status === 'upcoming')) {
-      const lead = b.progress.filter((r) => r.value > 0).slice(0, 3).map((r) => `**${names.get(r.key)}** ${r.value}/${b.target}`).join(' · ');
-      embeds.push({ title: `🎯 Neue Wochen-Bounty: ${b.title}`, url: siteUrl, color: COLOR,
-        description: `${b.desc}\nLäuft bis ${dayLabel(b.endMs - 1, timeZone)}.${lead ? `\nStand: ${lead}` : ''}` });
-    }
-    if (b.status === 'won' && old?.status !== 'won') {
-      embeds.push({ title: '🎯 Bounty geschafft!', url: siteUrl, color: COLOR,
-        description: `${b.winners.map((k) => `**${names.get(k)}**`).join(' und ')} ${b.winners.length > 1 ? 'haben' : 'hat'} „${b.title}“ als Erste${b.winners.length > 1 ? '' : 'r'} geschafft: +${b.points} Punkte!` });
-    }
-  }
-
-  const leader = (d) => { const top = (d.players || []).filter((p) => p.points?.solo?.place === 1); return top.length === 1 && top[0].points.solo.total > 0 ? top[0] : null; };
-  const was = leader(prev), now = leader(next);
-  if (now && was?.key !== now.key) {
-    embeds.push({ title: '👑 Neuer Spitzenreiter', url: siteUrl, color: COLOR, description: `**${now.name}** führt jetzt mit ${now.points.solo.total} Punkten${was ? `, vor **${was.name}**` : ''}.` });
-  }
-  return embeds;
+  return {
+    title: `📰 Tagesrückblick · ${dayLabel(r.startMs, timeZone)}`, url: siteUrl, color: COLOR,
+    description: r.highlights.map((h) => `${h.icon} ${h.text}`).join('\n'), fields,
+  };
 }
 
-// One embed per Prime League game found by results.mjs.
-export function resultEmbed(day, opponent, game, siteUrl = '') {
-  const side = (list) => list.map((x) => `${champName(x.champ)} · ${x.name} ${x.k}/${x.d}/${x.a}`).join('\n') || '–';
-  return {
-    title: `${game.win ? '✅ Sieg' : '❌ Niederlage'} · Spieltag ${day}${opponent ? ` vs ${opponent}` : ''}`,
-    url: `${siteUrl}#prime`, color: game.win ? 0x7BD389 : 0xFF7A59,
-    description: `${Math.round(game.duration / 60)} Minuten${game.vsOpponent ? '' : ' (Gegner-Roster nicht eindeutig erkannt)'}`,
-    fields: [{ name: 'Wir', value: side(game.us), inline: true }, { name: opponent || 'Gegner', value: side(game.them), inline: true }],
-  };
+// Posts for a new data.json: one daily post per newly finished day, nothing else.
+// Nothing after a reset (different reviewsKey), when every game is counted again.
+export function buildNotifications(prev, next, opts = {}) {
+  if (!prev?.reviewsKey || prev.reviewsKey !== next.reviewsKey) return [];
+  const had = new Set((prev.reviews || []).map((r) => r.date));
+  return (next.reviews || []).filter((r) => !had.has(r.date)).map((r) => dailyEmbed(r, next, opts));
 }
 
 export async function queue(embeds) {
@@ -95,15 +72,12 @@ export async function queue(embeds) {
   console.log(`Queued ${embeds.length} Discord post(s).`);
 }
 
-// A labelled sample in the real format: the latest Tagesrückblick and today's leaderboard.
-export function testEmbed(data, { siteUrl = '', timeZone = 'Europe/Berlin' } = {}) {
+// A labelled sample in the real format: the latest daily post with today's data.
+export function testEmbed(data, opts = {}) {
   const r = [...(data.reviews || [])].sort((a, b) => b.startMs - a.startMs)[0];
-  return {
-    title: `🧪 Test · ${r ? `Tagesrückblick · ${dayLabel(r.startMs, timeZone)}` : 'Climbing Challenge'}`, url: siteUrl, color: COLOR,
-    description: r ? r.highlights.map((h) => `${h.icon} ${h.text}`).join('\n') : 'Noch kein Tagesrückblick.',
-    fields: [{ name: '🏆 Leaderboard Solo/Duo', value: leaderboardText(data.players || [], 'solo') }],
-    footer: { text: 'Testnachricht: so sehen die echten Posts aus. Ab jetzt kommt das nach jedem Tag automatisch.' },
-  };
+  if (!r) return { title: '🧪 Test · Climbing Challenge', url: opts.siteUrl, color: COLOR, description: 'Noch kein Tagesrückblick.', fields: [{ name: '🏆 Leaderboard Solo/Duo', value: leaderboardText(data.players || [], 'solo') }] };
+  const e = dailyEmbed(r, data, opts);
+  return { ...e, title: `🧪 Test · ${e.title}`, footer: { text: 'Testnachricht: so sieht der tägliche Post aus. Er kommt einmal am Tag, kurz nach Mitternacht.' } };
 }
 
 async function send(test = false) {
@@ -111,7 +85,9 @@ async function send(test = false) {
   let embeds;
   if (test) {
     const data = JSON.parse(await readFile(new URL('../docs/data.json', import.meta.url), 'utf8'));
-    embeds = [testEmbed(data, { siteUrl: cfg.siteUrl, timeZone: cfg.challenge?.timeZone })];
+    const results = await readFile(new URL('../docs/prime/results.json', import.meta.url), 'utf8').then(JSON.parse).catch(() => null);
+    const gamedays = await readFile(new URL('../docs/prime/gamedays.json', import.meta.url), 'utf8').then((t) => JSON.parse(t).gamedays).catch(() => []);
+    embeds = [testEmbed(data, { siteUrl: cfg.siteUrl, timeZone: cfg.challenge?.timeZone, results, gamedays })];
   } else {
     try { embeds = JSON.parse(await readFile(QUEUE, 'utf8')); } catch { console.log('Nothing to post.'); return; }
   }

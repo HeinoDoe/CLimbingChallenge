@@ -35,7 +35,7 @@ Most games · Highest win rate · Highest KDA · Lowest KDA · Best vision score
 
 Win rate, both KDA awards, vision and deaths per game need at least `minGames` (20) games. **One-trick:** each player's best champion by win rate (with at least 10 games on it); the two players with the highest such win rate get +10 each, and anyone tied at the cut-off does too.
 
-**Weekly bounties** (`challenge.bounties`): a side quest per week. The first player to win games on `target` different champions between `start` and `end` gets `points` right away (players who reach it in the same game share it). Week 1: 10 different champions, +20, until Sunday 4.10. The bounty card sits above the news; Discord gets a post when a bounty goes live and when someone completes it. To add next week's bounty, add another entry with a new `id`, `start` and `end`.
+**Weekly bounties** (`challenge.bounties`): a side quest per week. The first player to win games on `target` different champions between `start` and `end` gets `points` right away (players who reach it in the same game share it). Week 1: 10 different champions, +20, until Sunday 4.10. The bounty card sits above the news; The daily Discord post shows its progress. To add next week's bounty, add another entry with a new `id`, `start` and `end`.
 
 Only ranked games played between the start and end date count. Remakes don't count.
 
@@ -57,16 +57,18 @@ To prepare a new game day:
 2. Run **Actions → Scout opponent** with the day number. It uses the `RIOT_API_KEY` secret to pull both rosters' ranks, last 30 ranked games, top mastery and last 15 tournament games (Prime League games are tournament-code games, so their past team drafts and bans show up), and saves `docs/prime/scout-day<N>.json`.
 3. Write the `plan` for that day (or ask Claude to). The page shows the scouting tables as soon as the scout file exists, and the plan once it's in `gamedays.json`.
 
-**Results** come in by themselves: from the game day's start time, every hourly update looks for our tournament games (2 hours before to 10 hours after the start) and saves the result, both lineups with KDA and the bans to `docs/prime/results.json` (`scripts/results.mjs`). The game day page then shows the result above the plan, including how many of our picks came from it.
+**Results** come in by themselves: from the game day's start time, every hourly update looks for our tournament games (2 hours before to 10 hours after the start) and saves the result, both lineups with KDA and the bans to `docs/prime/results.json` (`scripts/results.mjs`). The game day page then shows the result above the plan, including how many of our picks came from it, and the day's Discord post lists it.
 
 ## Discord posts
 
-The update posts to one Discord channel through a webhook:
+The update posts **once a day** to one Discord channel through a webhook, shortly after midnight when the day is finished. The post holds:
 
-- the **Tagesrückblick** after each finished day, with the top 3 and last place (and ▲/▼ since yesterday)
-- every new **pentakill**
-- a **new leader** in the Solo/Duo standings
-- every **Prime League game** we play on a game day (result, both lineups with KDA)
+- the **Tagesrückblick** (which already covers pentakills and a new leader)
+- the **leaderboard**: top 3 and last place, with ▲/▼ since yesterday
+- the **weekly bounty**: progress, or who completed it
+- our **Prime League games** of that day, if there were any
+
+Nothing else is posted on its own. To see what it looks like: **Actions → Test Discord post → Run workflow**.
 
 A webhook only ever posts into the channel it was created in. To set it up for the General chat:
 
@@ -162,7 +164,7 @@ scripts/challenge.mjs           the scoring: dates, per-game stats, LP, achievem
 scripts/challenge.test.mjs      scoring tests (npm test)
 scripts/review.mjs              the daily review highlights
 scripts/review.test.mjs         daily review tests (npm test)
-scripts/notify.mjs              Discord posts (built in the update, sent by the workflow)
+scripts/notify.mjs              the daily Discord post (built in the update, sent by the workflow)
 scripts/notify.test.mjs         tests for Discord posts, results and ▲/▼ places
 scripts/results.mjs             finds our Prime League games and saves the results
 scripts/riot.mjs                small Riot API client used by scout.mjs and results.mjs

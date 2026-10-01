@@ -2,7 +2,7 @@
 // Run with `npm test`.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildNotifications, leaderboardText, resultEmbed } from './notify.mjs';
+import { buildNotifications, leaderboardText, dailyEmbed } from './notify.mjs';
 import { extractGame } from './results.mjs';
 import { trackPlaces } from './challenge.mjs';
 
@@ -22,15 +22,12 @@ test('new daily review is posted with the leaderboard', () => {
   assert.match(out[0].fields[0].value, /🥇 \*\*A\*\* · 60 Punkte/);
 });
 
-test('new pentakill and new leader are posted once', () => {
+test('only the daily post: pentakills, a new leader or bounty changes are not posted on their own', () => {
   const penta = { t: 5, champ: 'Katarina', k: 15, d: 2, a: 4, penta: 1 };
-  const prev = data([player('a', 'A', 1, 50), player('b', 'B', 2, 40)]);
-  const next = data([player('a', 'A', 2, 50), player('b', 'B', 1, 70, [penta])]);
-  const out = buildNotifications(prev, next);
-  assert.deepEqual(out.map((e) => e.title), ['💥 PENTAKILL!', '👑 Neuer Spitzenreiter']);
-  assert.match(out[0].description, /\*\*B\*\* hat auf Katarina/);
-  assert.match(out[1].description, /\*\*B\*\* führt jetzt mit 70 Punkten, vor \*\*A\*\*/);
-  assert.equal(buildNotifications(next, next).length, 0); // nothing new the next run
+  const bounty = (status) => ({ id: 'b1', title: 'T', desc: 'D', target: 10, points: 20, startMs: 0, endMs: 9e15, status, winners: status === 'won' ? ['b'] : [], progress: [] });
+  const prev = { ...data([player('a', 'A', 1, 50), player('b', 'B', 2, 40)]), bounties: [] };
+  const next = { ...data([player('a', 'A', 2, 50), player('b', 'B', 1, 70, [penta])]), bounties: [bounty('won')] };
+  assert.equal(buildNotifications(prev, next).length, 0);
 });
 
 test('nothing is posted after a reset or on the first run', () => {
@@ -68,7 +65,6 @@ test('tournament match: finds our side, lineups by position, bans and opponent',
   assert.deepEqual(g.us.slice(0, 2).map((x) => x.name), ['Kolbe', 'Smette']);
   assert.deepEqual([g.ourBans, g.theirBans], [['JarvanIV'], ['Braum']]);
   assert.equal(g.vsOpponent, true);
-  assert.match(resultEmbed(1, 'BS eSports', g).title, /✅ Sieg · Spieltag 1 vs BS eSports/);
   // A tournament game without 3 of us on one team is ignored.
   assert.equal(extractGame(m, ours.slice(0, 2), theirs), null);
 });
@@ -115,15 +111,19 @@ test('bounty: open while nobody has it, shared when reached in the same game, ex
   assert.deepEqual(s.winners, ['d1', 'd2']);
 });
 
-test('bounty posts: announced once when it goes live, celebrated once when won', () => {
-  const live = { id: 'b1', title: 'T', desc: 'D', target: 10, points: 20, endMs: t('2026-10-04T22:00Z'), status: 'open', winners: [], progress: [{ key: 'a', value: 4 }] };
+test("daily post: bounty status and that day's Prime League games", () => {
+  const day = review('2026-10-04');
+  day.endMs = day.startMs + 86_400_000;
   const players = [player('a', 'A', 1, 10)];
-  const prev = { reviewsKey: 'k', reviews: [], players, bounties: [] };
-  const next = { reviewsKey: 'k', reviews: [], players, bounties: [live] };
-  const out = buildNotifications(prev, next);
-  assert.equal(out.length, 1);
-  assert.match(out[0].description, /Stand: \*\*A\*\* 4\/10/);
-  assert.equal(buildNotifications(next, next).length, 0);
-  const won = { ...next, bounties: [{ ...live, status: 'won', winners: ['a'] }] };
-  assert.match(buildNotifications(next, won)[0].description, /\*\*A\*\* hat „T“ als Erster geschafft: \+20 Punkte/);
+  const b = { id: 'b1', title: '10 verschiedene Champions', points: 20, target: 10, startMs: 0, endMs: day.endMs, status: 'open', winners: [], progress: [{ key: 'a', value: 4 }] };
+  const results = { days: { 1: { games: [
+    { t: day.startMs + 19 * 3600_000, win: true, us: [{ champ: 'Trundle' }, { champ: 'MonkeyKing' }] },
+    { t: day.startMs - 3600_000, win: false, us: [{ champ: 'Ahri' }] }, // the day before: not in this post
+  ] } } };
+  const e = dailyEmbed(day, { players, bounties: [b] }, { results, gamedays: [{ day: 1, opponent: { name: 'BS eSports' } }] });
+  assert.deepEqual(e.fields.map((f) => f.name), ['🏆 Leaderboard Solo/Duo', '🎯 Wochen-Bounty: 10 verschiedene Champions (+20)', '⚔️ Prime League']);
+  assert.match(e.fields[1].value, /\*\*A\*\* 4\/10 · läuft bis Sonntag, 4\.10\./);
+  assert.equal(e.fields[2].value, '✅ Sieg · Spieltag 1 vs BS eSports · Trundle, Wukong');
+  const won = dailyEmbed(day, { players, bounties: [{ ...b, status: 'won', winners: ['a'] }] });
+  assert.equal(won.fields[1].value, 'Geschafft von **A**!');
 });
