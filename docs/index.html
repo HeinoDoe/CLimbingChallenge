@@ -34,7 +34,7 @@
   body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); }
   a { color: inherit; }
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 20px 64px; }
+  .wrap { max-width: 1360px; margin: 0 auto; padding: 32px 20px 64px; }
 
   header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; margin-bottom: 28px; }
   h1 { font: 700 clamp(36px, 5.5vw, 64px)/.92 var(--display); letter-spacing: -.01em; margin: 0; }
@@ -45,7 +45,7 @@
   .how.mob { display: none; }
 
   /* Above the fold: standings + news side by side */
-  .fold { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px 28px; align-items: start; }
+  .fold { display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 16px 32px; align-items: start; }
   .st-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; margin-bottom: 6px; }
   .st-title h2 { font-size: 26px; margin: 0; }
   .news { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; }
@@ -164,6 +164,29 @@
     .st-detail { padding-left: 12px; }
   }
   .st-row .nums { display: contents; }
+  /* Desktop: the leaderboard grows with the window height so the first screen is filled
+     (8 rows ≈ 410px on a 768px-high laptop, ≈ 500px on a 1080p screen). */
+  @media (min-width: 641px) {
+    .st-head, .st-row { grid-template-columns: 44px minmax(0, 1fr) 84px 140px; gap: 10px; }
+    .st-head { font-size: 15px; }
+    .st-row { padding: clamp(4px, 1.1vh, 12px) 10px; }
+    .st-row .pos { font-size: clamp(18px, 2.8vh, 28px); }
+    .st-row .pl { gap: 12px; }
+    .st-row .pl img { width: clamp(28px, 4.4vh, 42px); height: clamp(28px, 4.4vh, 42px); }
+    .st-row .pl b { font-size: clamp(17px, 2.5vh, 24px); }
+    .st-row .bdg { font-size: clamp(14px, 2vh, 19px); }
+    .awchip { font-size: clamp(11px, 1.6vh, 14px); padding: 0 5px; }
+    .st-row .n { font-size: clamp(17px, 2.4vh, 23px); line-height: 1.1; }
+    .st-row .pl b { line-height: 1.2; }
+    .st-row .n.tot { font-size: clamp(22px, 3.5vh, 34px); }
+    .provpts { font-size: clamp(13px, 1.8vh, 17px); }
+    .st-title h2 { font-size: clamp(24px, 3.2vh, 32px); }
+    .news { padding: 14px 18px; }
+    .news h2 { font-size: clamp(22px, 3.2vh, 30px); }
+    .news .day { font-size: 14px; }
+    .news li { font-size: clamp(14px, 1.9vh, 17px); padding: clamp(6px, 1vh, 10px) 0; grid-template-columns: 26px minmax(0, 1fr); }
+    .news .ic { font-size: clamp(16px, 2.2vh, 20px); }
+  }
 
   /* Challenges */
   .boards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 28px 32px; }
