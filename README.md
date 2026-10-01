@@ -3,7 +3,8 @@
 A points competition for the squad's ranked games in League of Legends. **Solo/Duo and Flex are two separate competitions**, each with its own tab, standings and awards. The website shows:
 
 - **Standings:** total points per player (LP earned + achievements + end awards), with a tap-to-expand breakdown
-- **End awards:** who's leading each award right now, and the winners once the challenge is over
+- **End awards:** who's leading each award right now (faded until it's final), and the winners once the challenge is over
+- **Tagesrückblick:** about 5 highlights from the previous day, written automatically after midnight
 - where everyone stands in rank, how far they moved since the start or this week, and rank over time
 - a players table and a feed of everyone's latest games
 - a Prime League tab with our draft pool, comps and a scouting tool
@@ -14,7 +15,7 @@ It runs for free on GitHub. A background timer fetches data from the Riot API on
 
 Solo/Duo and Flex are scored separately with the same rules: the Solo/Duo tab only uses Solo/Duo games and Solo/Duo LP, the Flex tab only Flex games and Flex LP.
 
-**Total = LP earned + achievements + end awards.** End awards only count once the challenge is over; until then they show as "pending".
+**Total = LP earned + achievements + end awards.** End awards only count once the challenge is over. Until then the standings and award boards show who's currently leading, faded and slightly blurred, plus small chips naming the awards each player leads.
 
 **LP earned:** net LP change in that queue during the challenge, on one scale where every division is 100 LP (Plat 4 0 LP → Plat 1 0 LP = +300; Master and above is one open-ended scale). Losses subtract, so it can be negative.
 - The starting rank is the first rank snapshot at or after the start. Riot's API has no past LP, so it's recorded on the first update after the start. Players unranked at that point start from their first ranked snapshot.
@@ -37,6 +38,12 @@ Win rate, both KDA awards, vision and deaths per game need at least `minGames` (
 Only ranked games played between the start and end date count. Remakes don't count.
 
 **Trial run:** with `challenge.preview.start` set, the site scores a trial from that day until the real start, so you can see live results early. When the real challenge starts, everything resets automatically: game stats are counted again from the real start and the LP baseline is taken fresh. Remove `preview` if you don't want a trial.
+
+## Daily review
+
+After every finished day (midnight in `challenge.timeZone`), the update writes a **Tagesrückblick** with up to 5 highlights for that day, picked in this order: day winner (Solo/Duo points), pentakills, a new leader, the biggest LP loss, promotions and demotions, the best and worst game, the Flex day winner, quadrakills, streaks of 4+, the biggest grinder, and who didn't play. The first day starts at the challenge start, not midnight.
+
+Reviews are kept in `docs/data.json`. A day is only written once every game is processed, so a day with games still loading waits for the next run. The logic lives in `scripts/review.mjs` (tests in `scripts/review.test.mjs`).
 
 ## Run it locally
 
@@ -122,6 +129,8 @@ package.json                    npm start / update / test / sample
 scripts/update.mjs              fetches data from the Riot API and writes docs/data.json
 scripts/challenge.mjs           the scoring: dates, per-game stats, LP, achievements, awards
 scripts/challenge.test.mjs      scoring tests (npm test)
+scripts/review.mjs              the daily review highlights
+scripts/review.test.mjs         daily review tests (npm test)
 scripts/make-sample.mjs         builds docs/data.sample.json (npm run sample)
 scripts/serve.mjs               local web server for docs/
 .github/workflows/update.yml    runs one update and saves the result

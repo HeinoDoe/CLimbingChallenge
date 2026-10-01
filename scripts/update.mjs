@@ -4,6 +4,7 @@
 // `npm run update`. Needs Node 18+.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { STATS_VERSION, MODES, activeWindow, emptyMode, addMatch, scoreModes } from './challenge.mjs';
+import { buildReviews } from './review.mjs';
 
 // Locally the key comes from a .env file next to package.json (never committed).
 try {
@@ -190,12 +191,18 @@ try {
     players.push(await updatePlayer(entry));
   }
   const awards = scoreModes(players, CH, WIN, Date.now());
+  // Daily reviews: kept between runs; a new day is only written once every game is in.
+  const kept = previous.reviewsKey === STATS_KEY ? previous.reviews || [] : [];
+  const complete = players.every((p) => !p.error && !p.pendingMatches);
+  const reviews = complete ? buildReviews(players, CH, WIN, Date.now(), kept) : kept;
   const data = {
     squadName: cfg.squadName,
     platform: PLATFORM,
     queues: QUEUES,
     challenge: { ...CH, ...WIN },
     awards,
+    reviews,
+    reviewsKey: STATS_KEY,
     updatedAt: new Date().toISOString(),
     players,
   };

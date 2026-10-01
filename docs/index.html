@@ -85,7 +85,21 @@
   .st-row .n { font: 600 18px var(--display); font-variant-numeric: tabular-nums; }
   .st-row .n small { display: none; font: 500 12px var(--body); color: var(--muted); }
   .st-row .tot { font: 700 26px var(--display); }
-  .st-row .pend { font: 500 14px var(--body); color: var(--muted); font-style: italic; }
+  /* Provisional end awards: visible, but clearly not locked in yet */
+  .prov { filter: blur(1.4px); opacity: .55; transition: filter .2s, opacity .2s; }
+  .st-row:hover .prov, .award:hover .prov, .st-detail li:hover .prov { filter: blur(.4px); opacity: .85; }
+  .awchips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+  .awchip { font: 600 11px/1.6 var(--body); border: 1px dashed var(--muted); border-radius: 999px; padding: 0 7px; color: var(--muted); white-space: nowrap; }
+  .awchip.won { border: 1px solid #C9A13B; background: #C9A13B; color: #14222C; }
+  .hint { font: 500 13px var(--body); color: var(--muted); }
+
+  /* Daily review */
+  .review ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-width: 780px; }
+  .review li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 8px; align-items: start; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 9px 12px; }
+  .review .ic { font-size: 18px; line-height: 1.35; }
+  .review details { margin-top: 14px; max-width: 780px; }
+  .review summary { cursor: pointer; color: var(--muted); font-weight: 600; }
+  .review details h3 { font: 700 18px var(--display); margin: 16px 0 8px; }
   .st-row .chev { display: inline-block; margin-left: 6px; color: var(--muted); transition: transform .15s; }
   .st-row[aria-expanded="true"] .chev { transform: rotate(90deg); }
   .st-detail { background: var(--panel); border-bottom: 1px solid var(--line); padding: 12px 16px 14px 60px; font-size: 15px; }
@@ -107,6 +121,7 @@
     .st-row .n { text-align: left; font-size: 15px; } .st-row .n small { display: inline; margin-right: 3px; }
     .st-row .n.tot { font-size: 26px; text-align: right; }
     .st-detail { padding-left: 16px; }
+    .awchip { padding: 0 5px; } .awchip .t { display: none; }
   }
   @media (min-width: 641px) { .st-row .nums { display: contents; } }
 
@@ -320,6 +335,14 @@ const AWARD_FMT = {
   oneTrick: (v, d) => `${pct(v)}${d ? ` on ${champName(d.champ)} (${d.games} games)` : ''}`,
 };
 const fmtAward = (key, v, d) => v == null ? '–' : (AWARD_FMT[key] || (x => x))(v, d);
+// Short labels for the award chips in the standings.
+const AWARD_SHORT = {
+  mostGames: '🎮 Most games', highestWinRate: '📊 Best win rate', highestKda: '🎯 Best KDA', lowestKda: '🪦 Worst KDA',
+  bestVision: '👁️ Vision', longestWinStreak: '🚀 Win streak', longestLoseStreak: '💀 Lose streak',
+  mostDeathsPerGame: '☠️ Most deaths', oneTrick: '🎭 One-trick',
+};
+// Emoji + label; phones only show the emoji (the label stays in the tooltip).
+const chipLabel = a => { const [e, ...t] = (AWARD_SHORT[a.key] || a.title).split(' '); return `${e}<span class="t"> ${esc(t.join(' '))}</span>`; };
 
 // ---------- Memes ----------
 // Scrolls across the top. Add your own.
@@ -408,6 +431,9 @@ function weekGain(p, q) {
 const challenge = () => data.challenge;
 const phase = () => { const c = challenge(), now = Date.now(); return now < c.startMs ? 'before' : now < c.endMs ? 'running' : 'over'; };
 const awardsFinal = (m = 'solo') => awardsOf(m).some(a => a.final);
+const zoneDate = (ms, opts) => new Date(ms).toLocaleDateString('de-DE', { timeZone: challenge().timeZone || 'Europe/Berlin', ...opts });
+const endDay = () => zoneDate(challenge().endMs - 1, { day: 'numeric', month: 'numeric' }); // e.g. "14.10."
+const provNote = () => `End awards show who's leading right now, faded until they're locked in on ${endDay()}`;
 function countdownText(to) {
   let s = Math.max(0, Math.round((to - Date.now()) / 1000));
   const d = Math.floor(s / 86400); s -= d * 86400;
@@ -442,15 +468,17 @@ function renderShell() {
     </header>
     <p class="roast">${roastLine()}</p>
 
-    <section style="margin-top:0">
+    <section style="margin-top:0" class="review" id="review"></section>
+
+    <section>
       <h2>Solo/Duo standings</h2>
-      <p class="lede">Total = Solo/Duo LP earned + achievements${awardsFinal() ? ' + end awards' : ', plus end awards once the challenge is over'}. Only Solo/Duo games count here. Tap a player for the breakdown.<span class="quip">${quip('standings')}</span></p>
+      <p class="lede">Total = Solo/Duo LP earned + achievements${awardsFinal() ? ' + end awards' : `. ${provNote()} and added to the total then`}. Only Solo/Duo games count here. Tap a player for the breakdown.<span class="quip">${quip('standings')}</span></p>
       <div class="st" id="standings-solo"></div>
     </section>
 
     <section>
       <h2>End awards</h2>
-      <p class="lede">+${awardsOf('solo')[0]?.points ?? 10} each, handed out when the challenge ends. Ties for first all get the points.<span class="quip">${quip('boards')}</span></p>
+      <p class="lede">+${awardsOf('solo')[0]?.points ?? 10} each, handed out when the challenge ends${awardsFinal() ? '' : ` on ${endDay()} Faded names are the current leaders, not final yet`}. Ties for first all get the points.<span class="quip">${quip('boards')}</span></p>
       <div class="boards" id="boards-solo"></div>
     </section>
 
@@ -522,11 +550,14 @@ function renderStandings(mode) {
   const head = `<div class="st-head" aria-hidden="true"><span>#</span><span>Player</span><span>LP earned</span><span>Achievements</span><span>End awards</span><span>Total</span></div>`;
   const body = rows.map(({ p, i, P }) => {
     const id = `${mode}-${p.key}`, open = state.open.has(id);
-    const awardsCell = final ? signedPts(P.awardsTotal ?? 0) : '<span class="pend">pending</span>';
+    const awardsCell = final ? signedPts(P.awardsTotal ?? 0)
+      : P.awardsProvisional ? `<span class="prov" title="Provisional: locked in on ${endDay()}">+${P.awardsProvisional}</span>` : '<span style="color:var(--muted)">–</span>';
+    const leading = awardsOf(mode).filter(a => P.awards?.[a.key]?.leader);
+    const chips = leading.length ? `<span class="awchips">${leading.map(a => `<span class="awchip ${final ? 'won' : ''}" title="${esc(a.title)}${final ? '' : ': currently leading, not final yet'}">${chipLabel(a)}</span>`).join('')}</span>` : '';
     return `<button type="button" class="st-row ${P.place === 1 && spread ? 'first' : ''}" data-id="${esc(id)}" aria-expanded="${open}">
         <span class="pos">${P.place ?? ''}</span>
         <span class="who"><span class="pl">${p.profileIconId != null ? `<img src="${iconImg(p.profileIconId)}" alt="" style="border-color:${colorOf(i)}" onerror="this.style.visibility='hidden'">` : ''}
-          <span><b>${esc(nameOf(p))}${badges(p, P)}<span class="chev">›</span></b><span>${esc(p.riotId)}</span>${p.error ? `<span class="err" style="display:block">${esc(p.error)}</span>` : ''}</span></span></span>
+          <span><b>${esc(nameOf(p))}${badges(p, P)}<span class="chev">›</span></b><span>${esc(p.riotId)}</span>${chips}${p.error ? `<span class="err" style="display:block">${esc(p.error)}</span>` : ''}</span></span></span>
         <span class="nums">
           <span class="n ${P.lp > 0 ? 'up' : P.lp < 0 ? 'down' : ''}" style="color:${P.lp > 0 ? 'var(--up)' : P.lp < 0 ? 'var(--down)' : 'inherit'}"><small>LP</small>${P.lp == null ? '–' : signed(P.lp)}</span>
           <span class="n"><small>Achiev.</small>${signedPts(P.achievementsTotal ?? 0)}</span>
@@ -560,7 +591,7 @@ function breakdown(p, mode) {
   const awards = awardsOf(mode).map(a => {
     const mine = P.awards?.[a.key];
     if (!mine) return '';
-    if (mine.leader) return line(`${esc(a.title)}: ${esc(fmtAward(a.key, mine.value, mine.detail))}`, final ? '+' + mine.points : `pending (+${a.points})`);
+    if (mine.leader) return line(`${esc(a.title)}: ${esc(fmtAward(a.key, mine.value, mine.detail))}`, final ? '+' + mine.points : `<span class="prov">+${a.points}</span>`);
     if (!mine.qualifies && mine.note) return line(`${esc(a.title)}: needs ${esc(mine.note)}`, '–', true);
     return '';
   }).join('');
@@ -571,7 +602,7 @@ function breakdown(p, mode) {
       ${ach(A.pentakills, 'pentakill', 'pentakills')}
       ${ach(A.quadrakills, 'quadrakill', 'quadrakills')}
     </ul>
-    <h4>End awards ${final ? '' : '<span class="pend" style="font:500 13px var(--body)">pending: currently leading</span>'}</h4><ul>${awards || line('None yet', '0', true)}</ul>
+    <h4>End awards ${final ? '' : `<span class="hint">currently leading, locked in on ${endDay()}</span>`}</h4><ul>${awards || line('None yet', '0', true)}</ul>
     <h4>Total</h4><ul>${line(`${P.lp ?? 0} LP + ${P.achievementsTotal ?? 0} achievements${final ? ` + ${P.awardsTotal ?? 0} awards` : ''}`, '= ' + (P.total ?? 0))}</ul>`;
 }
 
@@ -585,13 +616,29 @@ function renderBoards(mode) {
       <h3>${esc(a.title)} <span style="font:600 15px var(--display);color:var(--muted)">+${a.points}</span></h3><p>${esc(a.desc)}</p>
       ${leaders.length
         ? (leaders.every(l => l.value === leaders[0].value && !l.detail)
-          ? `<div class="who">${leaders.map(l => esc(nameOf(l.p))).join(', ')}</div><div class="val">${esc(fmtAward(a.key, leaders[0].value, leaders[0].detail))}</div>`
-          : leaders.map(l => `<div class="who">${esc(nameOf(l.p))}</div><div class="val">${esc(fmtAward(a.key, l.value, l.detail))}</div>`).join(''))
+          ? `<div class="${final ? '' : 'prov'}"><div class="who">${leaders.map(l => esc(nameOf(l.p))).join(', ')}</div><div class="val">${esc(fmtAward(a.key, leaders[0].value, leaders[0].detail))}</div></div>`
+          : leaders.map(l => `<div class="${final ? '' : 'prov'}"><div class="who">${esc(nameOf(l.p))}</div><div class="val">${esc(fmtAward(a.key, l.value, l.detail))}</div></div>`).join(''))
         : '<div class="val" style="margin-top:8px">Nobody qualifies yet.</div>'}
-      <span class="status ${final && leaders.length ? 'won' : ''}">${final ? (leaders.length ? (a.key === 'oneTrick' || leaders.length > 1 ? 'Winners' : 'Winner') : 'No winner') : 'pending'}</span>
+      ${final ? `<span class="status ${leaders.length ? 'won' : ''}">${leaders.length ? (a.key === 'oneTrick' || leaders.length > 1 ? 'Winners' : 'Winner') : 'No winner'}</span>` : ''}
       ${rest.length ? `<ol style="margin-top:10px">${rest.slice(0, 3).map(r => `<li class="none"><span>${esc(nameOf(r.p))}</span><span>${esc(fmtAward(a.key, r.value, r.detail))}</span></li>`).join('')}</ol>` : ''}
     </div>`;
   }).join('');
+}
+
+function renderReview() {
+  const reviews = (data.reviews || []).slice().sort((a, b) => b.startMs - a.startMs);
+  const text = t => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  const list = r => `<ol>${r.highlights.map(h => `<li><span class="ic">${h.icon}</span><span>${text(h.text)}</span></li>`).join('')}</ol>`;
+  const day = r => zoneDate(r.startMs, { weekday: 'long', day: 'numeric', month: 'numeric' });
+  const el = document.getElementById('review');
+  if (!reviews.length) {
+    el.innerHTML = `<h2>Tagesrückblick</h2><p class="lede">Der erste Rückblick erscheint nach dem ersten vollen Tag, kurz nach Mitternacht.</p>`;
+    return;
+  }
+  const [latest, ...older] = reviews;
+  el.innerHTML = `<h2>Tagesrückblick <span class="hint" style="font-size:18px">${day(latest)}</span></h2>
+    <p class="lede">Die Highlights vom letzten Tag.</p>${list(latest)}
+    ${older.length ? `<details><summary>Frühere Tage (${older.length})</summary>${older.map(r => `<h3>${day(r)}</h3>${list(r)}`).join('')}</details>` : ''}`;
 }
 
 function renderWall() {
@@ -723,12 +770,12 @@ function renderFlexTab() {
     </header>
     <section style="margin-top:0">
       <h2>Flex standings</h2>
-      <p class="lede">A separate competition with the same rules: Flex LP earned + achievements from Flex games${awardsFinal('flex') ? ' + end awards' : ', plus end awards once the challenge is over'}. Tap a player for the breakdown.</p>
+      <p class="lede">A separate competition with the same rules: Flex LP earned + achievements from Flex games${awardsFinal('flex') ? ' + end awards' : `. ${provNote()} and added to the total then`}. Tap a player for the breakdown.</p>
       <div class="st" id="standings-flex"></div>
     </section>
     <section>
       <h2>Flex end awards</h2>
-      <p class="lede">+${awardsOf('flex')[0]?.points ?? 10} each, handed out when the challenge ends. Ties for first all get the points.</p>
+      <p class="lede">+${awardsOf('flex')[0]?.points ?? 10} each, handed out when the challenge ends${awardsFinal('flex') ? '' : ` on ${endDay()} Faded names are the current leaders, not final yet`}. Ties for first all get the points.</p>
       <div class="boards" id="boards-flex"></div>
     </section>
     <section>
@@ -885,6 +932,7 @@ async function main() {
     const shift = Math.round((Date.now() - Date.parse(data.updatedAt)) / DAY) * DAY, iso = t => new Date(Date.parse(t) + shift).toISOString();
     data.updatedAt = new Date(Date.now() - 35 * 60_000).toISOString();
     if (data.challenge) for (const k of ['startMs', 'endMs', 'realStartMs', 'realEndMs']) if (data.challenge[k]) data.challenge[k] += shift;
+    for (const r of data.reviews || []) { r.startMs += shift; r.endMs += shift; }
     for (const p of data.players || []) {
       (p.history || []).forEach(h => { h.t = iso(h.t); });
       for (const m of ['solo', 'flex']) {
@@ -896,7 +944,7 @@ async function main() {
   }
   document.title = data.squadName || 'Squad ladder';
   if (!data.challenge || !data.awards?.solo) return renderEmpty('The data file is from an older version. Run the "Update squad data" workflow once.');
-  renderShell(); renderStandings('solo'); renderBoards('solo'); renderWall(); renderWeek(); renderChart(); renderPlayers(); renderFeed('solo');
+  renderShell(); renderReview(); renderStandings('solo'); renderBoards('solo'); renderWall(); renderWeek(); renderChart(); renderPlayers(); renderFeed('solo');
   renderFlexTab(); renderRoster();
 }
 document.getElementById('ticker').textContent = (TICKER.join('   ·   ') + '   ·   ').repeat(2); // doubled so the loop is seamless

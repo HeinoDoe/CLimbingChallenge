@@ -3,6 +3,7 @@
 // The page shifts all demo timestamps so the sample always looks "live".
 import { readFile, writeFile } from 'node:fs/promises';
 import { challengeWindow, emptyMode, addMatch, scoreModes } from './challenge.mjs';
+import { buildReviews } from './review.mjs';
 
 const cfg = JSON.parse(await readFile(new URL('../squad.config.json', import.meta.url), 'utf8'));
 const { preview, ...rest } = cfg.challenge;
@@ -70,7 +71,7 @@ const awards = scoreModes(players, CH, WIN, NOW);
 const data = {
   squadName: 'Demo squad', platform: 'euw1', queues: [420, 440],
   challenge: { ...CH, startMs: WIN.startMs, endMs: WIN.endMs },
-  awards, updatedAt: new Date(NOW).toISOString(), players,
+  awards, reviews: buildReviews(players, CH, WIN, NOW), updatedAt: new Date(NOW).toISOString(), players,
 };
 await writeFile(new URL('../docs/data.sample.json', import.meta.url), JSON.stringify(data));
 for (const mode of ['solo', 'flex']) {

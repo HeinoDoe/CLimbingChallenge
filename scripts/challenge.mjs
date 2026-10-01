@@ -5,11 +5,12 @@
 // Bump this whenever addMatch() starts tracking something new. update.mjs then
 // resets every player's match stats and re-processes all challenge matches
 // (puuid and rank history are kept).
-export const STATS_VERSION = 3;
+export const STATS_VERSION = 4;
 
 // Each ranked queue is its own competition with its own LP, achievements and awards.
 export const MODES = { 420: 'solo', 440: 'flex' };
-export const emptyMode = () => ({ stats: emptyStats(), champions: {}, recent: [] });
+// recent = last 20 games for the feed; log = every challenge game, compact, for the daily review.
+export const emptyMode = () => ({ stats: emptyStats(), champions: {}, recent: [], log: [] });
 
 // ---------- Dates ----------
 // "start" and "end" are calendar days in the challenge time zone. The end day is
@@ -22,7 +23,7 @@ function tzOffsetMs(t, timeZone) {
   const asUtc = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second);
   return asUtc - Math.floor(t / 1000) * 1000;
 }
-function zonedMidnight(date, timeZone, addDays = 0) {
+export function zonedMidnight(date, timeZone, addDays = 0) {
   const [y, m, d] = date.split('-').map(Number);
   const guess = Date.UTC(y, m - 1, d + addDays);
   let t = guess - tzOffsetMs(guess, timeZone);
@@ -30,6 +31,8 @@ function zonedMidnight(date, timeZone, addDays = 0) {
   return t;
 }
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+// Calendar day ("YYYY-MM-DD") of a timestamp in the challenge time zone.
+export const dayOf = (t, timeZone) => new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(t));
 
 export function challengeWindow(ch) {
   const tz = ch.timeZone || 'Europe/Berlin';
@@ -66,7 +69,7 @@ export const emptyStats = () => ({
 // quadra became the penta). So the quadras that stayed quadras are the difference.
 export const pureQuadras = (me) => Math.max(0, (me.quadraKills || 0) - (me.pentaKills || 0));
 
-// Adds one finished match to a mode's stats / champions / recent (p = { stats, champions, recent }).
+// Adds one finished match to a mode's stats / champions / recent / log (p = emptyMode()).
 export function addMatch(p, m, me) {
   const s = p.stats;
   const quadras = pureQuadras(me);
@@ -99,6 +102,10 @@ export function addMatch(p, m, me) {
     multi: me.pentaKills ? 'Pentakill' : quadras ? 'Quadrakill' : null,
   });
   if (p.recent.length > 20) p.recent = p.recent.slice(-20);
+  (p.log ??= []).push({
+    t: m.info.gameEndTimestamp || m.info.gameCreation, win, champ: me.championName,
+    k: me.kills, d: me.deaths, a: me.assists, penta: me.pentaKills || 0, quadra: quadras,
+  });
 }
 
 // ---------- LP earned ----------
