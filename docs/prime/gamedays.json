@@ -1,0 +1,30 @@
+{
+  "ourTeam": [
+    { "name": "Kolbe", "riotId": "Jack The Dripper#1608", "role": "Top" },
+    { "name": "Smette", "riotId": "Smette#xDD", "role": "Jungle" },
+    { "name": "Heino", "riotId": "HeinoDoe#213", "role": "Mid" },
+    { "name": "EP Theyron", "riotId": "MENTALITY MEN#xdd", "role": "ADC" },
+    { "name": "HennenG", "riotId": "HennenG#YEET", "role": "Support" }
+  ],
+  "gamedays": [
+    {
+      "day": 1,
+      "date": "2026-10-04T19:00:00+02:00",
+      "opponent": {
+        "name": null,
+        "players": [
+          { "name": "Ruvex", "riotId": "Ruvex#Fool", "role": "Top" },
+          { "name": "Señor Flausch", "riotId": "Señor Flausch#EUW", "role": "Jungle" },
+          { "name": "WoFu Ven", "riotId": "WoFu Ven#EUW", "role": "Mid" },
+          { "name": "Don Namaste", "riotId": "Don Namaste#2407", "role": "ADC" },
+          { "name": "Lord Steve", "riotId": "LordSteve#EUW", "role": "Support" }
+        ]
+      }
+    },
+    { "day": 2, "date": null, "opponent": null },
+    { "day": 3, "date": null, "opponent": null },
+    { "day": 4, "date": null, "opponent": null },
+    { "day": 5, "date": null, "opponent": null },
+    { "day": 6, "date": null, "opponent": null }
+  ]
+}

@@ -1,0 +1,43 @@
+name: Scout opponent
+
+# Actions -> Scout opponent -> Run workflow, enter the game day number.
+# Reads the rosters from docs/prime/gamedays.json and saves docs/prime/scout-day<N>.json.
+on:
+  workflow_dispatch:
+    inputs:
+      day:
+        description: "Game day number"
+        required: true
+        default: "1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: squad-update   # shares the push queue with the data updates
+  cancel-in-progress: false
+
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Scout both teams
+        run: node scripts/scout.mjs "${{ inputs.day }}"
+        env:
+          RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
+
+      - name: Save scouting data
+        run: |
+          git config user.name "squad-bot"
+          git config user.email "squad-bot@users.noreply.github.com"
+          git add docs/prime/
+          git commit -m "Scout game day ${{ inputs.day }}" || exit 0
+          git pull --rebase -X theirs
+          git push
