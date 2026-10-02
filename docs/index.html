@@ -56,7 +56,15 @@
   .bpts { display: inline-block; background: var(--accent); color: var(--on-accent); border-radius: 999px; padding: 0 9px; font-size: .7em; vertical-align: middle; }
   .bdesc { margin: 4px 0; font-size: 14px; }
   .bprog { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 5px; }
-  .bprog li { display: grid; grid-template-columns: minmax(70px, 110px) 1fr 44px; gap: 8px; align-items: center; font-size: 14px; }
+  .bprog li { display: grid; grid-template-columns: minmax(70px, 110px) 1fr 40px 22px; gap: 4px 8px; align-items: center; font-size: 14px; }
+  .bprog li.more { display: none; } .bounty.all .bprog li.more { display: grid; }
+  .bi { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--accent); background: none; color: var(--accent); font: 700 12px/1 var(--body); padding: 0; cursor: pointer; }
+  .bi[aria-expanded="true"] { background: var(--accent); color: var(--on-accent); }
+  .bi:disabled { opacity: .3; cursor: default; }
+  .bchamps { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 10px; padding: 4px 0 6px; }
+  .bchamps span { display: inline-flex; flex-direction: column; align-items: center; width: 52px; text-align: center; }
+  .bchamps small { font-size: 11px; color: var(--muted); line-height: 1.2; overflow-wrap: anywhere; }
+  .bmore { margin-top: 6px; background: none; border: 0; padding: 0; font: 600 13px var(--body); color: var(--muted); text-decoration: underline; cursor: pointer; }
   .bprog .bar { height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
   .bprog .bar i { display: block; height: 100%; background: var(--accent); }
   .bprog b { text-align: right; }
@@ -788,18 +796,35 @@ function renderBoards(mode) {
   }).join('');
 }
 
-// Weekly bounty card above the news: the latest Solo/Duo bounty that has started.
+// Weekly bounty card above the news: the latest Solo/Duo bounty that has started. The (!)
+// next to each player shows the champions they've won with, in the order they got them.
 function renderBounty() {
   const el = document.getElementById('bounty');
   const b = (data.bounties || []).filter(x => x.queue === 'solo' && x.status !== 'upcoming').sort((x, y) => y.startMs - x.startMs)[0];
   if (!b) { el.remove(); return; }
   const who = k => esc(nameOf(byKey(k) || { riotId: k }));
+  // Older data has no champion list yet: rebuild it from the game log.
+  const champsOf = r => r.champs || [...new Set((modeOf(byKey(r.key) || {}, b.queue).log || [])
+    .filter(g => g.win && g.t >= b.startMs && g.t < b.endMs).sort((x, y) => x.t - y.t).map(g => g.champ))];
   const ends = zoneDate(b.endMs - 1, { weekday: 'long', day: 'numeric', month: 'numeric' });
   const state = b.status === 'won' ? `<p class="bwin">🏆 Geschafft von ${b.winners.map(who).join(' & ')}: +${b.points} Punkte</p>`
     : b.status === 'expired' ? '<p class="hint">Vorbei, niemand hat es geschafft.</p>'
     : `<p class="hint">Noch ${countdownText(b.endMs)}, bis ${ends}</p>`;
+  const rows = b.progress.filter((r, i) => i < 4 || r.value > 0);
   el.innerHTML = `<h2>🎯 Wochen-Bounty <span class="bpts">+${b.points}</span></h2><p class="bdesc">${esc(b.desc)}</p>${state}
-    <ol class="bprog">${b.progress.slice(0, 4).map(r => `<li><span>${who(r.key)}</span><span class="bar"><i style="width:${Math.min(100, r.value / b.target * 100)}%"></i></span><b>${r.value}/${b.target}</b></li>`).join('')}</ol>`;
+    <ol class="bprog">${rows.map((r, i) => {
+      const champs = champsOf(r);
+      return `<li class="${i >= 4 ? 'more' : ''}"><span>${who(r.key)}</span><span class="bar"><i style="width:${Math.min(100, r.value / b.target * 100)}%"></i></span><b>${r.value}/${b.target}</b>
+        <button type="button" class="bi" aria-expanded="false" title="Mit welchen Champions?" ${champs.length ? '' : 'disabled'}>!</button>
+        <div class="bchamps" hidden>${champs.map((c, n) => `<span title="${n + 1}. ${esc(champName(c))}">${champIcon(c, 26)}<small>${esc(champName(c))}</small></span>`).join('')}</div></li>`;
+    }).join('')}</ol>
+    ${rows.length > 4 ? '<button type="button" class="bmore">Alle anzeigen</button>' : ''}`;
+  el.querySelectorAll('.bi').forEach(btn => btn.addEventListener('click', () => {
+    const box = btn.nextElementSibling, open = box.hidden;
+    box.hidden = !open;
+    btn.setAttribute('aria-expanded', open);
+  }));
+  el.querySelector('.bmore')?.addEventListener('click', e => { el.classList.add('all'); e.target.remove(); });
 }
 
 // News panel next to the standings: the live roast line + the latest Tagesrückblick.

@@ -273,7 +273,7 @@ export function scoreBounties(players, ch, now) {
       const champs = new Set();
       let reachedAt = null;
       for (const g of wins) { champs.add(g.champ); if (reachedAt == null && champs.size >= b.target) reachedAt = g.t; }
-      return { key: p.key, value: champs.size, reachedAt };
+      return { key: p.key, value: champs.size, reachedAt, champs: [...champs] }; // champs in the order of their first win
     });
     const first = Math.min(...rows.map((r) => r.reachedAt ?? Infinity));
     const winners = Number.isFinite(first) ? rows.filter((r) => r.reachedAt === first).map((r) => r.key) : [];
@@ -288,7 +288,7 @@ export function scoreBounties(players, ch, now) {
       id: b.id, title: b.title, desc: b.desc, target: b.target, points: b.points, queue: mode, startMs, endMs,
       status: winners.length ? 'won' : now >= endMs ? 'expired' : now < startMs ? 'upcoming' : 'open',
       winners, wonAt: winners.length ? first : null,
-      progress: [...rows].sort((x, y) => y.value - x.value).map(({ key, value }) => ({ key, value })),
+      progress: [...rows].sort((x, y) => y.value - x.value).map(({ key, value, champs }) => ({ key, value, champs })),
     };
   });
   for (const mode of Object.values(MODES)) {

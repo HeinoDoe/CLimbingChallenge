@@ -127,3 +127,15 @@ test("daily post: bounty status and that day's Prime League games", () => {
   const won = dailyEmbed(day, { players, bounties: [{ ...b, status: 'won', winners: ['a'] }] });
   assert.equal(won.fields[1].value, 'Geschafft von **A**!');
 });
+
+test('bounty alert: once when a player reaches 9/10, "geschafft" if they jump straight to 10', () => {
+  const players = [player('a', 'A', 1, 10), player('b', 'B', 2, 5)];
+  const b = (progress, status = 'open', winners = []) => ({ id: 'b1', title: '10 verschiedene Champions', target: 10, points: 20, status, winners, progress });
+  const prev = { reviewsKey: 'k', reviews: [], players, bounties: [b([{ key: 'a', value: 8 }, { key: 'b', value: 8 }])] };
+  const next = { reviewsKey: 'k', reviews: [], players, bounties: [b([{ key: 'a', value: 9, champs: ['Ahri', 'MonkeyKing'] }, { key: 'b', value: 10 }], 'won', ['b'])] };
+  const out = buildNotifications(prev, next);
+  assert.deepEqual(out.map((e) => e.title), ['🎯 Noch 1 Champion: 10 verschiedene Champions', '🎯 Bounty geschafft: 10 verschiedene Champions']);
+  assert.match(out[0].description, /\*\*A\*\* steht bei 9\/10.*\nSchon geschafft mit: Ahri, Wukong/s);
+  assert.match(out[1].description, /\*\*B\*\* hat mit 10 verschiedenen Champions gewonnen und holt \+20 Punkte!/);
+  assert.equal(buildNotifications(next, next).length, 0); // only once
+});

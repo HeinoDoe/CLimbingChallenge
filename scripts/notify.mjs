@@ -1,6 +1,6 @@
-// Discord: one post per day. update.mjs queues the daily post in notify.json once a day
-// is finished; the last step of the update workflow runs this file, which sends it with
-// the DISCORD_WEBHOOK_URL secret (without the secret nothing is sent).
+// Discord: one post per day, plus a heads-up when someone is one away from a bounty.
+// update.mjs queues posts in notify.json; the last step of the update workflow runs this
+// file, which sends them with the DISCORD_WEBHOOK_URL secret (without it nothing is sent).
 //
 //   node scripts/notify.mjs          send everything in notify.json, then empty it
 //   node scripts/notify.mjs --test   send one test post built from the current data.json
@@ -56,12 +56,40 @@ export function dailyEmbed(r, data, { siteUrl = '', timeZone = 'Europe/Berlin', 
   };
 }
 
-// Posts for a new data.json: one daily post per newly finished day, nothing else.
-// Nothing after a reset (different reviewsKey), when every game is counted again.
+// Posts for a new data.json: one daily post per newly finished day, plus one alert when a
+// player gets within one of a bounty's target (e.g. 9/10). Nothing after a reset
+// (different reviewsKey), when every game is counted again.
 export function buildNotifications(prev, next, opts = {}) {
   if (!prev?.reviewsKey || prev.reviewsKey !== next.reviewsKey) return [];
   const had = new Set((prev.reviews || []).map((r) => r.date));
-  return (next.reviews || []).filter((r) => !had.has(r.date)).map((r) => dailyEmbed(r, next, opts));
+  return [
+    ...(next.reviews || []).filter((r) => !had.has(r.date)).map((r) => dailyEmbed(r, next, opts)),
+    ...bountyAlerts(prev, next, opts),
+  ];
+}
+
+// "One champion to go": once per player and bounty, when they first reach target - 1.
+// Someone who jumps straight to the target in one update gets a "geschafft" post instead.
+export function bountyAlerts(prev, next, { siteUrl = '' } = {}) {
+  const names = new Map((next.players || []).map((p) => [p.key, p.name]));
+  const before = new Map((prev.bounties || []).map((b) => [b.id, new Map((b.progress || []).map((r) => [r.key, r.value]))]));
+  const out = [];
+  for (const b of next.bounties || []) {
+    if (b.status === 'upcoming' || b.status === 'expired') continue;
+    const edge = b.target - 1;
+    for (const r of b.progress || []) {
+      if (r.value < edge || (before.get(b.id)?.get(r.key) ?? 0) >= edge) continue;
+      const champs = (r.champs || []).map(champName).join(', ');
+      const done = r.value >= b.target;
+      out.push({
+        title: done ? `🎯 Bounty geschafft: ${b.title}` : `🎯 Noch 1 Champion: ${b.title}`, url: siteUrl, color: COLOR,
+        description: done
+          ? `**${names.get(r.key)}** hat mit ${r.value} verschiedenen Champions gewonnen${b.winners?.includes(r.key) ? ` und holt +${b.points} Punkte` : ''}!${champs ? `\n${champs}` : ''}`
+          : `**${names.get(r.key)}** steht bei ${r.value}/${b.target}: noch ein Sieg mit einem neuen Champion für +${b.points} Punkte.${champs ? `\nSchon geschafft mit: ${champs}` : ''}`,
+      });
+    }
+  }
+  return out;
 }
 
 export async function queue(embeds) {

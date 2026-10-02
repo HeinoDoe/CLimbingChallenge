@@ -35,7 +35,7 @@ Most games · Highest win rate · Highest KDA · Lowest KDA · Best vision score
 
 Win rate, both KDA awards, vision and deaths per game need at least `minGames` (20) games. **One-trick:** each player's best champion by win rate (with at least 10 games on it); the two players with the highest such win rate get +10 each, and anyone tied at the cut-off does too.
 
-**Weekly bounties** (`challenge.bounties`): a side quest per week. The first player to win games on `target` different champions between `start` and `end` gets `points` right away (players who reach it in the same game share it). Week 1: 10 different champions, +20, until Sunday 4.10. The bounty card sits above the news, and the daily Discord post shows its progress. To add next week's bounty, add another entry with a new `id`, `start` and `end`.
+**Weekly bounties** (`challenge.bounties`): a side quest per week. The first player to win games on `target` different champions between `start` and `end` gets `points` right away (players who reach it in the same game share it). Week 1: 10 different champions, +20, until Sunday 4.10. The bounty card sits above the news; the (!) next to each player shows the champions they've won with so far. The daily Discord post shows the progress, and reaching 9/10 triggers a heads-up post. To add next week's bounty, add another entry with a new `id`, `start` and `end`.
 
 Only ranked games played between the start and end date count. Remakes don't count.
 
@@ -68,7 +68,7 @@ The update posts **once a day** to one Discord channel through a webhook, shortl
 - the **weekly bounty**: progress, or who completed it
 - our **Prime League games** of that day, if there were any
 
-Nothing else is posted on its own. To see what it looks like: **Actions → Test Discord post → Run workflow**.
+The one exception: when someone gets within one of a bounty's target (e.g. **9/10**), a short heads-up is posted right away, once per player and bounty (or a "geschafft" post if they jump straight to the target). Nothing else is posted on its own. To see what the daily post looks like: **Actions → Test Discord post → Run workflow**.
 
 A webhook only ever posts into the channel it was created in. To set it up for the General chat:
 
