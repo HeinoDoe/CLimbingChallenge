@@ -166,6 +166,15 @@
   .st-detail h4:first-child { margin-top: 0; }
   .st-detail ul { list-style: none; margin: 0; padding: 0; }
   .st-detail li { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; border-bottom: 1px dashed var(--line); max-width: 560px; }
+  .st-detail li.cl { display: block; max-width: none; }
+  .st-detail li.cl summary { display: flex; justify-content: space-between; gap: 12px; max-width: 560px; cursor: pointer; list-style: none; }
+  .st-detail li.cl summary::-webkit-details-marker { display: none; }
+  .st-detail .info { font-size: 13px; color: var(--accent); font-weight: 600; margin-left: 6px; text-decoration: underline dotted; }
+  .st-detail details[open] .info { visibility: hidden; }
+  .champgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px 14px; margin: 8px 0 6px; }
+  .cg { display: flex; align-items: center; gap: 8px; }
+  .cg b { display: block; font-size: 14px; line-height: 1.2; }
+  .cg small { color: var(--muted); font-size: 12px; }
   .st-detail li.muted { color: var(--muted); }
   .st-detail li b { font-variant-numeric: tabular-nums; white-space: nowrap; }
   .award .status { display: inline-block; font: 600 12px var(--body); border-radius: 999px; padding: 1px 8px; margin-top: 6px; background: var(--bg); border: 1px solid var(--line); color: var(--muted); }
@@ -716,6 +725,19 @@ function renderStandings(mode) {
 const signedPts = v => v > 0 ? '+' + v : String(v);
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
+// The "X champions × 5" line, expandable to every champion played with games and win rate.
+function champLine(p, mode, a) {
+  if (!a) return '';
+  const champs = Object.entries(modeOf(p, mode).champions || {}).sort((x, y) => y[1].games - x[1].games || y[1].wins - x[1].wins);
+  const label = `${plural(a.count, 'champion', 'champions')} × ${a.per}`;
+  if (!champs.length) return `<li class="muted"><span>${label}</span><b>= ${a.points}</b></li>`;
+  return `<li class="cl"><details><summary><span>${label} <span class="info">ⓘ show all</span></span><b>= ${a.points}</b></summary>
+    <div class="champgrid">${champs.map(([c, v]) => {
+      const wr = v.wins / v.games;
+      return `<div class="cg">${champIcon(c, 30)}<span><b>${esc(champName(c))}</b><small>${v.games} ${v.games === 1 ? 'game' : 'games'} · ${v.wins}W ${v.games - v.wins}L · <span style="color:${wr >= .5 ? 'var(--up)' : 'var(--down)'}">${pct(wr)}</span></small></span></div>`;
+    }).join('')}</div></details></li>`;
+}
+
 function breakdown(p, mode) {
   const P = ptsOf(p, mode), A = P.achievements || {}, L = P.lpInfo, final = awardsFinal(mode);
   const line = (label, value, muted) => `<li class="${muted ? 'muted' : ''}"><span>${label}</span><b>${value}</b></li>`;
@@ -735,7 +757,7 @@ function breakdown(p, mode) {
 
   return `<p class="hint" style="margin:0 0 6px">${esc(p.riotId)}</p><h4>LP earned (${MODE_NAME[mode]})</h4><ul>${lp}</ul>
     <h4>Achievements</h4><ul>
-      ${ach(A.uniqueChampions, 'champion', 'champions')}
+      ${champLine(p, mode, A.uniqueChampions)}
       ${ach(A.pentakills, 'pentakill', 'pentakills')}
       ${ach(A.quadrakills, 'quadrakill', 'quadrakills')}
     </ul>
