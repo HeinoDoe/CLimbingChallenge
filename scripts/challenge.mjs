@@ -5,7 +5,7 @@
 // Bump this whenever addMatch() starts tracking something new. update.mjs then
 // resets every player's match stats and re-processes all challenge matches
 // (puuid and rank history are kept).
-export const STATS_VERSION = 4;
+export const STATS_VERSION = 5; // 5: short games that ended in a normal surrender count (only real remakes are skipped)
 
 // Each ranked queue is its own competition with its own LP, achievements and awards.
 export const MODES = { 420: 'solo', 440: 'flex' };
@@ -62,6 +62,11 @@ export const emptyStats = () => ({
   curStreak: 0, bestWinStreak: 0, worstLoseStreak: 0,
   maxKills: 0, maxKillsChamp: null,
 });
+
+// A remake doesn't count (no LP, no win). Riot flags remakes with gameEndedInEarlySurrender.
+// Short games that end in a normal surrender (e.g. after a leaver, 4:20 in EUW1_8001245197,
+// +31 LP for the winners) are real games and do count, so the length is not a criterion.
+export const isRemake = (me) => Boolean(me.gameEndedInEarlySurrender);
 
 // Riot's multikill counters are cumulative: a pentakill also adds 1 to quadraKills
 // (and to tripleKills/doubleKills). Checked on real matches EUW1_7991476648 and

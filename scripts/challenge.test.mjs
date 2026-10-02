@@ -177,3 +177,11 @@ test('solo and flex are separate competitions', () => {
   assert.equal(p.points.flex.achievements.uniqueChampions.count, 1);
   assert.deepEqual(Object.keys(awards), ['solo', 'flex']);
 });
+
+import { isRemake } from './challenge.mjs';
+
+test('remakes: only Riot\'s early-surrender flag counts, not the game length', () => {
+  // EUW1_8001245197: 4:20, enemy surrendered after a leaver, +31 LP for the winners.
+  assert.equal(isRemake({ win: true, gameEndedInEarlySurrender: false, gameEndedInSurrender: true, timePlayed: 260 }), false);
+  assert.equal(isRemake({ win: false, gameEndedInEarlySurrender: true, timePlayed: 200 }), true);
+});

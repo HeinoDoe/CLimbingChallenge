@@ -37,7 +37,7 @@ Win rate, both KDA awards, vision and deaths per game need at least `minGames` (
 
 **Weekly bounties** (`challenge.bounties`): a side quest per week. The first player to win games on `target` different champions between `start` and `end` gets `points` right away (players who reach it in the same game share it). Week 1: 10 different champions, +20, until Sunday 4.10. The bounty card sits above the news; the (!) next to each player shows the champions they've won with so far. The daily Discord post shows the progress, and reaching 9/10 triggers a heads-up post. To add next week's bounty, add another entry with a new `id`, `start` and `end`.
 
-Only ranked games played between the start and end date count. Remakes don't count.
+Only ranked games played between the start and end date count. Remakes don't count (Riot's early-surrender flag), but short games that ended in a normal surrender, e.g. after a leaver, do.
 
 **Trial run:** with `challenge.preview.start` set, the site scores a trial from that day until the real start, so you can see live results early. When the real challenge starts, everything resets automatically: game stats are counted again from the real start and the LP baseline is taken fresh. Remove `preview` if you don't want a trial.
 

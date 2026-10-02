@@ -3,7 +3,7 @@
 // Runs on GitHub Actions (see .github/workflows/update.yml) or locally with
 // `npm run update`. Needs Node 18+.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { STATS_VERSION, MODES, activeWindow, emptyMode, addMatch, scoreModes, scoreBounties, trackPlaces, dayOf } from './challenge.mjs';
+import { STATS_VERSION, MODES, activeWindow, emptyMode, addMatch, isRemake, scoreModes, scoreBounties, trackPlaces, dayOf } from './challenge.mjs';
 import { buildReviews } from './review.mjs';
 import { buildNotifications, queue } from './notify.mjs';
 
@@ -42,7 +42,8 @@ const REGION = cfg.region || 'europe';
 const QUEUES = (cfg.queues || [420, 440]).filter((q) => MODES[q]);
 const CAP = cfg.maxNewMatchesPerPlayerPerRun ?? 60;
 // Match stats reset when the scoring code or the challenge dates/queues change.
-const STATS_KEY = `${STATS_VERSION}|${WIN.startMs}|${WIN.endMs}|${QUEUES.join(',')}`;
+const WINDOW_KEY = `${WIN.startMs}|${WIN.endMs}|${QUEUES.join(',')}`;
+const STATS_KEY = `${STATS_VERSION}|${WINDOW_KEY}`;
 
 // ---------- Rate limiting (personal/dev keys: 20 req/s, 100 req/2 min) ----------
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -165,7 +166,7 @@ async function updatePlayer(entry) {
         seen.add(id);
         if (!m) continue;
         const me = m.info.participants.find((x) => x.puuid === p.puuid);
-        if (!me || me.gameEndedInEarlySurrender || m.info.gameDuration < 300) continue; // skip remakes
+        if (!me || isRemake(me)) continue;
         const mode = p.modes[MODES[m.info.queueId]];
         if (mode) addMatch(mode, m, me);
       }
@@ -199,7 +200,9 @@ try {
   const reviews = complete ? buildReviews(players, CH, WIN, Date.now(), kept) : kept;
   // Places at the end of each day, for the ▲/▼ since yesterday in the leaderboard.
   const tz = CH.timeZone || 'Europe/Berlin';
-  const places = trackPlaces(players, previous.placesKey === STATS_KEY ? previous.places || {} : {}, dayOf(Date.now(), tz));
+  // Kept across a STATS_VERSION re-count (same challenge window), so ▲/▼ survive it.
+  const samePlaces = previous.placesKey === WINDOW_KEY || previous.placesKey?.endsWith(`|${WINDOW_KEY}`); // older data keyed by STATS_KEY
+  const places = trackPlaces(players, samePlaces ? previous.places || {} : {}, dayOf(Date.now(), tz));
   const data = {
     squadName: cfg.squadName,
     platform: PLATFORM,
@@ -210,7 +213,7 @@ try {
     reviews,
     reviewsKey: STATS_KEY,
     places,
-    placesKey: STATS_KEY,
+    placesKey: WINDOW_KEY,
     updatedAt: new Date().toISOString(),
     players,
   };
