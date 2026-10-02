@@ -1,8 +1,10 @@
-name: Hourly timer
+name: Update timer
 
 # GitHub's own schedule often starts runs hours late or skips them. This job
-# stays running instead: it starts "Update squad data" once an hour, and after
+# stays running instead: it starts "Update squad data" every 10 minutes, and after
 # 5 hours it starts a fresh copy of itself (jobs may run at most 6 hours).
+# Every update rebuilds GitHub Pages, which allows about 10 builds per hour, so
+# don't go much below 10 minutes.
 # Free on public repositories. To stop it, disable this workflow in the Actions tab.
 
 on:
@@ -14,7 +16,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: hourly-timer
+  group: update-timer
   cancel-in-progress: false
 
 jobs:
@@ -25,11 +27,11 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
     steps:
-      - name: Start an update every hour for 5 hours
+      - name: Start an update every 10 minutes for 5 hours
         run: |
-          for i in 1 2 3 4 5; do
+          for i in $(seq 1 30); do
             gh workflow run update.yml --ref main && echo "Update $i started at $(date -u +%H:%M) UTC"
-            sleep 3600
+            sleep 600
           done
 
       - name: Start the next timer

@@ -587,11 +587,12 @@ function periodGain(p, q) {
   return cur == null || past == null ? null : cur - past;
 }
 
-// "Updated 5 min ago" next to the tabs; red when the last update is over 2 hours old.
+// "Updated 5 min ago" next to the tabs; red when the last update is over an hour old
+// (updates run every 10 minutes).
 function renderUpdated() {
   const el = document.getElementById('updated');
   if (!el || !data?.updatedAt) return;
-  const t = Date.parse(data.updatedAt), stale = Date.now() - t > 2 * 3600_000;
+  const t = Date.parse(data.updatedAt), stale = Date.now() - t > 3600_000;
   el.className = 'updated' + (stale ? ' stale' : '');
   el.innerHTML = `${stale ? '⚠️ ' : '🔄 '}Updated <b>${timeAgo(t)}</b>`;
   el.title = new Date(t).toLocaleString('de-DE', { timeZone: 'Europe/Berlin' }) + ' Uhr';

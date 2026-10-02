@@ -9,7 +9,7 @@ A points competition for the squad's ranked games in League of Legends. **Solo/D
 - a players table and a feed of everyone's latest games
 - a Prime League tab with game day draft plans for each opponent, our draft pool, comps and a scouting tool
 
-It runs for free on GitHub. A background timer fetches data from the Riot API once an hour, scores it and saves it into this repository. The website is a static page on GitHub Pages that only displays that saved file. Your API key stays in a GitHub secret and never reaches the website.
+It runs for free on GitHub. A background timer fetches data from the Riot API every 10 minutes, scores it and saves it into this repository. The website is a static page on GitHub Pages that only displays that saved file. Your API key stays in a GitHub secret and never reaches the website.
 
 ## How scoring works
 
@@ -57,7 +57,7 @@ To prepare a new game day:
 2. Run **Actions → Scout opponent** with the day number. It uses the `RIOT_API_KEY` secret to pull both rosters' ranks, last 30 ranked games, top mastery and last 15 tournament games (Prime League games are tournament-code games, so their past team drafts and bans show up), and saves `docs/prime/scout-day<N>.json`.
 3. Write the `plan` for that day (or ask Claude to). The page shows the scouting tables as soon as the scout file exists, and the plan once it's in `gamedays.json`.
 
-**Results** come in by themselves: from the game day's start time, every hourly update looks for our tournament games (2 hours before to 10 hours after the start) and saves the result, both lineups with KDA and the bans to `docs/prime/results.json` (`scripts/results.mjs`). The game day page then shows the result above the plan, including how many of our picks came from it, and the day's Discord post lists it.
+**Results** come in by themselves: from the game day's start time, every update looks for our tournament games (2 hours before to 10 hours after the start) and saves the result, both lineups with KDA and the bans to `docs/prime/results.json` (`scripts/results.mjs`). The game day page then shows the result above the plan, including how many of our picks came from it, and the day's Discord post lists it.
 
 ## Discord posts
 
@@ -88,7 +88,7 @@ You need [Node.js](https://nodejs.org) 18 or newer. There are no packages to ins
 
 Edit `docs/index.html` and reload the browser to see changes.
 
-**Heads-up:** the GitHub Action commits a fresh `docs/data.json` every hour. Run `git pull` before you start working, and don't commit a `data.json` from a local test run unless you mean to replace the live data.
+**Heads-up:** the GitHub Action commits a fresh `docs/data.json` every 10 minutes. Run `git pull` before you start working, and don't commit a `data.json` from a local test run unless you mean to replace the live data.
 
 ## Setup
 
@@ -118,7 +118,7 @@ When you replace a development key the next day, edit this same secret. Nothing 
 
 ### 5. Updating
 
-The **Hourly timer** workflow (`.github/workflows/timer.yml`) starts **Update squad data** once an hour. GitHub's built-in schedule often skips runs for hours, so the timer stays running instead and restarts itself every 5 hours; a backup schedule restarts it if the chain ever breaks. It's free on public repositories. To pause updates, disable **Hourly timer** in the Actions tab.
+The **Update timer** workflow (`.github/workflows/timer.yml`) starts **Update squad data** every 10 minutes (GitHub Pages allows about 10 site builds per hour, so don't go much lower). GitHub's built-in schedule often skips runs for hours, so the timer stays running instead and restarts itself every 5 hours; a backup schedule restarts it if the chain ever breaks. It's free on public repositories. To pause updates, disable **Update timer** in the Actions tab.
 
 To update right away: **Actions → Update squad data → Run workflow**.
 
@@ -172,7 +172,7 @@ scripts/make-sample.mjs         builds docs/data.sample.json (npm run sample)
 scripts/scout.mjs               scouts both rosters of a Prime League game day
 scripts/serve.mjs               local web server for docs/
 .github/workflows/update.yml    runs one update and saves the result
-.github/workflows/timer.yml     starts the update once an hour
+.github/workflows/timer.yml     starts the update every 10 minutes
 .github/workflows/scout.yml     "Scout opponent": runs scripts/scout.mjs for a game day
 docs/prime/gamedays.json        Prime League game days: opponents and draft plans
 docs/prime/scout-day<N>.json    scouting data for a game day (written by the scout)
