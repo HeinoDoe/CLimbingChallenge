@@ -62,6 +62,7 @@
   .bi[aria-expanded="true"] { background: var(--accent); color: var(--on-accent); }
   .bi:disabled { opacity: .3; cursor: default; }
   .bchamps { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 10px; padding: 4px 0 6px; }
+  .bchamps[hidden] { display: none; }
   .bchamps span { display: inline-flex; flex-direction: column; align-items: center; width: 52px; text-align: center; }
   .bchamps small { font-size: 11px; color: var(--muted); line-height: 1.2; overflow-wrap: anywhere; }
   .bmore { margin-top: 6px; background: none; border: 0; padding: 0; font: 600 13px var(--body); color: var(--muted); text-decoration: underline; cursor: pointer; }
@@ -810,7 +811,7 @@ function renderBounty() {
   const state = b.status === 'won' ? `<p class="bwin">🏆 Geschafft von ${b.winners.map(who).join(' & ')}: +${b.points} Punkte</p>`
     : b.status === 'expired' ? '<p class="hint">Vorbei, niemand hat es geschafft.</p>'
     : `<p class="hint">Noch ${countdownText(b.endMs)}, bis ${ends}</p>`;
-  const rows = b.progress.filter((r, i) => i < 4 || r.value > 0);
+  const rows = b.progress; // top 4 shown, everyone else behind "Alle anzeigen"
   el.innerHTML = `<h2>🎯 Wochen-Bounty <span class="bpts">+${b.points}</span></h2><p class="bdesc">${esc(b.desc)}</p>${state}
     <ol class="bprog">${rows.map((r, i) => {
       const champs = champsOf(r);
@@ -824,7 +825,10 @@ function renderBounty() {
     box.hidden = !open;
     btn.setAttribute('aria-expanded', open);
   }));
-  el.querySelector('.bmore')?.addEventListener('click', e => { el.classList.add('all'); e.target.remove(); });
+  el.querySelector('.bmore')?.addEventListener('click', e => {
+    const all = el.classList.toggle('all');
+    e.target.textContent = all ? 'Weniger anzeigen' : 'Alle anzeigen';
+  });
 }
 
 // News panel next to the standings: the live roast line + the latest Tagesrückblick.
