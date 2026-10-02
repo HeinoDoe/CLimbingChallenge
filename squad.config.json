@@ -34,6 +34,7 @@
     { "name": "ShaiTing", "riotId": "ShaiTing#0000", "role": "Jungle" },
     { "name": "Alwmson", "riotId": "WNBL#MAYBE", "role": "" },
     { "name": "BigLennen420", "riotId": "Schwänze#EUW", "role": "Top" },
-    { "name": "HennenG", "riotId": "HennenG#YEET", "role": "Support" }
+    { "name": "HennenG", "riotId": "HennenG#YEET", "role": "Support" },
+    { "name": "CrackedPipe", "riotId": "CrackedPipe#EUW", "role": "" }
   ]
 }
