@@ -1,0 +1,21 @@
+name: Inspect short games
+
+on:
+  workflow_dispatch:
+    inputs:
+      riotId:
+        description: "Riot ID (Name#TAG)"
+        required: true
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/inspect.mjs "${{ inputs.riotId }}"
+        env:
+          RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
