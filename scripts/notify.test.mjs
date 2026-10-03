@@ -124,7 +124,7 @@ test("daily post: bounty status and that day's Prime League games", () => {
   assert.deepEqual(e.fields.map((f) => f.name), ['🏆 Leaderboard Solo/Duo', '🎯 Wochen-Bounty: 10 verschiedene Champions (+20)', '⚔️ Prime League']);
   assert.match(e.fields[1].value, /\*\*A\*\* 4\/10 · läuft bis Sonntag, 4\.10\./);
   assert.equal(e.fields[2].value, '✅ Sieg · Spieltag 1 vs BS eSports · Trundle, Wukong');
-  const won = dailyEmbed(day, { players, bounties: [{ ...b, status: 'won', winners: ['a'] }] });
+  const won = dailyEmbed(day, { players, bounties: [{ ...b, status: 'won', winners: ['a'], wonAt: day.startMs + 3600_000 }] });
   assert.equal(won.fields[1].value, 'Geschafft von **A**!');
 });
 
@@ -138,4 +138,20 @@ test('bounty alert: once when a player reaches 9/10, "geschafft" if they jump st
   assert.match(out[0].description, /\*\*A\*\* steht bei 9\/10.*\nSchon geschafft mit: Ahri, Wukong/s);
   assert.match(out[1].description, /\*\*B\*\* hat mit 10 verschiedenen Champions gewonnen und holt \+20 Punkte!/);
   assert.equal(buildNotifications(next, next).length, 0); // only once
+});
+
+test('bingo alerts: "noch 1 Feld" at 4/5 in a line, "BINGO!" for the first full line, each once', () => {
+  const players = [player('a', 'A', 1, 10), player('b', 'B', 2, 5)];
+  const four = { 0: 1, 1: 1, 2: 1, 3: 1 };                       // first row without the last field
+  const bingo = (rows) => ({ id: 'g1', points: 20, winners: 3, status: 'open', startMs: 0, endMs: 9e15, players: rows });
+  const prev = { reviewsKey: 'k', reviews: [], players, bingo: bingo([{ key: 'a', done: {}, lines: [], best: 3 }, { key: 'b', done: {}, lines: [], best: 3 }]) };
+  const next = { reviewsKey: 'k', reviews: [], players, bingo: bingo([
+    { key: 'b', done: { ...four, 4: 1 }, lines: [[0, 1, 2, 3, 4]], best: 5, rank: 1 },
+    { key: 'a', done: four, lines: [], best: 4 },
+  ]) };
+  const out = buildNotifications(prev, next);
+  assert.deepEqual(out.map((e) => e.title), ['🎲 BINGO!', '🎲 Noch 1 Feld bis Bingo']);
+  assert.match(out[0].description, /\*\*B\*\* hat eine volle Reihe und holt \+20 Punkte \(Platz 1 von 3\)/);
+  assert.match(out[1].description, /Fehlt: 4 Drachen als Team in einem Spiel/);
+  assert.equal(buildNotifications(next, next).length, 0);
 });

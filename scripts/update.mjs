@@ -3,9 +3,10 @@
 // Runs on GitHub Actions (see .github/workflows/update.yml) or locally with
 // `npm run update`. Needs Node 18+.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { STATS_VERSION, MODES, activeWindow, emptyMode, addMatch, isRemake, scoreModes, scoreBounties, trackPlaces, dayOf } from './challenge.mjs';
+import { STATS_VERSION, MODES, activeWindow, emptyMode, addMatch, isRemake, scoreModes, scoreBounties, trackPlaces, dayOf, zonedMidnight } from './challenge.mjs';
 import { buildReviews } from './review.mjs';
 import { buildNotifications, queue } from './notify.mjs';
+import { matchFacts, mightHaveElder, teamKilledElder, scoreBingo } from './bingo.mjs';
 
 // Locally the key comes from a .env file next to package.json (never committed).
 try {
@@ -44,6 +45,17 @@ const CAP = cfg.maxNewMatchesPerPlayerPerRun ?? 60;
 // Match stats reset when the scoring code or the challenge dates/queues change.
 const WINDOW_KEY = `${WIN.startMs}|${WIN.endMs}|${QUEUES.join(',')}`;
 const STATS_KEY = `${STATS_VERSION}|${WINDOW_KEY}`;
+
+// Weekly bingo window (challenge.bingo); games inside it get the extra checks below.
+const BINGO = CH.bingo ? (() => {
+  const tz = CH.timeZone || 'Europe/Berlin';
+  const edge = (v, end) => (/^\d{4}-\d{2}-\d{2}$/.test(v) ? zonedMidnight(v, tz, end ? 1 : 0) : Date.parse(v));
+  return { id: CH.bingo.id, startMs: edge(CH.bingo.start, false), endMs: edge(CH.bingo.end, true) };
+})() : null;
+// Everyone's puuid, for "Duo-Sieg mit einem Challenge-Mitspieler".
+const squadPuuids = new Set((previous.players || []).map((p) => p.puuid).filter(Boolean));
+let champById = null; // Data Dragon champion ids -> names, loaded when the mastery snapshot needs it
+const soloScores = new Map(); // puuid -> current Solo/Duo score, cached per run
 
 // ---------- Rate limiting (personal/dev keys: 20 req/s, 100 req/2 min) ----------
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -100,6 +112,44 @@ const rankOf = (e) => (e ? { tier: e.tier, rank: e.rank, lp: e.leaguePoints, win
 const matchNum = (id) => Number(id.split('_')[1]) || 0;
 const keyOf = (riotId) => riotId.toLowerCase().replace(/\s+/g, '');
 
+// Current Solo/Duo score of any player (for "Sieg gegen höher gerankten Lane-Gegner").
+async function soloScore(puuid) {
+  if (!soloScores.has(puuid)) {
+    const entries = (await riot(`https://${PLATFORM}.api.riotgames.com/lol/league/v4/entries/by-puuid/${puuid}`)) || [];
+    soloScores.set(puuid, score(entries.find((e) => e.queueType === 'RANKED_SOLO_5x5')));
+  }
+  return soloScores.get(puuid);
+}
+
+// Extra checks for Solo/Duo games inside the bingo window: Elder Drake (from the timeline,
+// only when it could have happened) and, for wins, whether the lane opponent ranks higher.
+async function bingoContext(m, me, p) {
+  const ctx = { squadPuuids };
+  const t = m.info.gameEndTimestamp || m.info.gameCreation;
+  if (!BINGO || MODES[m.info.queueId] !== 'solo' || t < BINGO.startMs || t >= BINGO.endMs) return ctx;
+  ctx.elder = mightHaveElder(m, me)
+    ? teamKilledElder(await riot(`https://${REGION}.api.riotgames.com/lol/match/v5/matches/${m.metadata.matchId}/timeline`), me.teamId)
+    : false;
+  const opp = me.teamPosition && m.info.participants.find((x) => x.teamId !== me.teamId && x.teamPosition === me.teamPosition);
+  if (me.win && opp) {
+    const theirs = await soloScore(opp.puuid), ours = p.ranks?.solo?.score ?? null;
+    if (theirs != null && ours != null) ctx.higher = theirs > ours;
+  }
+  return ctx;
+}
+
+// Top-20 mastery at the bingo start, frozen for the whole bingo week.
+async function snapshotMastery(p) {
+  if (!BINGO || Date.now() < BINGO.startMs || p.bingoMastery?.id === BINGO.id) return;
+  if (!champById) {
+    const version = (await (await fetch('https://ddragon.leagueoflegends.com/api/versions.json')).json())[0];
+    const data = (await (await fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion.json`)).json()).data;
+    champById = Object.fromEntries(Object.values(data).map((c) => [Number(c.key), c.id]));
+  }
+  const top = (await riot(`https://${PLATFORM}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/${p.puuid}/top?count=20`)) || [];
+  p.bingoMastery = { id: BINGO.id, at: new Date().toISOString(), champs: top.map((x) => champById[x.championId]).filter(Boolean) };
+}
+
 // ---------- Per player ----------
 async function updatePlayer(entry) {
   const [gameName, tagLine] = entry.riotId.split('#').map((s) => s.trim());
@@ -124,6 +174,7 @@ async function updatePlayer(entry) {
     const acc = await riot(`https://${REGION}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`);
     if (!acc) { p.error = 'Riot ID not found. Check the spelling and tag in squad.config.json.'; return p; }
     p.puuid = acc.puuid;
+    squadPuuids.add(p.puuid);
 
     const sum = await riot(`https://${PLATFORM}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${p.puuid}`);
     if (sum) { p.profileIconId = sum.profileIconId; p.summonerLevel = sum.summonerLevel; }
@@ -133,6 +184,7 @@ async function updatePlayer(entry) {
       solo: rankOf(entries.find((e) => e.queueType === 'RANKED_SOLO_5x5')),
       flex: rankOf(entries.find((e) => e.queueType === 'RANKED_FLEX_SR')),
     };
+    await snapshotMastery(p);
 
     // Rank history: a point whenever rank changes, once a day, and on the first run
     // after the challenge starts or ends (the LP baseline and the frozen final LP).
@@ -168,7 +220,7 @@ async function updatePlayer(entry) {
         const me = m.info.participants.find((x) => x.puuid === p.puuid);
         if (!me || isRemake(me)) continue;
         const mode = p.modes[MODES[m.info.queueId]];
-        if (mode) addMatch(mode, m, me);
+        if (mode) addMatch(mode, m, me, matchFacts(m, me, await bingoContext(m, me, p)));
       }
       p.seen = [...seen];
       p.pendingMatches = unseen.length - todo.length;
@@ -194,6 +246,7 @@ try {
   }
   const awards = scoreModes(players, CH, WIN, Date.now());
   const bounties = scoreBounties(players, CH, Date.now()); // adds bounty points and re-ranks
+  const bingo = scoreBingo(players, CH, Date.now());        // adds bingo points and re-ranks
   // Daily reviews: kept between runs; a new day is only written once every game is in.
   const kept = previous.reviewsKey === STATS_KEY ? previous.reviews || [] : [];
   const complete = players.every((p) => !p.error && !p.pendingMatches);
@@ -210,6 +263,7 @@ try {
     challenge: { ...CH, ...WIN },
     awards,
     bounties,
+    bingo,
     reviews,
     reviewsKey: STATS_KEY,
     places,

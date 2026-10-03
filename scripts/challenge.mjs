@@ -5,7 +5,7 @@
 // Bump this whenever addMatch() starts tracking something new. update.mjs then
 // resets every player's match stats and re-processes all challenge matches
 // (puuid and rank history are kept).
-export const STATS_VERSION = 5; // 5: short games that ended in a normal surrender count (only real remakes are skipped)
+export const STATS_VERSION = 6; // 6: bingo facts per game (g.f); 5: short surrender games count
 
 // Each ranked queue is its own competition with its own LP, achievements and awards.
 export const MODES = { 420: 'solo', 440: 'flex' };
@@ -75,7 +75,8 @@ export const isRemake = (me) => Boolean(me.gameEndedInEarlySurrender);
 export const pureQuadras = (me) => Math.max(0, (me.quadraKills || 0) - (me.pentaKills || 0));
 
 // Adds one finished match to a mode's stats / champions / recent / log (p = emptyMode()).
-export function addMatch(p, m, me) {
+// `facts` (from bingo.mjs matchFacts) is stored on the log entry as g.f.
+export function addMatch(p, m, me, facts = null) {
   const s = p.stats;
   const quadras = pureQuadras(me);
   const win = Boolean(me.win);
@@ -110,6 +111,7 @@ export function addMatch(p, m, me) {
   (p.log ??= []).push({
     t: m.info.gameEndTimestamp || m.info.gameCreation, win, champ: me.championName,
     k: me.kills, d: me.deaths, a: me.assists, penta: me.pentaKills || 0, quadra: quadras,
+    ...(facts ? { f: facts } : {}),
   });
 }
 

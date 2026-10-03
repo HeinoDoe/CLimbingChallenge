@@ -70,6 +70,42 @@
   .bprog .bar i { display: block; height: 100%; background: var(--accent); }
   .bprog b { text-align: right; }
   .bwin { font-weight: 700; color: var(--accent); margin: 4px 0; }
+  /* Weekly challenge card: tabs, bingo standings */
+  .wtabs { display: flex; gap: 6px; margin: 0 0 8px; }
+  .wtabs button { font: 600 13px var(--body); color: var(--muted); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; cursor: pointer; }
+  .wtabs button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .wrows { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 2px; }
+  .wrows li.more { display: none; } .bounty.all .wrows li.more { display: block; }
+  .wrows button { width: 100%; display: grid; grid-template-columns: 22px minmax(60px, 1fr) auto 52px; gap: 8px; align-items: center; background: none; border: 0; border-radius: 4px; padding: 3px 4px; font: 14px var(--body); color: var(--ink); text-align: left; cursor: pointer; }
+  .wrows button:hover { background: var(--bg); }
+  .wrows .dots { letter-spacing: 1px; color: var(--accent); font-size: 12px; white-space: nowrap; }
+  .wrows .dots i { font-style: normal; color: var(--line); }
+  .wrows b { text-align: right; font-size: 13px; }
+  .wlink { display: inline-block; margin-top: 8px; font: 600 13px var(--body); color: var(--accent); }
+  /* Bingo card */
+  .bpills { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 12px; }
+  .bpills button { font: 600 14px var(--body); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  .bpills button small { color: var(--muted); font-weight: 500; margin-left: 4px; }
+  .bpills button[aria-pressed="true"] { background: var(--ink); color: var(--bg); } .bpills button[aria-pressed="true"] small { color: var(--bg); opacity: .7; }
+  .bgrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; max-width: 980px; }
+  .bcell { display: flex; flex-direction: column; justify-content: space-between; gap: 10px; min-height: 108px; padding: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; font-size: 14px; font-weight: 600; line-height: 1.3; }
+  .bcell .bsrc { font: 500 11px var(--body); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .bcell.done { background: color-mix(in srgb, var(--up) 22%, var(--panel)); border-color: var(--up); }
+  .bcell.done .bsrc { color: var(--up); text-transform: none; letter-spacing: 0; font-weight: 600; }
+  .bcell.line { border: 2px solid var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent); }
+  .blegend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 10px 0; font-size: 13px; color: var(--muted); }
+  .blegend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .bstats { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 12px; }
+  .bstats div { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; min-width: 120px; }
+  .bstats b { display: block; font: 700 24px var(--display); }
+  .bstats span { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .brules { max-width: 860px; font-size: 14px; }
+  .brules li { margin: 3px 0; }
+  @media (max-width: 640px) {
+    .bgrid { gap: 3px; }
+    .bcell { min-height: 84px; padding: 4px; gap: 4px; font-size: 10px; font-weight: 600; border-radius: 5px; }
+    .bcell .bsrc { font-size: 8px; }
+  }
   .news { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; }
   .news h2 { font-size: 24px; margin: 0; }
   .news .day { color: var(--muted); font-size: 13px; margin: 0 0 6px; }
@@ -570,7 +606,7 @@ const endDay = () => zoneDate(challenge().endMs - 1, { day: 'numeric', month: 'n
 // One line for first-time visitors: how points are earned.
 function howToScore(queue) {
   const pt = challenge().points || {};
-  return `<b>How to score</b> (${queue} games only): 📈 1 LP = 1 point · 🎭 each new champion +${pt.uniqueChampion ?? 5} · 💥 pentakill +${pt.pentakill ?? 10} · 🔥 quadrakill +${pt.quadrakill ?? 5} · 🏆 end awards +${pt.mostGames ?? 10} each on ${endDay()}${(data.bounties || []).some(b => b.queue === (queue === 'Flex' ? 'flex' : 'solo')) ? ' · 🎯 weekly bounty' : ''}`;
+  return `<b>How to score</b> (${queue} games only): 📈 1 LP = 1 point · 🎭 each new champion +${pt.uniqueChampion ?? 5} · 💥 pentakill +${pt.pentakill ?? 10} · 🔥 quadrakill +${pt.quadrakill ?? 5} · 🏆 end awards +${pt.mostGames ?? 10} each on ${endDay()}${queue !== 'Flex' && data.bingo ? ' · 🎲 weekly bingo' : (data.bounties || []).some(b => b.queue === (queue === 'Flex' ? 'flex' : 'solo')) ? ' · 🎯 weekly bounty' : ''}`;
 }
 function countdownText(to) {
   let s = Math.max(0, Math.round((to - Date.now()) / 1000));
@@ -624,8 +660,10 @@ function renderShell() {
         <p class="footnote">${awardsFinal() ? '' : `Faded +points: end awards they'd get if it ended now, added on ${endDay()} `}<i>${quip('standings')}</i></p>
         <p class="how mob">${howToScore('Solo/Duo')}</p>
       </section>
-      <aside class="side"><div class="bounty" id="bounty"></div><div class="news" id="review"></div></aside>
+      <aside class="side"><div class="bounty" id="weekly"></div><div class="news" id="review"></div></aside>
     </div>
+
+    <section id="bingo-sec"></section>
 
     <section>
       <h2>End awards</h2>
@@ -700,6 +738,7 @@ function renderStandings(mode) {
       st >= 3 ? ['🔥', `${st} Siege in Folge`] : null,
       st <= -3 ? ['💀', `Tilt: ${-st} Niederlagen in Folge`] : null,
       P.bountyTotal ? ['🎯', `Wochen-Bounty geschafft: +${P.bountyTotal}`] : null,
+      P.bingo?.points ? ['🎲', `Wochen-Bingo: +${P.bingo.points}`] : null,
     ].filter(Boolean).map(([e, t]) => `<span class="bdg" title="${t}">${e}</span>`).join('');
   };
 
@@ -748,6 +787,16 @@ function champLine(p, mode, a) {
     }).join('')}</div></details></li>`;
 }
 
+// Weekly challenges in the breakdown: each bounty and the bingo.
+function weeklyLines(P, mode, line) {
+  const rows = (data.bounties || []).filter(b => b.queue === mode).map(b => {
+    const mine = P.bounties?.[b.id];
+    return mine ? line(`🎯 ${esc(b.title)}: ${mine.progress}/${mine.target}`, mine.points ? '+' + mine.points : '0', !mine.points) : '';
+  });
+  if (mode === 'solo' && data.bingo && P.bingo) rows.push(line(`🎲 Bingo: ${P.bingo.fields}/25 Felder, ${P.bingo.lines} ${P.bingo.lines === 1 ? 'Reihe' : 'Reihen'}`, P.bingo.points ? '+' + P.bingo.points : '0', !P.bingo.points));
+  return rows.join('') ? `<h4>Weekly challenges</h4><ul>${rows.join('')}</ul>` : '';
+}
+
 function breakdown(p, mode) {
   const P = ptsOf(p, mode), A = P.achievements || {}, L = P.lpInfo, final = awardsFinal(mode);
   const line = (label, value, muted) => `<li class="${muted ? 'muted' : ''}"><span>${label}</span><b>${value}</b></li>`;
@@ -771,12 +820,9 @@ function breakdown(p, mode) {
       ${ach(A.pentakills, 'pentakill', 'pentakills')}
       ${ach(A.quadrakills, 'quadrakill', 'quadrakills')}
     </ul>
-    ${(data.bounties || []).some(b => b.queue === mode) ? `<h4>Bounty</h4><ul>${(data.bounties || []).filter(b => b.queue === mode).map(b => {
-      const mine = P.bounties?.[b.id];
-      return mine ? line(`🎯 ${esc(b.title)}: ${mine.progress}/${mine.target}`, mine.points ? '+' + mine.points : '0', !mine.points) : '';
-    }).join('')}</ul>` : ''}
+    ${weeklyLines(P, mode, line)}
     <h4>End awards ${final ? '' : `<span class="hint">currently leading, locked in on ${endDay()}</span>`}</h4><ul>${awards || line('None yet', '0', true)}</ul>
-    <h4>Total</h4><ul>${line(`${P.lp ?? 0} LP + ${P.achievementsTotal ?? 0} achievements${P.bountyTotal ? ` + ${P.bountyTotal} bounty` : ''}${final ? ` + ${P.awardsTotal ?? 0} awards` : ''}`, '= ' + (P.total ?? 0))}</ul>`;
+    <h4>Total</h4><ul>${line(`${P.lp ?? 0} LP + ${P.achievementsTotal ?? 0} achievements${(P.bountyTotal || 0) + (P.bingo?.points || 0) ? ` + ${(P.bountyTotal || 0) + (P.bingo?.points || 0)} weekly` : ''}${final ? ` + ${P.awardsTotal ?? 0} awards` : ''}`, '= ' + (P.total ?? 0))}</ul>`;
 }
 
 function renderBoards(mode) {
@@ -798,29 +844,59 @@ function renderBoards(mode) {
   }).join('');
 }
 
-// Weekly bounty card above the news: the latest Solo/Duo bounty that has started. The (!)
-// next to each player shows the champions they've won with, in the order they got them.
-function renderBounty() {
-  const el = document.getElementById('bounty');
-  const b = (data.bounties || []).filter(x => x.queue === 'solo' && x.status !== 'upcoming').sort((x, y) => y.startMs - x.startMs)[0];
-  if (!b) { el.remove(); return; }
-  const who = k => esc(nameOf(byKey(k) || { riotId: k }));
+// ---------- Weekly challenge ----------
+// Card above the news with two tabs: this week's bingo standings and past challenges
+// (finished bounties, with each player's winning champions behind the (!)).
+const MEDALS = ['🥇', '🥈', '🥉'];
+const who = k => esc(nameOf(byKey(k) || { riotId: k }));
+const shortWhen = t => new Date(t).toLocaleString('de-DE', { timeZone: challenge().timeZone || 'Europe/Berlin', weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' });
+const pastBounties = () => (data.bounties || []).filter(b => b.queue === 'solo' && (b.status === 'won' || b.status === 'expired' || Date.now() >= b.endMs));
+
+function bingoSummary(bg) {
+  const ends = zoneDate(bg.endMs - 1, { weekday: 'long', day: 'numeric', month: 'numeric' });
+  const state = bg.status === 'done' ? `<p class="bwin">Alle ${bg.winners} Plätze vergeben</p>`
+    : bg.status === 'over' ? '<p class="hint">Vorbei.</p>'
+    : bg.status === 'upcoming' ? `<p class="hint">Startet ${shortWhen(bg.startMs)}</p>`
+    : `<p class="hint">Noch ${countdownText(bg.endMs)}, bis ${ends}</p>`;
+  const winners = bg.players.filter(x => x.rank);
+  return `<h2>🎲 Wochen-Bingo <span class="bpts">+${bg.points}</span></h2>
+    <p class="bdesc">Die ersten ${bg.winners} mit einer vollen Reihe, Spalte oder Diagonale bekommen +${bg.points} Punkte.</p>${state}
+    ${winners.length ? `<p class="bwin">${winners.map(x => `${MEDALS[x.rank - 1]} ${who(x.key)}`).join(' · ')}</p>` : ''}
+    <ol class="wrows">${bg.players.map((x, i) => `<li class="${i >= 5 ? 'more' : ''}"><button type="button" data-key="${esc(x.key)}" title="Bingo-Karte von ${who(x.key)} ansehen">
+      <span>${x.rank ? MEDALS[x.rank - 1] : ''}</span><span>${who(x.key)}</span>
+      <span class="dots" title="Beste Reihe: ${x.best}/5">${'●'.repeat(x.best)}<i>${'●'.repeat(5 - x.best)}</i></span>
+      <b>${Object.keys(x.done).length}/25</b></button></li>`).join('')}</ol>
+    ${bg.players.length > 5 ? '<button type="button" class="bmore">Alle anzeigen</button><br>' : ''}
+    <a class="wlink" href="#bingo-sec">Bingo-Karten ansehen ↓</a>`;
+}
+
+function bountyHtml(b) {
   // Older data has no champion list yet: rebuild it from the game log.
   const champsOf = r => r.champs || [...new Set((modeOf(byKey(r.key) || {}, b.queue).log || [])
     .filter(g => g.win && g.t >= b.startMs && g.t < b.endMs).sort((x, y) => x.t - y.t).map(g => g.champ))];
-  const ends = zoneDate(b.endMs - 1, { weekday: 'long', day: 'numeric', month: 'numeric' });
-  const state = b.status === 'won' ? `<p class="bwin">🏆 Geschafft von ${b.winners.map(who).join(' & ')}: +${b.points} Punkte</p>`
-    : b.status === 'expired' ? '<p class="hint">Vorbei, niemand hat es geschafft.</p>'
-    : `<p class="hint">Noch ${countdownText(b.endMs)}, bis ${ends}</p>`;
-  const rows = b.progress; // top 4 shown, everyone else behind "Alle anzeigen"
-  el.innerHTML = `<h2>🎯 Wochen-Bounty <span class="bpts">+${b.points}</span></h2><p class="bdesc">${esc(b.desc)}</p>${state}
-    <ol class="bprog">${rows.map((r, i) => {
+  const result = b.status === 'won' ? `<p class="bwin">🏆 ${b.winners.map(who).join(' & ')}: +${b.points} Punkte${b.wonAt ? `, geschafft ${shortWhen(b.wonAt)}` : ''}</p>`
+    : b.status === 'expired' ? '<p class="hint">Niemand hat es geschafft.</p>' : `<p class="hint">Läuft noch, bis ${zoneDate(b.endMs - 1, { weekday: 'long', day: 'numeric', month: 'numeric' })}</p>`;
+  return `<h3 style="font:700 19px var(--display);margin:6px 0 0">🎯 ${esc(b.title)} <span class="bpts">+${b.points}</span></h3>
+    <p class="bdesc">${esc(b.desc)}</p>${result}
+    <ol class="bprog">${b.progress.map((r, i) => {
       const champs = champsOf(r);
       return `<li class="${i >= 4 ? 'more' : ''}"><span>${who(r.key)}</span><span class="bar"><i style="width:${Math.min(100, r.value / b.target * 100)}%"></i></span><b>${r.value}/${b.target}</b>
         <button type="button" class="bi" aria-expanded="false" title="Mit welchen Champions?" ${champs.length ? '' : 'disabled'}>!</button>
         <div class="bchamps" hidden>${champs.map((c, n) => `<span title="${n + 1}. ${esc(champName(c))}">${champIcon(c, 26)}<small>${esc(champName(c))}</small></span>`).join('')}</div></li>`;
     }).join('')}</ol>
-    ${rows.length > 4 ? '<button type="button" class="bmore">Alle anzeigen</button>' : ''}`;
+    ${b.progress.length > 4 ? '<button type="button" class="bmore">Alle anzeigen</button>' : ''}`;
+}
+
+function renderWeekly(tab = state.weeklyTab) {
+  const el = document.getElementById('weekly');
+  const bg = data.bingo, past = pastBounties();
+  if (!bg && !past.length) { el.remove(); return; }
+  tab = state.weeklyTab = tab || (bg ? 'now' : 'past');
+  el.classList.remove('all');
+  el.innerHTML = `<div class="wtabs">${bg ? `<button type="button" data-w="now" aria-pressed="${tab === 'now'}">Diese Woche</button>` : ''}
+      ${past.length ? `<button type="button" data-w="past" aria-pressed="${tab === 'past'}">Vergangene (${past.length})</button>` : ''}</div>
+    ${tab === 'now' && bg ? bingoSummary(bg) : past.map(bountyHtml).join('')}`;
+  el.querySelectorAll('[data-w]').forEach(btn => btn.addEventListener('click', () => renderWeekly(btn.dataset.w)));
   el.querySelectorAll('.bi').forEach(btn => btn.addEventListener('click', () => {
     const box = btn.nextElementSibling, open = box.hidden;
     box.hidden = !open;
@@ -830,6 +906,48 @@ function renderBounty() {
     const all = el.classList.toggle('all');
     e.target.textContent = all ? 'Weniger anzeigen' : 'Alle anzeigen';
   });
+  el.querySelectorAll('.wrows [data-key]').forEach(btn => btn.addEventListener('click', () => {
+    renderBingo(btn.dataset.key);
+    document.getElementById('bingo-sec').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
+}
+
+// Full bingo card of one player, below the leaderboard.
+function renderBingo(key = state.bingoKey) {
+  const sec = document.getElementById('bingo-sec');
+  const bg = data.bingo;
+  if (!bg) { sec.remove(); return; }
+  const r = bg.players.find(x => x.key === key) || bg.players[0];
+  state.bingoKey = r.key;
+  const inLine = new Set(r.lines.flat());
+  const pos = { TOP: 'Top', JUNGLE: 'Jungle', MIDDLE: 'Mid', BOTTOM: 'ADC', UTILITY: 'Support' };
+  const from = shortWhen(bg.startMs), to = zoneDate(bg.endMs - 1, { weekday: 'long', day: 'numeric', month: 'numeric' });
+  sec.innerHTML = `<h2>🎲 Wochen-Bingo</h2>
+    <p class="lede">Wird automatisch aus euren Solo/Duo-Games abgehakt. Die ersten ${bg.winners} mit einer vollen Reihe, Spalte oder Diagonale bekommen +${bg.points} Punkte.</p>
+    <div class="bpills">${bg.players.map(x => `<button type="button" data-key="${esc(x.key)}" aria-pressed="${x.key === r.key}">${x.rank ? MEDALS[x.rank - 1] + ' ' : ''}${who(x.key)}<small>${Object.keys(x.done).length}/25</small></button>`).join('')}</div>
+    <div class="bstats">
+      <div><b>${Object.keys(r.done).length}/25</b><span>Felder</span></div>
+      <div><b>${r.lines.length}</b><span>Bingos</span></div>
+      <div><b>${r.best}/5</b><span>Beste Reihe</span></div>
+      <div><b style="color:var(--accent)">${r.points ? '+' + r.points : '–'}</b><span>${r.rank ? `Platz ${r.rank}` : 'Punkte'}</span></div>
+    </div>
+    <div class="bgrid">${bg.cells.map((c, i) => {
+      const t = r.done[i];
+      return `<div class="bcell ${t != null ? 'done' : ''} ${inLine.has(i) ? 'line' : ''}"><span>${esc(c.text)}</span><span class="bsrc">${t != null ? '✓ ' + shortWhen(t) : esc(c.src)}</span></div>`;
+    }).join('')}</div>
+    <div class="blegend"><span><i style="background:var(--up)"></i>Erledigt</span><span><i style="background:var(--accent)"></i>Teil einer Bingo-Reihe</span></div>
+    <details class="dig"><summary>Regeln</summary><ul class="brules">
+      <li>Nur Ranked Solo/Duo zählt, gespielt von ${from} bis ${to}.</li>
+      <li>Ein Spiel darf mehrere Felder abhaken (z. B. ein Sieg ohne Tod unter 22 Minuten).</li>
+      <li>„Lane-Gegner“ ist der Spieler auf derselben Position im gegnerischen Team.</li>
+      <li>Alles wird automatisch aus den Riot-Daten abgehakt, alle 10 Minuten. Keine Screenshots nötig.</li>
+      <li>„Top 20 Mastery“: wurde beim Bingo-Start automatisch bei Riot gespeichert${r.hasMastery ? '' : ' (für diesen Spieler noch nicht)'}.</li>
+      <li>„Off-Role“: die eingetragene Rolle, sonst die meistgespielte Position. ${who(r.key)}: <b>${pos[r.mainPos] || 'noch unbekannt'}</b>.</li>
+      <li>„Höher gerankt“: der Solo/Duo-Rang des Lane-Gegners direkt nach dem Spiel.</li>
+      <li>„Baron und Elder“: Elder Drake wird aus der Riot-Timeline erkannt.</li>
+      <li>„Bestes KDA aller 10 Spieler“ ersetzt das OP.GG-MVP-Abzeichen, das nicht über die Riot-API abrufbar ist.</li>
+    </ul></details>`;
+  sec.querySelectorAll('.bpills [data-key]').forEach(btn => btn.addEventListener('click', () => renderBingo(btn.dataset.key)));
 }
 
 // News panel next to the standings: the live roast line + the latest Tagesrückblick.
@@ -1256,7 +1374,7 @@ async function main() {
   document.title = data.squadName || 'Squad ladder';
   if (!data.challenge || !data.awards?.solo) return renderEmpty('The data file is from an older version. Run the "Update squad data" workflow once.');
   renderUpdated(); setInterval(renderUpdated, 30_000);
-  renderShell(); renderBounty(); renderReview(); renderStandings('solo'); renderBoards('solo'); renderWall(); renderWeek(); renderChart(); renderPlayers(); renderFeed('solo');
+  renderShell(); renderWeekly(); renderBingo(); renderReview(); renderStandings('solo'); renderBoards('solo'); renderWall(); renderWeek(); renderChart(); renderPlayers(); renderFeed('solo');
   renderFlexTab(); renderPool();
 }
 document.getElementById('ticker').textContent = (TICKER.join('   ·   ') + '   ·   ').repeat(2); // doubled so the loop is seamless

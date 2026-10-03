@@ -37,6 +37,8 @@ Win rate, both KDA awards, vision and deaths per game need at least `minGames` (
 
 **Weekly bounties** (`challenge.bounties`): a side quest per week. The first player to win games on `target` different champions between `start` and `end` gets `points` right away (players who reach it in the same game share it). Week 1: 10 different champions, +20, until Sunday 4.10. The bounty card sits above the news; the (!) next to each player shows the champions they've won with so far. The daily Discord post shows the progress, and reaching 9/10 triggers a heads-up post. To add next week's bounty, add another entry with a new `id`, `start` and `end`.
 
+**Weekly bingo** (`challenge.bingo`, week 2: 3.10. 07:25 until Friday 9.10.): a 5×5 card of game goals ("Sieg ohne einen einzigen Tod", "4 Drachen als Team", …), checked automatically from Solo/Duo games in the window. The first `winners` (3) players to complete a row, column or diagonal get `points` (+20) each. The fields live in `scripts/bingo.mjs` (`CELLS`); per game, `matchFacts()` stores what they need on the game's log entry. A few fields need extra Riot calls, but only for games inside the bingo window: the Elder Drake check reads the match timeline (only when our team took a Baron and someone reached dragon soul), "höher gerankter Lane-Gegner" looks up the opponent's Solo/Duo rank right after the game, and the top-20 mastery is fetched once at the bingo start and frozen. "Off-Role" uses the player's configured role, else their most played position. The card is in the weekly box above the news (tab "Diese Woche"), with full cards per player below the leaderboard; past challenges are under "Vergangene". Discord gets a post once per player at 4/5 in a line and for their first bingo.
+
 Only ranked games played between the start and end date count. Remakes don't count (Riot's early-surrender flag), but short games that ended in a normal surrender, e.g. after a leaver, do.
 
 **Trial run:** with `challenge.preview.start` set, the site scores a trial from that day until the real start, so you can see live results early. When the real challenge starts, everything resets automatically: game stats are counted again from the real start and the LP baseline is taken fresh. Remove `preview` if you don't want a trial.
@@ -135,6 +137,7 @@ Everything lives in `squad.config.json`:
 | `challenge.start` / `challenge.end` | First and last day of the challenge (`YYYY-MM-DD`, both days included, midnight in `challenge.timeZone`). A full timestamp like `2026-09-30T17:40:00+02:00` starts at that exact moment. Changing them re-processes all games on the next runs. |
 | `challenge.timeZone` | Time zone for the dates. Default `Europe/Berlin`. |
 | `challenge.bounties` | Weekly bounties: `id`, `type` (`distinctChampionWins`), `queue` (`solo`/`flex`), `title`, `desc`, `target`, `points`, `start`, `end`. |
+| `challenge.bingo` | Weekly bingo: `id`, `title`, `points`, `winners`, `start`, `end`. The 25 fields are in `scripts/bingo.mjs`. |
 | `challenge.preview.start` | Optional trial run from this day until `challenge.start`. Resets automatically when the real challenge starts. |
 | `challenge.minGames` | Games needed for the rate-based awards (win rate, KDA, vision, deaths). |
 | `challenge.oneTrickMinGames` | Games on one champion needed for the one-trick award. |
@@ -166,6 +169,8 @@ scripts/review.mjs              the daily review highlights
 scripts/review.test.mjs         daily review tests (npm test)
 scripts/notify.mjs              the daily Discord post (built in the update, sent by the workflow)
 scripts/notify.test.mjs         tests for Discord posts, results and ▲/▼ places
+scripts/bingo.mjs               the weekly bingo: fields, per-game facts, scoring
+scripts/bingo.test.mjs          bingo tests (npm test)
 scripts/results.mjs             finds our Prime League games and saves the results
 scripts/riot.mjs                small Riot API client used by scout.mjs and results.mjs
 scripts/make-sample.mjs         builds docs/data.sample.json (npm run sample)
