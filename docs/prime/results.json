@@ -96,9 +96,103 @@
      "ourBans": [],
      "theirBans": [],
      "vsOpponent": true
+    },
+    {
+     "id": "EUW1_8003871364",
+     "t": 1791139304984,
+     "duration": 2199,
+     "win": false,
+     "side": "red",
+     "us": [
+      {
+       "name": "ShaiTing",
+       "champ": "Malphite",
+       "pos": "TOP",
+       "k": 2,
+       "d": 7,
+       "a": 10
+      },
+      {
+       "name": "Smette",
+       "champ": "Khazix",
+       "pos": "JUNGLE",
+       "k": 3,
+       "d": 5,
+       "a": 12
+      },
+      {
+       "name": "Kolbe",
+       "champ": "Ryze",
+       "pos": "MIDDLE",
+       "k": 3,
+       "d": 7,
+       "a": 10
+      },
+      {
+       "name": "Heino",
+       "champ": "Yunara",
+       "pos": "BOTTOM",
+       "k": 19,
+       "d": 7,
+       "a": 9
+      },
+      {
+       "name": "HennenG",
+       "champ": "Leona",
+       "pos": "UTILITY",
+       "k": 4,
+       "d": 8,
+       "a": 22
+      }
+     ],
+     "them": [
+      {
+       "name": "Ruvex",
+       "champ": "Ambessa",
+       "pos": "TOP",
+       "k": 2,
+       "d": 5,
+       "a": 9
+      },
+      {
+       "name": "Señor Flausch",
+       "champ": "XinZhao",
+       "pos": "JUNGLE",
+       "k": 7,
+       "d": 6,
+       "a": 15
+      },
+      {
+       "name": "WoFu Ven",
+       "champ": "Yasuo",
+       "pos": "MIDDLE",
+       "k": 6,
+       "d": 4,
+       "a": 10
+      },
+      {
+       "name": "Don Namaste",
+       "champ": "Kaisa",
+       "pos": "BOTTOM",
+       "k": 19,
+       "d": 7,
+       "a": 5
+      },
+      {
+       "name": "Lord Steve",
+       "champ": "Nautilus",
+       "pos": "UTILITY",
+       "k": 0,
+       "d": 9,
+       "a": 29
+      }
+     ],
+     "ourBans": [],
+     "theirBans": [],
+     "vsOpponent": true
     }
    ],
-   "checkedAt": "2026-10-04T18:41:26.575Z"
+   "checkedAt": "2026-10-04T18:51:27.886Z"
   }
  }
 }
