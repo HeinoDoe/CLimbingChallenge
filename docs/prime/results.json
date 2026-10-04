@@ -2,8 +2,103 @@
  "days": {
   "1": {
    "final": false,
-   "games": [],
-   "checkedAt": "2026-10-04T17:41:08.503Z"
+   "games": [
+    {
+     "id": "EUW1_8003815056",
+     "t": 1791136226465,
+     "duration": 1926,
+     "win": false,
+     "side": "red",
+     "us": [
+      {
+       "name": "ShaiTing",
+       "champ": "KSante",
+       "pos": "TOP",
+       "k": 5,
+       "d": 4,
+       "a": 6
+      },
+      {
+       "name": "Smette",
+       "champ": "Viego",
+       "pos": "JUNGLE",
+       "k": 11,
+       "d": 2,
+       "a": 2
+      },
+      {
+       "name": "Kolbe",
+       "champ": "Galio",
+       "pos": "MIDDLE",
+       "k": 2,
+       "d": 4,
+       "a": 11
+      },
+      {
+       "name": "Heino",
+       "champ": "Sivir",
+       "pos": "BOTTOM",
+       "k": 2,
+       "d": 7,
+       "a": 7
+      },
+      {
+       "name": "HennenG",
+       "champ": "Lulu",
+       "pos": "UTILITY",
+       "k": 0,
+       "d": 5,
+       "a": 10
+      }
+     ],
+     "them": [
+      {
+       "name": "Ruvex",
+       "champ": "Ornn",
+       "pos": "TOP",
+       "k": 1,
+       "d": 5,
+       "a": 6
+      },
+      {
+       "name": "Señor Flausch",
+       "champ": "JarvanIV",
+       "pos": "JUNGLE",
+       "k": 1,
+       "d": 4,
+       "a": 14
+      },
+      {
+       "name": "WoFu Ven",
+       "champ": "Syndra",
+       "pos": "MIDDLE",
+       "k": 8,
+       "d": 6,
+       "a": 4
+      },
+      {
+       "name": "Don Namaste",
+       "champ": "Ezreal",
+       "pos": "BOTTOM",
+       "k": 11,
+       "d": 3,
+       "a": 8
+      },
+      {
+       "name": "Lord Steve",
+       "champ": "Rell",
+       "pos": "UTILITY",
+       "k": 1,
+       "d": 2,
+       "a": 17
+      }
+     ],
+     "ourBans": [],
+     "theirBans": [],
+     "vsOpponent": true
+    }
+   ],
+   "checkedAt": "2026-10-04T17:51:12.598Z"
   }
  }
 }
