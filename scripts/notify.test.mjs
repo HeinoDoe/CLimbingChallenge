@@ -143,15 +143,24 @@ test('bounty alert: once when a player reaches 9/10, "geschafft" if they jump st
 test('bingo alerts: "noch 1 Feld" at 4/5 in a line, "BINGO!" for the first full line, each once', () => {
   const players = [player('a', 'A', 1, 10), player('b', 'B', 2, 5)];
   const four = { 0: 1, 1: 1, 2: 1, 3: 1 };                       // first row without the last field
-  const bingo = (rows) => ({ id: 'g1', points: 20, winners: 3, status: 'open', startMs: 0, endMs: 9e15, players: rows });
+  const cells = ['Sieg ohne einen einzigen Tod', 'b', 'c', 'd', '4 Drachen als Team in einem Spiel'].map((text) => ({ text }));
+  const bingo = (rows) => ({ id: 'g1', title: 'Bingo #1', points: 20, winners: 3, status: 'open', startMs: 0, endMs: 9e15, cells, players: rows });
   const prev = { reviewsKey: 'k', reviews: [], players, bingo: bingo([{ key: 'a', done: {}, lines: [], best: 3 }, { key: 'b', done: {}, lines: [], best: 3 }]) };
   const next = { reviewsKey: 'k', reviews: [], players, bingo: bingo([
     { key: 'b', done: { ...four, 4: 1 }, lines: [[0, 1, 2, 3, 4]], best: 5, rank: 1 },
     { key: 'a', done: four, lines: [], best: 4 },
   ]) };
   const out = buildNotifications(prev, next);
-  assert.deepEqual(out.map((e) => e.title), ['🎲 BINGO!', '🎲 Noch 1 Feld bis Bingo']);
+  assert.deepEqual(out.map((e) => e.title), ['🎲 BINGO! · Bingo #1', '🎲 Noch 1 Feld bis Bingo · Bingo #1']);
   assert.match(out[0].description, /\*\*B\*\* hat eine volle Reihe und holt \+20 Punkte \(Platz 1 von 3\)/);
   assert.match(out[1].description, /Fehlt: 4 Drachen als Team in einem Spiel/);
   assert.equal(buildNotifications(next, next).length, 0);
+});
+
+test('finished bingos stay quiet (no alerts once all places are taken)', () => {
+  const players = [player('a', 'A', 1, 10)];
+  const bg = (status, rows) => ({ id: 'g1', title: 'Bingo #1', points: 20, winners: 3, status, startMs: 0, endMs: 9e15, cells: [], players: rows });
+  const prev = { reviewsKey: 'k', reviews: [], players, bingos: [bg('done', [{ key: 'a', done: {}, lines: [], best: 3 }])] };
+  const next = { reviewsKey: 'k', reviews: [], players, bingos: [bg('done', [{ key: 'a', done: { 0: 1, 1: 1, 2: 1, 3: 1, 4: 1 }, lines: [[0, 1, 2, 3, 4]], best: 5 }])] };
+  assert.equal(buildNotifications(prev, next).length, 0);
 });

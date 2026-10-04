@@ -2,7 +2,9 @@
 // Run with `npm test`.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { CELLS, LINES, matchFacts, teamKilledElder, mightHaveElder, mainPosition, scoreBingo } from './bingo.mjs';
+import { CARDS, LINES, matchFacts, teamKilledElder, mightHaveElder, mainPosition, scoreBingos } from './bingo.mjs';
+
+const CELLS = CARDS.week2.cells;
 
 const P = (puuid, teamId, pos, o = {}) => ({
   puuid, teamId, teamPosition: pos, win: teamId === 100, kills: o.k ?? 2, deaths: o.d ?? 2, assists: o.a ?? 2,
@@ -41,7 +43,8 @@ test('elder: timeline check, and only fetched when it could have happened', () =
 });
 
 const W = { start: '2026-10-03T07:30:00+02:00', end: '2026-10-09' };
-const CH = { timeZone: 'Europe/Berlin', bingo: { id: 'b2', title: 'Bingo', points: 20, winners: 3, ...W } };
+const CH = { timeZone: 'Europe/Berlin', bingos: [{ id: 'b2', card: 'week2', title: 'Bingo', points: 20, winners: 3, ...W }] };
+const scoreBingo = (players, ch, now) => scoreBingos(players, ch, now)[0];
 const t0 = Date.parse('2026-10-03T08:00:00+02:00');
 const base = { pos: 'MIDDLE', dur: 1500, cs: 0, gold: 0, ka: -1, dmg: 0, dmgTop: false, vision: false, worstKda: false, kda10: false, kp: 0.3, quadra: false, drakes: 0, duo: false };
 let n = 0;
@@ -94,4 +97,63 @@ test('off-role uses the configured role, else the most played position; top-20 m
   const noRole = pl('b', [game({}, { pos: 'BOTTOM' }), game({}, { pos: 'BOTTOM' }), game({}, { pos: 'TOP' })], { role: '' });
   assert.equal(mainPosition(noRole), 'BOTTOM');
   assert.equal(LINES.length, 12);
+});
+
+// ---------- Bingo 2 (card "week3") ----------
+const W3 = CARDS.week3.cells;
+const idx3 = (text) => W3.findIndex((c) => c.text.startsWith(text));
+
+test('week3 facts: solo kills, triple, first tower, lost inhib, damage share, surrender, CC/vision/building bests', () => {
+  const me = { ...P('me', 100, 'TOP', { k: 6, d: 1, a: 4, dmg: 20000, vs: 50 }), tripleKills: 1, firstTowerAssist: true, timeCCingOthers: 60, damageDealtToBuildings: 9000, gameEndedInSurrender: true, challenges: { soloKills: 3 } };
+  const others = [P('x1', 100, 'JUNGLE', { dmg: 10000 }), P('x2', 100, 'MIDDLE', { dmg: 10000 }), P('x3', 100, 'BOTTOM', { dmg: 15000 }), P('x4', 100, 'UTILITY', { dmg: 5000 }),
+    { ...P('opp', 200, 'TOP', { k: 2 }), timeCCingOthers: 30 }, P('e2', 200, 'JUNGLE'), P('e3', 200, 'MIDDLE'), P('e4', 200, 'BOTTOM'), P('e5', 200, 'UTILITY')];
+  const m = match([me, ...others]);
+  m.info.teams[1].objectives.inhibitor = { kills: 1 };
+  const f = matchFacts(m, me, { rankDiff: 250 });
+  assert.deepEqual([f.solo, f.triple, f.firstTower, f.lostInhib, f.surr, f.cc10, f.vision10, f.build10], [3, true, true, true, true, true, true, true]);
+  assert.equal(f.dmgShare, 20000 / 60000);
+  assert.deepEqual([f.kd, f.rankDiff, f.higher], [4, 250, true]);
+});
+
+const CH3 = { timeZone: 'Europe/Berlin', bingos: [{ id: 'b3', card: 'week3', title: 'Bingo #2', points: 20, winners: 5, start: '2026-10-04T10:00:00+02:00', end: '2026-10-14' }] };
+const t3 = Date.parse('2026-10-04T11:00:00+02:00');
+let k3 = 0;
+const g3 = (o = {}, f = {}) => ({ t: t3 + (k3++) * 3600_000, win: true, champ: 'Ahri', k: 3, d: 3, a: 3, ...o, f: { ...base, ...f } });
+
+test('week3 sequences: 4 in a row, win after 3 losses, 4 wins a day, 3 positions, 3 duo wins', () => {
+  k3 = 0;
+  const games = [g3({ win: false }), g3({ win: false }), g3({ win: false }), g3({}, { pos: 'TOP', duo: true }), g3({}, { pos: 'JUNGLE', duo: true }), g3({}, { duo: true }), g3()];
+  const [s] = scoreBingos([pl('a', games)], CH3, t3 + 86_400_000);
+  const done = s.players[0].done;
+  assert.equal(done[idx3('Sieg nach 3 Niederlagen')], games[3].t);
+  assert.equal(done[idx3('Siege auf 3 verschiedenen')], games[5].t); // TOP, JUNGLE, MIDDLE
+  assert.equal(done[idx3('3 Duo-Siege')], games[5].t);
+  assert.equal(done[idx3('4 Siege in Folge')], games[6].t);
+  assert.equal(done[idx3('4 Siege an einem Tag')], games[6].t);
+});
+
+test('week3 single-game fields: lane sweep, 2+ divisions, night owl (German time), top-40 mastery', () => {
+  k3 = 0;
+  const sweep = g3({}, { kd: 1, cs: 5, gold: 100, dmg: 50 });
+  const notSweep = g3({}, { kd: 1, cs: 5, gold: -100, dmg: 50 });
+  const owl = g3({ t: Date.parse('2026-10-06T03:30:00+02:00') });          // 03:30 in Berlin
+  const notOwl = g3({ t: Date.parse('2026-10-06T05:30:00Z') });           // 07:30 in Berlin
+  const big = g3({ champ: 'Garen' }, { rankDiff: 210 });
+  const p = pl('a', [notSweep, notOwl, sweep, owl, big], { bingoMastery: { b3: { champs: ['Ahri'] } } });
+  const [s] = scoreBingos([p], CH3, Date.parse('2026-10-07T12:00:00+02:00'));
+  const done = s.players[0].done;
+  assert.equal(done[idx3('Lane-Sieg')], sweep.t);
+  assert.equal(done[idx3('🦉 Nachteule')], owl.t);
+  assert.equal(done[idx3('Sieg gegen Lane-Gegner, der 2+')], big.t);
+  assert.equal(done[idx3('Sieg mit einem Champ außerhalb deiner Top 40')], big.t); // Garen isn't in the snapshot
+  assert.equal(W3[12].text, 'Quadra Kill'); // the hardest field sits in the middle
+});
+
+test('week3: the first 5 bingos get +20, the 6th does not', () => {
+  const row = () => [g3({ d: 0, k: 8, a: 4 }), g3({}, { cs: 120 }), g3({}, { solo: 3 }), g3({}, { dur: 2500 }), g3({}, { lostInhib: true })];
+  const ps = ['a', 'b', 'c', 'd', 'e', 'f'].map((key, i) => { k3 = i * 10; return pl(key, row()); });
+  const [s] = scoreBingos(ps, CH3, Date.parse('2026-10-08T12:00:00+02:00'));
+  assert.deepEqual(ps.map((p) => p.points.solo.total), [20, 20, 20, 20, 20, 0]);
+  assert.equal(s.status, 'done');
+  assert.deepEqual(ps.map((p) => p.points.solo.bingos.b3.lines), [1, 1, 1, 1, 1, 1]);
 });

@@ -606,7 +606,7 @@ const endDay = () => zoneDate(challenge().endMs - 1, { day: 'numeric', month: 'n
 // One line for first-time visitors: how points are earned.
 function howToScore(queue) {
   const pt = challenge().points || {};
-  return `<b>How to score</b> (${queue} games only): 📈 1 LP = 1 point · 🎭 each new champion +${pt.uniqueChampion ?? 5} · 💥 pentakill +${pt.pentakill ?? 10} · 🔥 quadrakill +${pt.quadrakill ?? 5} · 🏆 end awards +${pt.mostGames ?? 10} each on ${endDay()}${queue !== 'Flex' && data.bingo ? ' · 🎲 weekly bingo' : (data.bounties || []).some(b => b.queue === (queue === 'Flex' ? 'flex' : 'solo')) ? ' · 🎯 weekly bounty' : ''}`;
+  return `<b>How to score</b> (${queue} games only): 📈 1 LP = 1 point · 🎭 each new champion +${pt.uniqueChampion ?? 5} · 💥 pentakill +${pt.pentakill ?? 10} · 🔥 quadrakill +${pt.quadrakill ?? 5} · 🏆 end awards +${pt.mostGames ?? 10} each on ${endDay()}${queue !== 'Flex' && currentBingo() ? ' · 🎲 weekly bingo' : (data.bounties || []).some(b => b.queue === (queue === 'Flex' ? 'flex' : 'solo')) ? ' · 🎯 weekly bounty' : ''}`;
 }
 function countdownText(to) {
   let s = Math.max(0, Math.round((to - Date.now()) / 1000));
@@ -738,7 +738,7 @@ function renderStandings(mode) {
       st >= 3 ? ['🔥', `${st} Siege in Folge`] : null,
       st <= -3 ? ['💀', `Tilt: ${-st} Niederlagen in Folge`] : null,
       P.bountyTotal ? ['🎯', `Wochen-Bounty geschafft: +${P.bountyTotal}`] : null,
-      P.bingo?.points ? ['🎲', `Wochen-Bingo: +${P.bingo.points}`] : null,
+      bingoPoints(P) ? ['🎲', `Bingo: +${bingoPoints(P)}`] : null,
     ].filter(Boolean).map(([e, t]) => `<span class="bdg" title="${t}">${e}</span>`).join('');
   };
 
@@ -793,7 +793,10 @@ function weeklyLines(P, mode, line) {
     const mine = P.bounties?.[b.id];
     return mine ? line(`🎯 ${esc(b.title)}: ${mine.progress}/${mine.target}`, mine.points ? '+' + mine.points : '0', !mine.points) : '';
   });
-  if (mode === 'solo' && data.bingo && P.bingo) rows.push(line(`🎲 Bingo: ${P.bingo.fields}/25 Felder, ${P.bingo.lines} ${P.bingo.lines === 1 ? 'Reihe' : 'Reihen'}`, P.bingo.points ? '+' + P.bingo.points : '0', !P.bingo.points));
+  if (mode === 'solo') for (const bg of bingosOf()) {
+    const mine = P.bingos?.[bg.id] || (P.bingo && !data.bingos ? P.bingo : null);
+    if (mine) rows.push(line(`🎲 ${esc(bg.title)}: ${mine.fields}/25 Felder, ${mine.lines} ${mine.lines === 1 ? 'Reihe' : 'Reihen'}`, mine.points ? '+' + mine.points : '0', !mine.points));
+  }
   return rows.join('') ? `<h4>Weekly challenges</h4><ul>${rows.join('')}</ul>` : '';
 }
 
@@ -822,7 +825,7 @@ function breakdown(p, mode) {
     </ul>
     ${weeklyLines(P, mode, line)}
     <h4>End awards ${final ? '' : `<span class="hint">currently leading, locked in on ${endDay()}</span>`}</h4><ul>${awards || line('None yet', '0', true)}</ul>
-    <h4>Total</h4><ul>${line(`${P.lp ?? 0} LP + ${P.achievementsTotal ?? 0} achievements${(P.bountyTotal || 0) + (P.bingo?.points || 0) ? ` + ${(P.bountyTotal || 0) + (P.bingo?.points || 0)} weekly` : ''}${final ? ` + ${P.awardsTotal ?? 0} awards` : ''}`, '= ' + (P.total ?? 0))}</ul>`;
+    <h4>Total</h4><ul>${line(`${P.lp ?? 0} LP + ${P.achievementsTotal ?? 0} achievements${(P.bountyTotal || 0) + bingoPoints(P) ? ` + ${(P.bountyTotal || 0) + bingoPoints(P)} weekly` : ''}${final ? ` + ${P.awardsTotal ?? 0} awards` : ''}`, '= ' + (P.total ?? 0))}</ul>`;
 }
 
 function renderBoards(mode) {
@@ -851,23 +854,29 @@ const MEDALS = ['🥇', '🥈', '🥉'];
 const who = k => esc(nameOf(byKey(k) || { riotId: k }));
 const shortWhen = t => new Date(t).toLocaleString('de-DE', { timeZone: challenge().timeZone || 'Europe/Berlin', weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' });
 const pastBounties = () => (data.bounties || []).filter(b => b.queue === 'solo' && (b.status === 'won' || b.status === 'expired' || Date.now() >= b.endMs));
+// All bingos (older data had a single `bingo`); the current one is the latest that is open or about to start.
+const bingosOf = () => data.bingos || (data.bingo ? [data.bingo] : []);
+const currentBingo = () => bingosOf().filter(b => b.status === 'open' || b.status === 'upcoming').at(-1) || null;
+const pastBingos = () => bingosOf().filter(b => b !== currentBingo() && b.status !== 'upcoming');
+const bingoPoints = P => P.bingos ? Object.values(P.bingos).reduce((n, b) => n + (b.points || 0), 0) : P.bingo?.points || 0;
 
-function bingoSummary(bg) {
+function bingoSummary(bg, past = false) {
   const ends = zoneDate(bg.endMs - 1, { weekday: 'long', day: 'numeric', month: 'numeric' });
   const state = bg.status === 'done' ? `<p class="bwin">Alle ${bg.winners} Plätze vergeben</p>`
     : bg.status === 'over' ? '<p class="hint">Vorbei.</p>'
     : bg.status === 'upcoming' ? `<p class="hint">Startet ${shortWhen(bg.startMs)}</p>`
     : `<p class="hint">Noch ${countdownText(bg.endMs)}, bis ${ends}</p>`;
   const winners = bg.players.filter(x => x.rank);
-  return `<h2>🎲 Wochen-Bingo <span class="bpts">+${bg.points}</span></h2>
+  const H = past ? 'h3' : 'h2';
+  return `<${H} style="${past ? 'font:700 19px var(--display);margin:10px 0 0' : ''}">🎲 ${esc(bg.title)} <span class="bpts">+${bg.points}</span></${H}>
     <p class="bdesc">Die ersten ${bg.winners} mit einer vollen Reihe, Spalte oder Diagonale bekommen +${bg.points} Punkte.</p>${state}
-    ${winners.length ? `<p class="bwin">${winners.map(x => `${MEDALS[x.rank - 1]} ${who(x.key)}`).join(' · ')}</p>` : ''}
-    <ol class="wrows">${bg.players.map((x, i) => `<li class="${i >= 5 ? 'more' : ''}"><button type="button" data-key="${esc(x.key)}" title="Bingo-Karte von ${who(x.key)} ansehen">
-      <span>${x.rank ? MEDALS[x.rank - 1] : ''}</span><span>${who(x.key)}</span>
+    ${winners.length ? `<p class="bwin">${winners.map(x => `${MEDALS[x.rank - 1] || '🏅'} ${who(x.key)}`).join(' · ')}</p>` : ''}
+    <ol class="wrows">${bg.players.map((x, i) => `<li class="${i >= 5 ? 'more' : ''}"><button type="button" data-key="${esc(x.key)}" data-bingo="${esc(bg.id)}" title="Bingo-Karte von ${who(x.key)} ansehen">
+      <span>${x.rank ? (MEDALS[x.rank - 1] || '🏅') : ''}</span><span>${who(x.key)}</span>
       <span class="dots" title="Beste Reihe: ${x.best}/5">${'●'.repeat(x.best)}<i>${'●'.repeat(5 - x.best)}</i></span>
       <b>${Object.keys(x.done).length}/25</b></button></li>`).join('')}</ol>
     ${bg.players.length > 5 ? '<button type="button" class="bmore">Alle anzeigen</button><br>' : ''}
-    <a class="wlink" href="#bingo-sec">Bingo-Karten ansehen ↓</a>`;
+    ${past ? '' : '<a class="wlink" href="#bingo-sec">Bingo-Karten ansehen ↓</a>'}`;
 }
 
 function bountyHtml(b) {
@@ -889,42 +898,48 @@ function bountyHtml(b) {
 
 function renderWeekly(tab = state.weeklyTab) {
   const el = document.getElementById('weekly');
-  const bg = data.bingo, past = pastBounties();
-  if (!bg && !past.length) { el.remove(); return; }
+  const bg = currentBingo(), pastB = pastBingos(), past = pastBounties(), nPast = pastB.length + past.length;
+  if (!bg && !nPast) { el.remove(); return; }
+  tab = state.weeklyTab = (tab === 'now' && !bg) || (tab === 'past' && !nPast) ? null : tab;
   tab = state.weeklyTab = tab || (bg ? 'now' : 'past');
   el.classList.remove('all');
   el.innerHTML = `<div class="wtabs">${bg ? `<button type="button" data-w="now" aria-pressed="${tab === 'now'}">Diese Woche</button>` : ''}
-      ${past.length ? `<button type="button" data-w="past" aria-pressed="${tab === 'past'}">Vergangene (${past.length})</button>` : ''}</div>
-    ${tab === 'now' && bg ? bingoSummary(bg) : past.map(bountyHtml).join('')}`;
+      ${nPast ? `<button type="button" data-w="past" aria-pressed="${tab === 'past'}">Vergangene (${nPast})</button>` : ''}</div>
+    ${tab === 'now' ? bingoSummary(bg) : [...pastB.slice().reverse().map(x => bingoSummary(x, true)), ...past.map(bountyHtml)].join('<hr style="border:0;border-top:1px dashed var(--line);margin:12px 0">')}`;
   el.querySelectorAll('[data-w]').forEach(btn => btn.addEventListener('click', () => renderWeekly(btn.dataset.w)));
   el.querySelectorAll('.bi').forEach(btn => btn.addEventListener('click', () => {
     const box = btn.nextElementSibling, open = box.hidden;
     box.hidden = !open;
     btn.setAttribute('aria-expanded', open);
   }));
-  el.querySelector('.bmore')?.addEventListener('click', e => {
+  el.querySelectorAll('.bmore').forEach(btn => btn.addEventListener('click', e => {
     const all = el.classList.toggle('all');
-    e.target.textContent = all ? 'Weniger anzeigen' : 'Alle anzeigen';
-  });
+    el.querySelectorAll('.bmore').forEach(x => { x.textContent = all ? 'Weniger anzeigen' : 'Alle anzeigen'; });
+  }));
   el.querySelectorAll('.wrows [data-key]').forEach(btn => btn.addEventListener('click', () => {
-    renderBingo(btn.dataset.key);
+    renderBingo(btn.dataset.key, btn.dataset.bingo);
     document.getElementById('bingo-sec').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }));
 }
 
-// Full bingo card of one player, below the leaderboard.
-function renderBingo(key = state.bingoKey) {
+// Full bingo card of one player, below the leaderboard; a switch on top when there are several bingos.
+function renderBingo(key = state.bingoKey, id = state.bingoId) {
   const sec = document.getElementById('bingo-sec');
-  const bg = data.bingo;
-  if (!bg) { sec.remove(); return; }
+  const all = bingosOf().filter(b => b.status !== 'upcoming');
+  if (!all.length) { sec.remove(); return; }
+  const bg = all.find(b => b.id === id) || currentBingo() || all.at(-1);
+  state.bingoId = bg.id;
   const r = bg.players.find(x => x.key === key) || bg.players[0];
   state.bingoKey = r.key;
   const inLine = new Set(r.lines.flat());
   const pos = { TOP: 'Top', JUNGLE: 'Jungle', MIDDLE: 'Mid', BOTTOM: 'ADC', UTILITY: 'Support' };
   const from = shortWhen(bg.startMs), to = zoneDate(bg.endMs - 1, { weekday: 'long', day: 'numeric', month: 'numeric' });
-  sec.innerHTML = `<h2>🎲 Wochen-Bingo</h2>
+  const has = re => bg.cells.some(c => re.test(c.text));
+  const topN = bg.cells.map(c => c.text.match(/Top (\d+) Mastery/)).find(Boolean)?.[1];
+  sec.innerHTML = `<h2>🎲 ${esc(bg.title)}</h2>
+    ${all.length > 1 ? `<div class="wtabs" style="margin:2px 0 10px">${all.slice().reverse().map(b => `<button type="button" data-bid="${esc(b.id)}" aria-pressed="${b.id === bg.id}">${esc(b.title)}${b === currentBingo() ? ' (aktuell)' : ''}</button>`).join('')}</div>` : ''}
     <p class="lede">Wird automatisch aus euren Solo/Duo-Games abgehakt. Die ersten ${bg.winners} mit einer vollen Reihe, Spalte oder Diagonale bekommen +${bg.points} Punkte.</p>
-    <div class="bpills">${bg.players.map(x => `<button type="button" data-key="${esc(x.key)}" aria-pressed="${x.key === r.key}">${x.rank ? MEDALS[x.rank - 1] + ' ' : ''}${who(x.key)}<small>${Object.keys(x.done).length}/25</small></button>`).join('')}</div>
+    <div class="bpills">${bg.players.map(x => `<button type="button" data-key="${esc(x.key)}" aria-pressed="${x.key === r.key}">${x.rank ? (MEDALS[x.rank - 1] || '🏅') + ' ' : ''}${who(x.key)}<small>${Object.keys(x.done).length}/25</small></button>`).join('')}</div>
     <div class="bstats">
       <div><b>${Object.keys(r.done).length}/25</b><span>Felder</span></div>
       <div><b>${r.lines.length}</b><span>Bingos</span></div>
@@ -938,16 +953,23 @@ function renderBingo(key = state.bingoKey) {
     <div class="blegend"><span><i style="background:var(--up)"></i>Erledigt</span><span><i style="background:var(--accent)"></i>Teil einer Bingo-Reihe</span></div>
     <details class="dig"><summary>Regeln</summary><ul class="brules">
       <li>Nur Ranked Solo/Duo zählt, gespielt von ${from} bis ${to}.</li>
-      <li>Ein Spiel darf mehrere Felder abhaken (z. B. ein Sieg ohne Tod unter 22 Minuten).</li>
+      <li>Ein Spiel darf mehrere Felder abhaken.</li>
       <li>„Lane-Gegner“ ist der Spieler auf derselben Position im gegnerischen Team.</li>
       <li>Alles wird automatisch aus den Riot-Daten abgehakt, alle 10 Minuten. Keine Screenshots nötig.</li>
-      <li>„Top 20 Mastery“: wurde beim Bingo-Start automatisch bei Riot gespeichert${r.hasMastery ? '' : ' (für diesen Spieler noch nicht)'}.</li>
-      <li>„Off-Role“: die eingetragene Rolle, sonst die meistgespielte Position. ${who(r.key)}: <b>${pos[r.mainPos] || 'noch unbekannt'}</b>.</li>
-      <li>„Höher gerankt“: der Solo/Duo-Rang des Lane-Gegners direkt nach dem Spiel.</li>
-      <li>„Baron und Elder“: Elder Drake wird aus der Riot-Timeline erkannt.</li>
-      <li>„Bestes KDA aller 10 Spieler“ ersetzt das OP.GG-MVP-Abzeichen, das nicht über die Riot-API abrufbar ist.</li>
+      ${topN ? `<li>„Top ${topN} Mastery“: wurde beim Bingo-Start automatisch bei Riot gespeichert${r.hasMastery ? '' : ' (für diesen Spieler noch nicht)'}.</li>` : ''}
+      ${has(/Off-Role/) ? `<li>„Off-Role“: die eingetragene Rolle, sonst die meistgespielte Position. ${who(r.key)}: <b>${pos[r.mainPos] || 'noch unbekannt'}</b>.</li>` : ''}
+      ${has(/Positionen/) ? '<li>„3 verschiedene Positionen“: zählt die Position, die Riot dir im Spiel zuordnet (Top, Jungle, Mid, ADC, Support).</li>' : ''}
+      ${has(/ganzer Linie/) ? '<li>„Lane-Sieg auf ganzer Linie“: in einem Spiel mehr Kills, CS, Gold <i>und</i> Champion-Schaden als dein Lane-Gegner.</li>' : ''}
+      ${has(/gibt vor/) ? '<li>„Gegner gibt auf“: Surrender vor 25:00, Remakes zählen nicht.</li>' : ''}
+      ${has(/höher/) ? '<li>„Höher gerankt“/„2+ Divisionen“: der Solo/Duo-Rang des Lane-Gegners direkt nach dem Spiel; 2 Divisionen = 200 Punkte auf der Rang-Skala (100 pro Division, Master+ zählt LP).</li>' : ''}
+      ${has(/Elder/) ? '<li>„Baron und Elder“: Elder Drake wird aus der Riot-Timeline erkannt.</li>' : ''}
+      ${has(/Triple|Quadra/) ? '<li>Triple/Quadra Kill: ein größerer Multikill zählt auch.</li>' : ''}
+      ${has(/Nachteule/) ? '<li>„Nachteule“: zählt die Uhrzeit, zu der das Spiel endet (deutsche Zeit).</li>' : ''}
+      ${has(/aller 10 Spieler/) ? '<li>„… aller 10 Spieler“: Gleichstand mit dem Besten zählt auch.</li>' : ''}
+      ${has(/Bestes KDA aller 10/) ? '<li>„Bestes KDA aller 10 Spieler“ ersetzt das OP.GG-MVP-Abzeichen, das nicht über die Riot-API abrufbar ist.</li>' : ''}
     </ul></details>`;
-  sec.querySelectorAll('.bpills [data-key]').forEach(btn => btn.addEventListener('click', () => renderBingo(btn.dataset.key)));
+  sec.querySelectorAll('.bpills [data-key]').forEach(btn => btn.addEventListener('click', () => renderBingo(btn.dataset.key, bg.id)));
+  sec.querySelectorAll('[data-bid]').forEach(btn => btn.addEventListener('click', () => renderBingo(state.bingoKey, btn.dataset.bid)));
 }
 
 // News panel next to the standings: the live roast line + the latest Tagesrückblick.

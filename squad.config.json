@@ -23,11 +23,18 @@
         "target": 10, "points": 20, "start": "2026-09-30T17:40:00+02:00", "end": "2026-10-04"
       }
     ],
-    "bingo": {
-      "id": "week-2-bingo", "title": "Wochen-Bingo",
-      "points": 20, "winners": 3,
-      "start": "2026-10-03T07:25:00+02:00", "end": "2026-10-09"
-    }
+    "bingos": [
+      {
+        "id": "week-2-bingo", "card": "week2", "title": "Bingo #1",
+        "points": 20, "winners": 3,
+        "start": "2026-10-03T07:25:00+02:00", "end": "2026-10-09"
+      },
+      {
+        "id": "week-3-bingo", "card": "week3", "title": "Bingo #2",
+        "points": 20, "winners": 5,
+        "start": "2026-10-04T10:45:00+02:00", "end": "2026-10-14"
+      }
+    ]
   },
   "queues": [420, 440],
   "maxNewMatchesPerPlayerPerRun": 60,

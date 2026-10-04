@@ -3,10 +3,10 @@
 // Runs on GitHub Actions (see .github/workflows/update.yml) or locally with
 // `npm run update`. Needs Node 18+.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { STATS_VERSION, MODES, activeWindow, emptyMode, addMatch, isRemake, scoreModes, scoreBounties, trackPlaces, dayOf, zonedMidnight } from './challenge.mjs';
+import { STATS_VERSION, MODES, activeWindow, emptyMode, addMatch, isRemake, scoreModes, scoreBounties, trackPlaces, dayOf } from './challenge.mjs';
 import { buildReviews } from './review.mjs';
 import { buildNotifications, queue } from './notify.mjs';
-import { matchFacts, mightHaveElder, teamKilledElder, scoreBingo } from './bingo.mjs';
+import { CARDS, bingoEdge, matchFacts, mightHaveElder, teamKilledElder, scoreBingos } from './bingo.mjs';
 
 // Locally the key comes from a .env file next to package.json (never committed).
 try {
@@ -46,12 +46,11 @@ const CAP = cfg.maxNewMatchesPerPlayerPerRun ?? 60;
 const WINDOW_KEY = `${WIN.startMs}|${WIN.endMs}|${QUEUES.join(',')}`;
 const STATS_KEY = `${STATS_VERSION}|${WINDOW_KEY}`;
 
-// Weekly bingo window (challenge.bingo); games inside it get the extra checks below.
-const BINGO = CH.bingo ? (() => {
-  const tz = CH.timeZone || 'Europe/Berlin';
-  const edge = (v, end) => (/^\d{4}-\d{2}-\d{2}$/.test(v) ? zonedMidnight(v, tz, end ? 1 : 0) : Date.parse(v));
-  return { id: CH.bingo.id, startMs: edge(CH.bingo.start, false), endMs: edge(CH.bingo.end, true) };
-})() : null;
+// Bingo windows (challenge.bingos); games inside one get the extra checks below.
+const BINGOS = (CH.bingos || []).filter((b) => CARDS[b.card]).map((b) => ({
+  id: b.id, card: CARDS[b.card],
+  startMs: bingoEdge(b.start, CH.timeZone || 'Europe/Berlin', false), endMs: bingoEdge(b.end, CH.timeZone || 'Europe/Berlin', true),
+}));
 // Everyone's puuid, for "Duo-Sieg mit einem Challenge-Mitspieler".
 const squadPuuids = new Set((previous.players || []).map((p) => p.puuid).filter(Boolean));
 let champById = null; // Data Dragon champion ids -> names, loaded when the mastery snapshot needs it
@@ -121,33 +120,40 @@ async function soloScore(puuid) {
   return soloScores.get(puuid);
 }
 
-// Extra checks for Solo/Duo games inside the bingo window: Elder Drake (from the timeline,
-// only when it could have happened) and, for wins, whether the lane opponent ranks higher.
+// Extra checks for Solo/Duo games inside a bingo window: Elder Drake (from the timeline,
+// only for cards that need it and when it could have happened) and, for wins, how much
+// higher the lane opponent ranks right now (Solo/Duo score difference).
 async function bingoContext(m, me, p) {
   const ctx = { squadPuuids };
   const t = m.info.gameEndTimestamp || m.info.gameCreation;
-  if (!BINGO || MODES[m.info.queueId] !== 'solo' || t < BINGO.startMs || t >= BINGO.endMs) return ctx;
-  ctx.elder = mightHaveElder(m, me)
-    ? teamKilledElder(await riot(`https://${REGION}.api.riotgames.com/lol/match/v5/matches/${m.metadata.matchId}/timeline`), me.teamId)
-    : false;
+  const active = MODES[m.info.queueId] === 'solo' ? BINGOS.filter((b) => t >= b.startMs && t < b.endMs) : [];
+  if (!active.length) return ctx;
+  if (active.some((b) => b.card.elder)) {
+    ctx.elder = mightHaveElder(m, me)
+      ? teamKilledElder(await riot(`https://${REGION}.api.riotgames.com/lol/match/v5/matches/${m.metadata.matchId}/timeline`), me.teamId)
+      : false;
+  }
   const opp = me.teamPosition && m.info.participants.find((x) => x.teamId !== me.teamId && x.teamPosition === me.teamPosition);
   if (me.win && opp) {
     const theirs = await soloScore(opp.puuid), ours = p.ranks?.solo?.score ?? null;
-    if (theirs != null && ours != null) ctx.higher = theirs > ours;
+    if (theirs != null && ours != null) ctx.rankDiff = theirs - ours;
   }
   return ctx;
 }
 
-// Top-20 mastery at the bingo start, frozen for the whole bingo week.
+// Top mastery at each bingo's start, frozen for that bingo (p.bingoMastery[bingo id]).
 async function snapshotMastery(p) {
-  if (!BINGO || Date.now() < BINGO.startMs || p.bingoMastery?.id === BINGO.id) return;
-  if (!champById) {
-    const version = (await (await fetch('https://ddragon.leagueoflegends.com/api/versions.json')).json())[0];
-    const data = (await (await fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion.json`)).json()).data;
-    champById = Object.fromEntries(Object.values(data).map((c) => [Number(c.key), c.id]));
+  if (p.bingoMastery?.id) p.bingoMastery = { [p.bingoMastery.id]: { at: p.bingoMastery.at, champs: p.bingoMastery.champs } }; // older layout
+  for (const b of BINGOS) {
+    if (Date.now() < b.startMs || p.bingoMastery?.[b.id]) continue;
+    if (!champById) {
+      const version = (await (await fetch('https://ddragon.leagueoflegends.com/api/versions.json')).json())[0];
+      const data = (await (await fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion.json`)).json()).data;
+      champById = Object.fromEntries(Object.values(data).map((c) => [Number(c.key), c.id]));
+    }
+    const top = (await riot(`https://${PLATFORM}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/${p.puuid}/top?count=${b.card.mastery}`)) || [];
+    (p.bingoMastery ??= {})[b.id] = { at: new Date().toISOString(), champs: top.map((x) => champById[x.championId]).filter(Boolean) };
   }
-  const top = (await riot(`https://${PLATFORM}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/${p.puuid}/top?count=20`)) || [];
-  p.bingoMastery = { id: BINGO.id, at: new Date().toISOString(), champs: top.map((x) => champById[x.championId]).filter(Boolean) };
 }
 
 // ---------- Per player ----------
@@ -246,7 +252,7 @@ try {
   }
   const awards = scoreModes(players, CH, WIN, Date.now());
   const bounties = scoreBounties(players, CH, Date.now()); // adds bounty points and re-ranks
-  const bingo = scoreBingo(players, CH, Date.now());        // adds bingo points and re-ranks
+  const bingos = scoreBingos(players, CH, Date.now());       // adds bingo points and re-ranks
   // Daily reviews: kept between runs; a new day is only written once every game is in.
   const kept = previous.reviewsKey === STATS_KEY ? previous.reviews || [] : [];
   const complete = players.every((p) => !p.error && !p.pendingMatches);
@@ -263,7 +269,7 @@ try {
     challenge: { ...CH, ...WIN },
     awards,
     bounties,
-    bingo,
+    bingos,
     reviews,
     reviewsKey: STATS_KEY,
     places,
