@@ -485,10 +485,10 @@
     <div class="topright">
       <span class="updated" id="updated"></span>
       <nav class="tabs" aria-label="Pages">
+        <a href="#worlds" data-tab="worlds" hidden>Worlds</a>
         <a href="#ladder" data-tab="ladder" aria-current="page">Solo/Duo</a>
         <a href="#flex" data-tab="flex">Flex</a>
         <a href="#prime" data-tab="prime">Prime League</a>
-        <a href="#worlds" data-tab="worlds" hidden>Worlds</a>
       </nav>
     </div>
   </div>
@@ -1227,7 +1227,8 @@ const champIcon = (c, size = 30) => `<img src="${champImg(c)}" alt="" width="${s
 
 // ---------- Tabs ----------
 function showTab() {
-  const tab = { '#prime': 'prime', '#flex': 'flex', '#worlds': 'worlds' }[location.hash] || 'ladder';
+  const worldsOn = typeof data !== 'undefined' && !!data?.worlds?.url;
+  const tab = { '#prime': 'prime', '#flex': 'flex', '#worlds': 'worlds', '#ladder': 'ladder' }[location.hash] || (worldsOn ? 'worlds' : 'ladder');
   document.getElementById('app').hidden = tab !== 'ladder';
   document.getElementById('tab-flex').hidden = tab !== 'flex';
   document.getElementById('tab-prime').hidden = tab !== 'prime';
@@ -1456,6 +1457,7 @@ async function main() {
     return renderEmpty('The data file could not be loaded. If you just set things up, the first update has not run yet.');
   }
   document.querySelector('nav.tabs [data-tab="worlds"]').hidden = !data.worlds?.url;
+  if (!location.hash) showTab(); // now that we know whether the betting game is on
   players = data.players || [];
   if (!players.length) return renderEmpty('The tracker is set up, but the first update has not run yet.');
   if (demo) { // move the sample's clock so it always looks mid-challenge, updated 35 min ago
