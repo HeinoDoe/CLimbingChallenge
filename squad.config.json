@@ -40,12 +40,15 @@
     "supabaseUrl": "https://dnopdnxzqryzpygwpubj.supabase.co",
     "publishableKey": "sb_publishable_frol_MPdKJAFoXMTegbIvw_fcNf2g0Y",
     "start": "2026-10-20", "end": "2026-11-14",
-    "startBalance": 100, "daily": 10,
-    "winnerBonus": 20, "finalistBonus": 10,
-    "picksLock": "2026-11-03T12:00:00+01:00",
     "match": "Worlds",
-    "winnerEvent": "worlds-2026-winner",
-    "finalistEvent": "worlds-2026-team-to-make-grand-finals"
+    "points": { "bo1": 2, "winner": 2, "exact": 4 },
+    "bonus": [
+      { "kind": "winner", "title": "Weltmeister", "slots": 1, "points": 10, "lock": "2026-11-03T12:00:00+01:00", "event": "worlds-2026-winner" },
+      { "kind": "finalist", "title": "Finalisten", "slots": 2, "points": 5, "lock": "2026-11-03T12:00:00+01:00", "event": "worlds-2026-team-to-make-grand-finals" },
+      { "kind": "swiss30", "title": "3:0 in der Swiss Stage", "slots": 2, "points": 3, "lock": "2026-10-23T19:00:00+02:00", "event": "worlds-2026-teams-to-go-3-0-in-swiss-stage" },
+      { "kind": "swiss03", "title": "0:3 in der Swiss Stage", "slots": 1, "points": 3, "lock": "2026-10-23T19:00:00+02:00", "event": "worlds-2026-teams-to-go-0-3-in-swiss-stage" },
+      { "kind": "knockout", "title": "Viertelfinalisten", "slots": 8, "points": 1, "lock": "2026-10-23T19:00:00+02:00", "event": "worlds-2026-team-to-reach-knockout-stage" }
+    ]
   },
   "queues": [420, 440],
   "maxNewMatchesPerPlayerPerRun": 60,

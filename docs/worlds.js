@@ -1,9 +1,9 @@
-// Worlds betting game ("Justus Bucks"): the #worlds tab, "Summoner's Cup" look.
+// Worlds Tippspiel (like Kicktipp): the #worlds tab, "Summoner's Cup" look.
 // Everything is stored in Supabase (supabase/worlds.sql) and reached only through its wb_*
-// functions; the odds come from Polymarket via scripts/worlds.mjs. The connection (project
-// URL + publishable key, both public) is in squad.config.json → data.json → data.worlds.
-const WB = { st: null, me: null, slip: null, msg: null, histMine: true, timer: null, busy: false,
-  day: null, open: new Set(), pickMode: 'winner', boardAll: false, teamsAll: false };
+// functions; schedule, odds and results come from Polymarket via scripts/worlds.mjs. The
+// connection (project URL + publishable key, both public) is in squad.config.json →
+// data.json → data.worlds.
+const WB = { st: null, me: null, msg: null, timer: null, busy: false, day: null, kind: null, boardAll: false, teamsAll: false };
 const WB_TZ = 'Europe/Berlin';
 // Worlds 2026 schedule, for the timeline in the header.
 const WB_STAGES = [
@@ -16,7 +16,7 @@ const WB_ABBR = {
   'Gen.G': 'GEN', T1: 'T1', 'Hanwha Life Esports': 'HLE', 'Dplus KIA': 'DK', 'Bilibili Gaming': 'BLG', 'Top Esports': 'TES',
   'Invictus Gaming': 'IG', "Anyone's Legend": 'AL', 'G2 Esports': 'G2', 'Karmine Corp': 'KC', 'Movistar KOI': 'MKOI',
   'Team Liquid': 'TL', 'CTBC Flying Oyster': 'CFO', 'Team Secret Whales': 'TSW', LYON: 'LYON', LOS: 'LOS',
-  Cloud9: 'C9', 'FURIA Esports': 'FUR', 'MVK Esports': 'MVK',
+  Cloud9: 'C9', 'FURIA Esports': 'FUR', FURIA: 'FUR', 'MVK Esports': 'MVK',
 };
 const wbAbbr = t => WB_ABBR[t] || (t || '').split(/\s+/).map(w => w[0]).join('').slice(0, 4).toUpperCase();
 
@@ -24,14 +24,14 @@ try { WB.me = JSON.parse(localStorage.getItem('wb-auth') || 'null'); } catch { W
 const wbSaveMe = me => { WB.me = me; try { me ? localStorage.setItem('wb-auth', JSON.stringify(me)) : localStorage.removeItem('wb-auth'); } catch {} };
 
 const wbCfg = () => (typeof data !== 'undefined' && data?.worlds?.url && data?.worlds?.key) ? data.worlds : null;
-const wbMoney = n => '$' + (Math.round(Number(n) * 100) / 100).toLocaleString('en-US', { minimumFractionDigits: Number(n) % 1 ? 2 : 0, maximumFractionDigits: 2 });
-const wbOdds = n => Number(n).toFixed(2);
 const wbDayKey = t => new Date(t).toLocaleDateString('sv-SE', { timeZone: WB_TZ });
 const wbDay = t => new Date(t).toLocaleDateString('de-DE', { timeZone: WB_TZ, weekday: 'long', day: 'numeric', month: 'numeric' });
 const wbDayShort = t => new Date(t).toLocaleDateString('de-DE', { timeZone: WB_TZ, weekday: 'short', day: 'numeric', month: 'numeric' });
 const wbTime = t => new Date(t).toLocaleTimeString('de-DE', { timeZone: WB_TZ, hour: '2-digit', minute: '2-digit' });
+const wbDateShort = d => new Date(d + 'T12:00:00Z').toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric' });
 const wbStage = s => (s || '').replace(/^Worlds\s*/, '').replace('Group Stage', 'Swiss');
 const wbPct = p => `${Math.round(p * 1000) / 10} %`.replace('.', ',');
+const wbPts = n => `${n} ${Number(n) === 1 ? 'Punkt' : 'Punkte'}`;
 
 async function wbCall(fn, args = {}) {
   const c = wbCfg();
@@ -43,40 +43,22 @@ async function wbCall(fn, args = {}) {
   return out;
 }
 
-// Readable names for the Polymarket market types.
-const WB_PROPS = {
-  lol_both_teams_baron: 'Beide Teams töten Baron?',
-  lol_both_teams_dragon: 'Beide Teams holen einen Drachen?',
-  lol_both_teams_inhibitors: 'Beide Teams zerstören einen Inhibitor?',
-  lol_quadra_kill: 'Ein Quadra Kill?',
-  lol_penta_kill: 'Ein Pentakill?',
-  lol_odd_even_total_kills: 'Kills gesamt ungerade oder gerade?',
-};
-const WB_WORDS = { Yes: 'Ja', No: 'Nein', Over: 'Über', Under: 'Unter', Odd: 'Ungerade', Even: 'Gerade' };
-function wbLabel(m) {
-  const game = /Game (\d)/.exec(m.label)?.[1];
-  if (m.kind === 'moneyline') return 'Sieger';
-  if (m.kind === 'child_moneyline') return `Spiel ${game}: Sieger`;
-  if (m.kind === 'totals') return `Anzahl Spiele (${/[\d.]+/.exec(m.label)?.[0] || ''})`;
-  if (m.kind === 'map_handicap') return 'Handicap (Spiele)';
-  if (WB_PROPS[m.kind]) return `${game ? `Spiel ${game}: ` : ''}${WB_PROPS[m.kind]}`;
-  return m.label;
-}
-function wbOutcome(m, i) {
-  const o = m.outcomes[i];
-  if (m.kind === 'totals') return `${WB_WORDS[o] || o} ${/[\d.]+/.exec(m.label)?.[0] || ''}`;
-  if (m.kind === 'map_handicap') {
-    const h = [...m.label.matchAll(/\(([+-][\d.]+)\)/g)].map(x => x[1].replace('-', '−'));
-    return `${o} ${h[i] || ''}`;
-  }
-  return WB_WORDS[o] || o;
-}
-
-const wbOpen = m => m.status === 'open' && Date.parse(m.starts_at) > Date.now() && m.odds?.every(x => x > 1);
+const wbOpen = m => m.status === 'open' && Date.parse(m.starts_at) > Date.now();
+const wbLive = m => m.status === 'open' && !wbOpen(m);
 const wbPlayer = name => WB.st?.players.find(p => p.name === name);
-const wbBetsOf = id => (WB.st?.bets || []).filter(b => b.market_id === id);
-const wbChance = m => { const a = 1 / m.odds[0], b = 1 / m.odds[1]; return a / (a + b); };
-const wbBoardRows = () => WB.st.players.map((p, i) => ({ ...p, rank: i + 1, total: Number(p.cash) + Number(p.open) }));
+const wbRows = () => WB.st.players.map((p, i, all) => ({ ...p, rank: i && all[i - 1].points === p.points && all[i - 1].exact === p.exact ? null : i + 1 }))
+  .map((p, i, all) => ({ ...p, rank: p.rank ?? all.slice(0, i).reverse().find(x => x.rank)?.rank }));
+// All possible results of a match, [a, b]: BO1 1:0 0:1, BO3 2:0 2:1 1:2 0:2, BO5 3:0 … 0:3.
+function wbScores(bo) {
+  if (bo === 1) return [[1, 0], [0, 1]];
+  const need = (bo + 1) / 2, out = [];
+  for (let k = 0; k < need; k++) out.push([need, k], [k, need]);
+  return out;
+}
+// "GEN 2:1" — the winner first; BO1 just the team.
+const wbScoreText = (m, a, b) => m.best_of === 1 ? (a > b ? m.team_a : m.team_b)
+  : a > b ? `${wbAbbr(m.team_a)} ${a}:${b}` : `${wbAbbr(m.team_b)} ${b}:${a}`;
+const wbMissing = () => WB.me ? WB.st.matches.filter(m => wbOpen(m) && !m.mine) : [];
 
 // ---------- Rendering ----------
 
@@ -84,64 +66,58 @@ function renderWorlds() {
   const el = document.getElementById('tab-worlds');
   if (!el) return;
   if (!wbCfg()) {
-    el.innerHTML = `<div class="wb"><h1 class="wb-title">Worlds Wetten</h1><div class="wb-panel wb-empty">Das Wettspiel wird gerade eingerichtet. Schau später nochmal vorbei.</div></div>`;
+    el.innerHTML = `<div class="wb"><h1 class="wb-title">Worlds Tippspiel</h1><div class="wb-panel wb-empty">Das Tippspiel wird gerade eingerichtet. Schau später nochmal vorbei.</div></div>`;
     return;
   }
   const st = WB.st;
-  if (!st) { el.innerHTML = `<div class="wb"><h1 class="wb-title">Worlds Wetten</h1><p class="wb-muted">${WB.msg ? esc(WB.msg) : 'Lade Quoten…'}</p></div>`; return; }
-  const s = st.settings;
+  if (!st) { el.innerHTML = `<div class="wb"><h1 class="wb-title">Worlds Tippspiel</h1><p class="wb-muted">${WB.msg ? esc(WB.msg) : 'Lade Spiele…'}</p></div>`; return; }
+  const s = st.settings, missing = wbMissing();
   el.innerHTML = `<div class="wb">
     <div class="wb-bar">${wbAccount()}</div>
+    ${missing.length ? `<p class="wb-banner"><b>${missing.length === 1 ? 'Dir fehlt noch 1 Tipp' : `Dir fehlen noch ${missing.length} Tipps`}.</b> Ohne Tipp wird automatisch der Favorit getippt. <button type="button" class="wb-link" data-wb="jump-missing">Zum nächsten</button></p>` : ''}
     <section class="wb-hero">
       <div class="wb-hero-text">
         <p class="wb-eyebrow">${esc(wbEyebrow())}</p>
-        <h1 class="wb-title">Setz deine<br>Justus Bucks.</h1>
-        <p class="wb-lede">${wbMoney(s.start_balance)} zum Start, jeden Tag ${wbMoney(s.daily)} dazu. Wette auf jedes Worlds-Match zu Polymarket-Quoten. Am ${wbDateShort(s.end_day)} gewinnt, wer das meiste Geld hat.</p>
+        <h1 class="wb-title">Tipp jedes<br>Worlds-Spiel.</h1>
+        <p class="wb-lede">Wie Kicktipp: richtiger Sieger ${wbPts(s.pts_bo1)}, bei BO3 und BO5 das genaue Ergebnis ${wbPts(s.pts_exact)}. Dazu Bonusfragen. Wer am ${wbDateShort(s.end_day)} vorne liegt, gewinnt.</p>
         <ol class="wb-stages" aria-label="Turnier">${WB_STAGES.map(x => `<li class="${wbStageState(x)}">${x.name} · ${x.text}</li>`).join('')}</ol>
       </div>
-      ${wbTop()}
+      ${wbNext()}
     </section>
-    <section class="wb-sec" aria-label="Alle Spiele">${wbMatches()}</section>
+    <section class="wb-sec" aria-label="Spiele" id="wb-games">${wbMatches()}</section>
     <div class="wb-row">
       <section class="wb-panel" aria-label="Rangliste"><h2 class="wb-h">Rangliste</h2>${wbBoard()}</section>
-      <section class="wb-panel" aria-label="Pick'Ems">${wbPicks()}</section>
-    </div>
-    <div class="wb-row">
-      <section class="wb-panel" aria-label="Ergebnisse"><h2 class="wb-h">Ergebnisse</h2>${wbResults()}</section>
-      <section class="wb-panel" aria-label="Wetten">${wbHistory()}</section>
+      <section class="wb-panel" aria-label="Bonusfragen">${wbBonus()}</section>
     </div>
     <details class="wb-rules"><summary>Regeln</summary><ul>
-      <li>Start: ${wbMoney(s.start_balance)}. Jeden Tag um Mitternacht kommen ${wbMoney(s.daily)} dazu, auch wenn du später einsteigst (zählt ab ${wbDateShort(s.start_day)}).</li>
-      <li>Die Quote ist 1 ÷ Polymarket-Preis, ohne Buchmacher-Marge. Deine Quote wird beim Wetten festgeschrieben; Gewinn = Einsatz × Quote.</li>
-      <li>Wetten schließen, wenn das Match laut Zeitplan beginnt. Es gibt nur Wetten, für die Polymarket gerade einen echten Preis hat; Spezialwetten tauchen oft erst kurz vor dem Spiel auf.</li>
-      <li>Abgerechnet wird automatisch, sobald Polymarket das Ergebnis hat (meist 1–3 Stunden nach dem Spiel). Wird ein Spiel nicht gespielt (z. B. Spiel 4 bei 3:0), gibt es den Einsatz zurück.</li>
-      <li>Pick'Ems kosten nichts: richtiger Weltmeister +${wbMoney(s.winner_bonus)}, jeder richtige Finalist +${wbMoney(s.finalist_bonus)}. Änderbar bis ${wbDay(s.picks_lock)}, ${wbTime(s.picks_lock)}.</li>
-      <li>Rangliste = freies Geld + Geld in offenen Wetten. Kein echtes Geld. PIN vergessen? Sag Heino Bescheid.</li>
+      <li>Getippt wird jedes Worlds-Spiel ab ${wbDateShort(s.start_day)}: bei BO1 der Sieger, bei BO3 und BO5 das genaue Ergebnis (z. B. 2:1 oder 3:1).</li>
+      <li>Punkte: BO1 richtiger Sieger ${wbPts(s.pts_bo1)}. BO3/BO5: genaues Ergebnis ${wbPts(s.pts_exact)}, nur der Sieger richtig ${wbPts(s.pts_winner)}.</li>
+      <li>Tipps lassen sich bis zum geplanten Spielbeginn ändern. Danach sieht jeder, was die anderen getippt haben.</li>
+      <li>Kein Tipp abgegeben? Dann zählt automatisch der Favorit laut Polymarket, mit seinem wahrscheinlichsten Ergebnis (markiert mit „auto“). Das gilt auch für Spiele vor deiner Anmeldung.</li>
+      <li>Bonusfragen: ${st.pick_types.map(pt => `${esc(pt.title)} ${pt.slots > 1 ? `je Team ${wbPts(pt.points)}` : wbPts(pt.points)} (bis ${wbDayShort(pt.lock_at)} ${wbTime(pt.lock_at)})`).join(', ')}. Die Antworten der anderen sind ab dann sichtbar.</li>
+      <li>Ergebnisse kommen automatisch von Polymarket, meist 1–3 Stunden nach dem Spiel. Gleichstand in der Rangliste: mehr genaue Ergebnisse gewinnt. PIN vergessen? Sag Heino Bescheid.</li>
     </ul></details>
-    ${wbSlip()}
   </div>`;
   wbWire(el);
 }
 
-const wbDateShort = d => new Date(d + 'T12:00:00Z').toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric' });
 function wbStageState(x) {
   const today = wbDayKey(Date.now());
   return today > x.to ? 'done' : today >= x.from || WB_STAGES.find(y => today <= y.to) === x ? 'now' : '';
 }
 function wbEyebrow() {
-  const next = WB.st.markets.find(m => m.kind === 'moneyline' && wbOpen(m));
+  const next = WB.st.matches.find(wbOpen);
   return next ? `${wbStage(next.stage)} · nächstes Spiel ${wbDayShort(next.starts_at)} ${wbTime(next.starts_at)}`.toUpperCase() : 'WORLDS 2026';
 }
 
 function wbAccount() {
   const me = WB.me && wbPlayer(WB.me.name);
   if (WB.me && me) {
-    const row = wbBoardRows().find(p => p.name === me.name);
-    return `<p class="wb-muted">Platz <b>${row.rank}</b> von ${WB.st.players.length} · ${me.won} ${me.won === 1 ? 'Sieg' : 'Siege'}, ${me.lost} ${me.lost === 1 ? 'Niederlage' : 'Niederlagen'}</p>
+    const row = wbRows().find(p => p.name === me.name);
+    return `<p class="wb-muted">Platz <b>${row.rank}</b> von ${WB.st.players.length} · ${me.exact}× genau · ${me.hits} Treffer${me.bonus ? ` · +${me.bonus} Bonus` : ''}</p>
       <div class="wb-wallet">
         <span class="wb-avatar" aria-hidden="true">${esc(me.name[0] || '?')}</span>
-        <span class="wb-wallet-txt"><span class="wb-k">Justus Bucks · ${esc(me.name)}</span><b>${wbMoney(me.cash)}</b></span>
-        ${Number(me.open) ? `<span class="wb-wallet-open">${wbMoney(me.open)} in Wetten</span>` : ''}
+        <span class="wb-wallet-txt"><span class="wb-k">${esc(me.name)}</span><b>${wbPts(me.points)}</b></span>
         <button type="button" class="wb-link" data-wb="logout">Ausloggen</button>
       </div>`;
   }
@@ -150,205 +126,166 @@ function wbAccount() {
       <label class="wb-sr" for="wb-name">Name</label><input id="wb-name" name="name" placeholder="Name" maxlength="20" autocomplete="username" required>
       <label class="wb-sr" for="wb-pin">PIN</label><input id="wb-pin" name="pin" placeholder="PIN" inputmode="numeric" pattern="[0-9]{4,8}" maxlength="8" type="password" autocomplete="current-password" required>
       <button class="wb-btn gold" data-wb="login">Einloggen</button><button class="wb-btn" data-wb="register">Registrieren</button>
-      ${WB.msg && !WB.slip ? `<p class="wb-err">${esc(WB.msg)}</p>` : ''}
+      ${WB.msg ? `<p class="wb-err">${esc(WB.msg)}</p>` : ''}
     </form>`;
 }
 
-// The most open match of the next game day.
-function wbTop() {
-  const open = WB.st.markets.filter(m => m.kind === 'moneyline' && wbOpen(m));
-  if (!open.length) return `<article class="wb-top wb-empty">Gerade keine offenen Spiele. Neue tauchen auf, sobald Polymarket sie anbietet.</article>`;
-  const day = wbDayKey(open[0].starts_at);
-  const m = open.filter(x => wbDayKey(x.starts_at) === day).sort((a, b) => Math.abs(wbChance(a) - .5) - Math.abs(wbChance(b) - .5))[0];
-  const [a, b] = m.event_title.split(' vs '), pa = wbChance(m);
-  const btn = i => `<button type="button" class="wb-bigodd ${WB.slip?.id === m.id && WB.slip.o === i ? 'on' : ''}" data-m="${esc(m.id)}" data-o="${i}" aria-label="${esc(m.outcomes[i])} gewinnt, Quote ${wbOdds(m.odds[i])}">${esc(wbAbbr(m.outcomes[i]))} gewinnt <b>${wbOdds(m.odds[i])}</b></button>`;
-  return `<article class="wb-top" aria-label="Topspiel">
-    <div class="wb-top-head"><span class="wb-eyebrow">Topspiel</span><span class="wb-muted">${wbDay(m.starts_at)} ${wbTime(m.starts_at)}${m.best_of ? ` · BO${m.best_of}` : ''}</span></div>
+// The next match, big, with its tip buttons.
+function wbNext() {
+  const m = WB.st.matches.find(wbOpen);
+  if (!m) return `<article class="wb-top wb-empty">Gerade keine offenen Spiele. Neue tauchen auf, sobald Polymarket sie anbietet.</article>`;
+  return `<article class="wb-top" aria-label="Nächstes Spiel">
+    <div class="wb-top-head"><span class="wb-eyebrow">Nächstes Spiel</span><span class="wb-muted">${wbDay(m.starts_at)} ${wbTime(m.starts_at)} · BO${m.best_of}</span></div>
     <div class="wb-versus">
-      <div><span class="wb-crest big a">${esc(wbAbbr(a))}</span><b>${esc(a)}</b></div>
+      <div><span class="wb-crest big a">${esc(wbAbbr(m.team_a))}</span><b>${esc(m.team_a)}</b></div>
       <span class="wb-vs">VS</span>
-      <div><span class="wb-crest big b">${esc(wbAbbr(b))}</span><b>${esc(b || '')}</b></div>
+      <div><span class="wb-crest big b">${esc(wbAbbr(m.team_b))}</span><b>${esc(m.team_b)}</b></div>
     </div>
-    <div class="wb-chance"><i class="a" style="width:${pa * 100}%"></i><i class="b" style="width:${(1 - pa) * 100}%"></i></div>
-    <div class="wb-chance-txt"><span class="a">${wbPct(pa)} Siegchance</span><span class="b">${wbPct(1 - pa)} Siegchance</span></div>
-    <div class="wb-bigodds">${btn(0)}${btn(1)}</div>
+    ${wbChanceBar(m, true)}
+    ${wbTipButtons(m)}
+    <p class="wb-muted wb-small">${wbTipLine(m)}</p>
   </article>`;
+}
+
+function wbChanceBar(m, labels) {
+  if (m.price_a == null) return '';
+  const pa = Number(m.price_a);
+  return `<div class="wb-chance ${labels ? '' : 'thin'}" title="Siegchance laut Polymarket: ${wbPct(pa)} : ${wbPct(1 - pa)}"><i class="a" style="width:${pa * 100}%"></i><i class="b" style="width:${(1 - pa) * 100}%"></i></div>
+    ${labels ? `<div class="wb-chance-txt"><span class="a">${wbPct(pa)} Siegchance</span><span class="b">${wbPct(1 - pa)} Siegchance</span></div>` : ''}`;
+}
+
+function wbTipButtons(m) {
+  const mine = m.mine, scores = wbScores(m.best_of);
+  return `<div class="wb-tips bo${m.best_of}" role="group" aria-label="Dein Tipp">${scores.map(([a, b]) => {
+    const on = mine && mine.a === a && mine.b === b, fav = m.fav_a === a && m.fav_b === b;
+    return `<button type="button" class="wb-tip ${a > b ? 'a' : 'b'} ${on ? 'on' : ''}" data-tip="${esc(m.id)}" data-a="${a}" data-b="${b}" aria-pressed="${!!on}">
+      ${esc(wbScoreText(m, a, b))}${fav && !mine ? '<small>auto</small>' : ''}</button>`;
+  }).join('')}</div>`;
+}
+
+function wbTipLine(m) {
+  const total = WB.st.players.length;
+  const auto = m.fav_a != null ? `sonst Auto-Tipp ${esc(wbScoreText(m, m.fav_a, m.fav_b))}` : 'sonst Auto-Tipp Favorit';
+  const mine = m.mine ? `Dein Tipp: <b>${esc(wbScoreText(m, m.mine.a, m.mine.b))}</b>` : WB.me ? `Noch nicht getippt, ${auto}` : 'Zum Tippen oben einloggen';
+  return `${mine} · ${m.tipped}/${total} getippt`;
 }
 
 function wbMatches() {
-  const mls = WB.st.markets.filter(m => m.kind === 'moneyline' && m.status === 'open' && Date.parse(m.starts_at) > Date.now() - 8 * 3600e3);
-  const head = '<h2 class="wb-h">Alle Spiele</h2>';
-  if (!mls.length) return `${head}<div class="wb-panel wb-empty">Gerade keine offenen Spiele. Neue tauchen auf, sobald Polymarket sie anbietet.</div>`;
-  const days = [...new Set(mls.map(m => wbDayKey(m.starts_at)))].slice(0, 6);
-  if (!days.includes(WB.day)) WB.day = days[0];
-  const list = mls.filter(m => wbDayKey(m.starts_at) === WB.day);
+  const ms = WB.st.matches;
+  const head = '<h2 class="wb-h">Spiele</h2>';
+  if (!ms.length) return `${head}<div class="wb-panel wb-empty">Noch keine Spiele. Sie tauchen auf, sobald Polymarket sie anbietet.</div>`;
+  const days = [...new Set(ms.map(m => wbDayKey(m.starts_at)))];
+  if (!days.includes(WB.day)) WB.day = wbDayKey((ms.find(m => m.status === 'open') || ms.at(-1)).starts_at);
+  const list = ms.filter(m => wbDayKey(m.starts_at) === WB.day);
   return `<div class="wb-sec-head">${head}
-      ${days.length > 1 ? `<div class="wb-seg" role="tablist" aria-label="Tag">${days.map(d => {
-        const first = mls.find(m => wbDayKey(m.starts_at) === d);
-        return `<button type="button" role="tab" data-day="${d}" aria-selected="${d === WB.day}">${wbDayShort(first.starts_at)}</button>`;
-      }).join('')}</div>` : ''}</div>
+      <div class="wb-seg wb-days" role="tablist" aria-label="Spieltag">${days.map(d => {
+        const dm = ms.filter(m => wbDayKey(m.starts_at) === d);
+        const done = dm.every(m => m.status !== 'open'), todo = WB.me && dm.some(m => wbOpen(m) && !m.mine);
+        return `<button type="button" role="tab" data-day="${d}" aria-selected="${d === WB.day}">${wbDayShort(dm[0].starts_at)}${done ? ' ✓' : todo ? ' •' : ''}</button>`;
+      }).join('')}</div></div>
     <div class="wb-tiles">${list.map(wbTile).join('')}</div>`;
 }
 
-function wbTile(ml) {
-  const all = WB.st.markets.filter(m => m.event_id === ml.event_id);
-  const extra = all.filter(m => m !== ml && (wbOpen(m) || wbBetsOf(m.id).length));
-  const live = !wbOpen(ml);
-  const score = /\|(\d+)-(\d+)\|/.exec(ml.score || '');
-  const [a, b] = ml.event_title.split(' vs ');
-  const bets = all.flatMap(m => wbBetsOf(m.id).map(x => ({ m, x })));
-  const open = WB.open.has(ml.event_id);
-  const team = (name, i) => `<div class="wb-team"><span class="wb-crest ${i ? 'b' : 'a'}">${esc(wbAbbr(name))}</span><span class="wb-name">${esc(name || '')}</span>
-    ${live ? (score ? `<b class="wb-score">${score[i + 1]}</b>` : '') : wbOddBtn(ml, i)}</div>`;
-  const pa = live ? null : wbChance(ml);
-  const summary = !bets.length ? 'Noch keine Wetten'
-    : bets.length === 1 ? `${esc(bets[0].x.name)} ${wbMoney(bets[0].x.stake)} auf ${esc(wbOutcome(bets[0].m, bets[0].x.outcome))}`
-    : `${bets.length} Wetten · ${wbMoney(bets.reduce((n, y) => n + Number(y.x.stake), 0))}`;
-  return `<article class="wb-tile ${live ? 'live' : ''}">
-    <div class="wb-tile-top"><b>${wbTime(ml.starts_at)}</b><span>${live ? 'LÄUFT · WARTET AUF ERGEBNIS' : `${ml.best_of ? `BO${ml.best_of} · ` : ''}${esc(wbStage(ml.stage)).toUpperCase()}`}</span></div>
-    ${team(a, 0)}
-    ${pa == null ? '<div class="wb-chance thin"><i class="a" style="width:50%;opacity:.3"></i><i class="b" style="width:50%;opacity:.3"></i></div>'
-      : `<div class="wb-chance thin" title="Siegchance ${wbPct(pa)} : ${wbPct(1 - pa)}"><i class="a" style="width:${pa * 100}%"></i><i class="b" style="width:${(1 - pa) * 100}%"></i></div>`}
-    ${team(b, 1)}
-    <div class="wb-tile-foot"><span>${summary}</span>
-      ${extra.length || bets.length ? `<button type="button" class="wb-link" data-more="${esc(ml.event_id)}" aria-expanded="${open}">${open ? 'Weniger' : extra.length ? `+${extra.length} Spezialwetten` : 'Wer hat gewettet?'}</button>` : ''}</div>
-    ${open ? `<div class="wb-more">
-      ${extra.map(m => `<div class="wb-more-row"><span>${esc(wbLabel(m))}</span><div class="wb-more-odds">${wbOpen(m) ? m.outcomes.map((_, i) => wbOddBtn(m, i, true)).join('') : '<span class="wb-muted">geschlossen</span>'}</div></div>`).join('')}
-      ${bets.length ? `<p class="wb-who">${bets.map(({ m, x }) => `<span class="${x.name === WB.me?.name ? 'me' : ''}">${esc(x.name)} <b>${wbMoney(x.stake)}</b> auf ${esc(m.kind === 'moneyline' ? wbOutcome(m, x.outcome) : wbLabel(m) + ' ' + wbOutcome(m, x.outcome))} @ ${wbOdds(x.odds)}</span>`).join('')}</p>` : ''}
-    </div>` : ''}
+function wbTile(m) {
+  const open = wbOpen(m), done = m.status === 'done', live = wbLive(m);
+  const status = done ? `ENDE · ${m.score_a}:${m.score_b}` : m.status === 'void' ? 'ABGESAGT' : live ? 'LÄUFT · WARTET AUF ERGEBNIS' : `BO${m.best_of} · ${esc(wbStage(m.stage)).toUpperCase()}`;
+  const team = (name, i) => {
+    const won = done && (i ? m.score_b > m.score_a : m.score_a > m.score_b);
+    return `<div class="wb-team ${done && !won ? 'lost' : ''}"><span class="wb-crest ${i ? 'b' : 'a'}">${esc(wbAbbr(name))}</span><span class="wb-name">${esc(name)}</span>${done ? `<b class="wb-score">${i ? m.score_b : m.score_a}</b>` : ''}</div>`;
+  };
+  return `<article class="wb-tile ${live ? 'live' : ''} ${open && WB.me && !m.mine ? 'todo' : ''}" id="wb-m-${esc(m.id)}">
+    <div class="wb-tile-top"><b>${wbTime(m.starts_at)}</b><span>${status}</span></div>
+    ${team(m.team_a, 0)}
+    ${wbChanceBar(m, false) || '<div class="wb-chance thin"></div>'}
+    ${team(m.team_b, 1)}
+    ${open ? `${wbTipButtons(m)}<p class="wb-tile-foot">${wbTipLine(m)}</p>` : wbOthers(m)}
   </article>`;
 }
 
-function wbOddBtn(m, i, small) {
-  const on = WB.slip?.id === m.id && WB.slip.o === i;
-  return `<button type="button" class="wb-odd ${small ? 'small' : ''} ${on ? 'on' : ''}" data-m="${esc(m.id)}" data-o="${i}" aria-pressed="${on}" aria-label="${esc(wbLabel(m))}: ${esc(wbOutcome(m, i))}, Quote ${wbOdds(m.odds[i])}">${small ? `<span>${esc(wbOutcome(m, i))}</span>` : ''}${wbOdds(m.odds[i])}</button>`;
-}
-
-function wbSlip() {
-  const s = WB.slip;
-  const m = s && WB.st.markets.find(x => x.id === s.id);
-  if (!m || !wbOpen(m)) return '';
-  const me = WB.me && wbPlayer(WB.me.name);
-  const odds = m.odds[s.o];
-  const what = `<div class="wb-slip-what"><span class="wb-k">Wettschein · ${esc(wbLabel(m))}</span><b>${esc(wbOutcome(m, s.o))} <em>@ ${wbOdds(odds)}</em></b><small>${esc(m.event_title)}</small></div>`;
-  if (!me) {
-    return `<div class="wb-slip" role="region" aria-label="Wettschein"><div class="wb-slip-in">${what}
-      <p class="wb-muted">Zum Wetten oben einloggen oder registrieren.</p>
-      <button type="button" class="wb-btn gold" data-wb="focus-login">Einloggen</button>
-      <button type="button" class="wb-x" data-wb="cancel" aria-label="Wettschein schließen">×</button></div></div>`;
-  }
-  const stake = s.stake ?? Math.min(10, Math.floor(me.cash));
-  const all = Math.floor(me.cash * 100) / 100;
-  return `<div class="wb-slip" role="region" aria-label="Wettschein"><form class="wb-slip-in" data-m="${esc(m.id)}">${what}
-    <div class="wb-stake">
-      <label for="wb-stake">Einsatz $</label>
-      <input id="wb-stake" name="stake" type="number" min="1" step="0.01" max="${all}" value="${stake}" required>
-      ${[5, 10, 25].filter(x => x <= me.cash).map(x => `<button type="button" class="wb-chip" data-stake="${x}">$${x}</button>`).join('')}
-      <button type="button" class="wb-chip" data-stake="${all}">All-in</button>
-    </div>
-    <div class="wb-slip-go">
-      <div class="wb-payout"><span class="wb-k">Gewinn</span><b class="wb-win">${wbMoney(Math.round(stake * odds * 100) / 100)}</b></div>
-      <button class="wb-btn gold big" ${WB.busy ? 'disabled' : ''}>Wetten · <span class="wb-cta">${wbMoney(stake)}</span></button>
-    </div>
-    <button type="button" class="wb-x" data-wb="cancel" aria-label="Wettschein schließen">×</button>
-    ${WB.msg ? `<p class="wb-err">${esc(WB.msg)}</p>` : ''}
-  </form></div>`;
+// After the start: everyone's tip, with points once the result is in.
+function wbOthers(m) {
+  const tips = m.tips || [];
+  if (!tips.length) return '<p class="wb-tile-foot">Noch keine Mitspieler.</p>';
+  const done = m.status === 'done';
+  return `<ul class="wb-who" aria-label="Tipps">${tips.map(t => `<li class="${t.name === WB.me?.name ? 'me' : ''} ${done ? (t.pts > 0 ? 'up' : 'down') : ''}">
+      ${esc(t.name)} <b>${t.a == null ? '–' : esc(wbScoreText(m, t.a, t.b))}</b>${t.auto ? ' <small>auto</small>' : ''}${done ? ` <em>+${t.pts}</em>` : ''}</li>`).join('')}</ul>`;
 }
 
 function wbBoard() {
-  const rows = wbBoardRows();
+  const rows = wbRows();
   if (!rows.length) return '<p class="wb-muted">Noch niemand dabei. Sei der Erste!</p>';
   const meName = WB.me?.name;
-  const sub = p => `${p.won}–${p.lost}${Number(p.bonus) ? ` · +${wbMoney(p.bonus)} Pick'Ems` : ''}`;
+  const sub = p => `${p.exact}× genau · ${p.hits} Treffer${p.bonus ? ` · +${p.bonus} Bonus` : ''}`;
   const pod = [rows[1], rows[0], rows[2]].filter(Boolean);
-  const rest = rows.slice(3), shown = WB.boardAll ? rest : rest.slice(0, 5);
-  return `<div class="wb-podium" style="grid-template-columns:repeat(${pod.length},minmax(0,1fr))">${pod.map(p => `<div class="wb-pod r${p.rank} ${p.name === meName ? 'me' : ''}">
-      <b class="wb-pod-name">${esc(p.name)}</b><span class="wb-pod-money">${wbMoney(p.total)}</span><small>${sub(p)}</small>
+  const rest = rows.slice(3), shown = WB.boardAll ? rest : rest.slice(0, 7);
+  return `<div class="wb-podium" style="grid-template-columns:repeat(${pod.length},minmax(0,1fr))">${pod.map((p, i) => `<div class="wb-pod r${[2, 1, 3][pod.length === 1 ? 1 : i]} ${p.name === meName ? 'me' : ''}">
+      <b class="wb-pod-name">${esc(p.name)}</b><span class="wb-pod-money">${wbPts(p.points)}</span><small>${sub(p)}</small>
       <div class="wb-pod-step">${p.rank}</div></div>`).join('')}</div>
-    ${shown.length ? `<ol class="wb-list">${shown.map(p => `<li class="${p.name === meName ? 'me' : ''}"><span><b class="wb-rank">${p.rank}</b>${esc(p.name)} <small>${sub(p)}</small></span><span class="wb-money">${wbMoney(p.total)}</span></li>`).join('')}</ol>` : ''}
-    ${rest.length > 5 ? `<button type="button" class="wb-link" data-wb="board-all">${WB.boardAll ? 'Weniger anzeigen' : `Alle ${rows.length} anzeigen`}</button>` : ''}`;
+    ${shown.length ? `<ol class="wb-list">${shown.map(p => `<li class="${p.name === meName ? 'me' : ''}"><span><b class="wb-rank">${p.rank}</b>${esc(p.name)} <small>${sub(p)}</small></span><span class="wb-money">${p.points}</span></li>`).join('')}</ol>` : ''}
+    ${rest.length > 7 ? `<button type="button" class="wb-link" data-wb="board-all">${WB.boardAll ? 'Weniger anzeigen' : `Alle ${rows.length} anzeigen`}</button>` : ''}`;
 }
 
-function wbPicks() {
-  const s = WB.st.settings, teams = WB.st.teams;
-  const locked = Date.now() >= Date.parse(s.picks_lock);
+function wbBonus() {
+  const types = WB.st.pick_types;
+  if (!types.length) return '<h2 class="wb-h">Bonusfragen</h2><p class="wb-muted">Kommen gleich.</p>';
+  // start on the question that locks next
+  const next = types.filter(t => Date.now() < Date.parse(t.lock_at)).sort((a, b) => Date.parse(a.lock_at) - Date.parse(b.lock_at) || a.sort - b.sort)[0];
+  if (!types.some(t => t.kind === WB.kind)) WB.kind = (next || types[0]).kind;
+  const pt = types.find(t => t.kind === WB.kind);
+  const locked = Date.now() >= Date.parse(pt.lock_at);
   const me = WB.me && wbPlayer(WB.me.name);
-  const mine = me?.picks || {};
-  const winner = WB.pickMode === 'winner';
-  const chosen = t => winner ? mine.winner1 === t : mine.finalist1 === t || mine.finalist2 === t;
-  const price = t => winner ? t.win_price : t.final_price;
-  const max = Math.max(...teams.map(t => Number(price(t)) || 0), .01);
-  // Favourites first; the long tail only on request (your own picks always stay visible).
-  const alive = teams.filter(t => !t.out || chosen(t.team)).sort((a, b) => (Number(price(b)) || 0) - (Number(price(a)) || 0));
-  const list = WB.teamsAll ? alive : alive.filter((t, i) => i < 8 || chosen(t.team));
-  const mark = (t, key) => { const x = teams.find(y => y.team === t); return x?.[key] ? ' ✓' : x?.[key] === false || x?.out ? ' ✗' : ''; };
-  const others = WB.st.players.filter(p => p.picks);
-  return `<div class="wb-sec-head"><h2 class="wb-h">Pick'Ems</h2><span class="wb-muted">gratis · ${locked ? 'gesperrt' : `änderbar bis ${wbDayShort(s.picks_lock)}`}</span></div>
-    <div class="wb-seg" role="tablist" aria-label="Tipp">
-      <button type="button" role="tab" data-pmode="winner" aria-selected="${winner}">Weltmeister +${wbMoney(s.winner_bonus)}</button>
-      <button type="button" role="tab" data-pmode="finalist" aria-selected="${!winner}">Finalisten +${wbMoney(s.finalist_bonus)} je</button>
-    </div>
-    <p class="wb-muted">${winner ? 'Wer wird Weltmeister?' : 'Welche zwei Teams stehen im Finale?'} ${me ? '' : 'Zum Tippen einloggen.'} Balken = Chance laut Polymarket.</p>
-    <div class="wb-picks">${list.map(t => `<button type="button" class="wb-pick ${chosen(t.team) ? 'on' : ''}" data-team="${esc(t.team)}" aria-pressed="${chosen(t.team)}" ${!me || locked ? 'disabled' : ''}>
-        <span class="wb-dot" aria-hidden="true"></span><span class="wb-name">${esc(t.team)}</span>
-        <span class="wb-pbar" aria-hidden="true"><i style="width:${Math.round((Number(price(t)) || 0) / max * 100)}%"></i></span>
-        <span class="wb-ppct">${price(t) == null ? '–' : wbPct(Number(price(t)))}</span></button>`).join('')}</div>
-    ${alive.length > 8 ? `<button type="button" class="wb-link wb-more-teams" data-wb="teams-all">${WB.teamsAll ? 'Nur Favoriten zeigen' : `Alle ${alive.length} Teams zeigen`}</button>` : ''}
-    ${others.length ? `<details class="wb-others"><summary>Tipps der anderen (${others.length})</summary><ul>${others.map(p => `<li class="${p.name === WB.me?.name ? 'me' : ''}"><b>${esc(p.name)}</b>
-      <span>Weltmeister: ${p.picks.winner1 ? esc(p.picks.winner1) + mark(p.picks.winner1, 'won') : '–'}</span>
-      <span>Finale: ${[p.picks.finalist1, p.picks.finalist2].filter(Boolean).map(t => esc(t) + mark(t, 'finalist')).join(', ') || '–'}</span></li>`).join('')}</ul></details>` : ''}`;
-}
-
-function wbResults() {
-  const done = WB.st.markets.filter(m => m.kind === 'moneyline' && m.status !== 'open').reverse().slice(0, 10);
-  if (!done.length) return '<p class="wb-muted">Noch keine Ergebnisse.</p>';
-  return `<ul class="wb-res">${done.map(m => {
-    const score = /\|(\d+)-(\d+)\|/.exec(m.score || '');
-    const [a, b] = m.event_title.split(' vs ');
-    const bets = WB.st.markets.filter(x => x.event_id === m.event_id).flatMap(x => wbBetsOf(x.id));
-    const net = {};
-    for (const x of bets) if (x.status !== 'open') net[x.name] = (net[x.name] || 0) + Number(x.payout) - Number(x.stake);
-    return `<li><div class="wb-res-line"><span class="${m.result === 0 ? 'w' : ''}">${esc(a)}</span><b>${score ? `${score[1]}:${score[2]}` : 'vs'}</b><span class="${m.result === 1 ? 'w' : ''}">${esc(b || '')}</span></div>
-      <small class="wb-muted">${wbDay(m.starts_at)}${m.status === 'void' ? ' · abgesagt, Einsätze zurück' : ''}</small>
-      ${Object.keys(net).length ? `<p class="wb-who">${Object.entries(net).sort((x, y) => y[1] - x[1]).map(([n, v]) => `<span class="${v > 0 ? 'up' : v < 0 ? 'down' : ''}">${esc(n)} ${v > 0 ? '+' : v < 0 ? '−' : '±'}${wbMoney(Math.abs(v))}</span>`).join('')}</p>` : ''}</li>`;
-  }).join('')}</ul>`;
-}
-
-function wbHistory() {
-  const mine = WB.me && WB.histMine;
-  const bets = WB.st.bets.filter(b => !mine || b.name === WB.me.name).slice(0, 40);
-  const byId = new Map(WB.st.markets.map(m => [m.id, m]));
-  const st = { open: 'offen', won: 'gewonnen', lost: 'verloren', void: 'zurück' };
-  return `<div class="wb-sec-head"><h2 class="wb-h">Wetten</h2>${WB.me ? `<div class="wb-seg" role="tablist" aria-label="Wetten"><button type="button" role="tab" data-hist="mine" aria-selected="${!!mine}">Meine</button><button type="button" role="tab" data-hist="all" aria-selected="${!mine}">Alle</button></div>` : ''}</div>
-    ${bets.length ? `<ul class="wb-hist">${bets.map(b => {
-      const m = byId.get(b.market_id);
-      const what = m ? `${m.kind === 'moneyline' ? '' : esc(wbLabel(m)) + ' '}<b>${esc(wbOutcome(m, b.outcome))}</b>` : '?';
-      const res = b.status === 'won' ? `<span class="up">+${wbMoney(b.payout - b.stake)}</span>` : b.status === 'lost' ? `<span class="down">−${wbMoney(b.stake)}</span>` : `<span class="wb-muted">${st[b.status]}</span>`;
-      return `<li><div>${mine ? '' : `<b>${esc(b.name)}</b> · `}<span class="wb-muted">${m ? esc(m.event_title) : ''}</span><br>${what} @ ${wbOdds(b.odds)} · ${wbMoney(b.stake)}</div>${res}</li>`;
-    }).join('')}</ul>` : `<p class="wb-muted">${mine ? 'Du hast noch nicht gewettet.' : 'Noch keine Wetten.'}</p>`}`;
+  const mine = me?.picks?.[pt.kind] || [];
+  const odds = new Map(WB.st.team_odds.filter(o => o.kind === pt.kind).map(o => [o.team, o]));
+  const out = new Set(WB.st.teams.filter(t => t.out).map(t => t.team));
+  const alive = WB.st.teams.map(t => t.team).filter(t => !out.has(t) || mine.includes(t) || odds.get(t)?.hit)
+    .sort((a, b) => (Number(odds.get(b)?.price) || 0) - (Number(odds.get(a)?.price) || 0));
+  const list = WB.teamsAll ? alive : alive.filter((t, i) => i < 8 || mine.includes(t));
+  const max = Math.max(...alive.map(t => Number(odds.get(t)?.price) || 0), .01);
+  const pickers = t => WB.st.players.filter(p => p.name !== WB.me?.name && p.picks?.[pt.kind]?.includes(t)).map(p => p.name);
+  return `<div class="wb-sec-head"><h2 class="wb-h">Bonusfragen</h2><span class="wb-muted">${locked ? 'gesperrt seit' : 'änderbar bis'} ${wbDayShort(pt.lock_at)} ${wbTime(pt.lock_at)}</span></div>
+    <div class="wb-seg wb-kinds" role="tablist" aria-label="Bonusfrage">${types.map(t => `<button type="button" role="tab" data-kind="${esc(t.kind)}" aria-selected="${t.kind === pt.kind}">${esc(t.title)}</button>`).join('')}</div>
+    <p class="wb-muted wb-q">${pt.slots === 1 ? 'Wähle 1 Team' : `Wähle ${pt.slots} Teams`}, ${pt.slots > 1 ? `je richtiges Team ${wbPts(pt.points)}` : wbPts(pt.points)}.
+      ${me ? `<b>${mine.length}/${pt.slots} gewählt.</b>` : 'Zum Tippen einloggen.'} Balken = Chance laut Polymarket.${locked ? '' : ' Was die anderen gewählt haben, siehst du ab der Sperre.'}</p>
+    <div class="wb-picks">${list.map(t => {
+      const o = odds.get(t), on = mine.includes(t), who = locked ? pickers(t) : [];
+      const res = o?.hit === true ? '<span class="wb-hit up">✓</span>' : o?.hit === false ? '<span class="wb-hit down">✗</span>' : '';
+      return `<button type="button" class="wb-pick ${on ? 'on' : ''}" data-team="${esc(t)}" aria-pressed="${on}" ${!me || locked ? 'disabled' : ''}>
+        <span class="wb-dot" aria-hidden="true"></span>
+        <span class="wb-name">${esc(t)}${res}${who.length ? `<small>${who.map(esc).join(', ')}</small>` : ''}</span>
+        <span class="wb-pbar" aria-hidden="true"><i style="width:${Math.round((Number(o?.price) || 0) / max * 100)}%"></i></span>
+        <span class="wb-ppct">${o?.price == null ? '–' : wbPct(Number(o.price))}</span></button>`;
+    }).join('')}</div>
+    ${alive.length > 8 ? `<button type="button" class="wb-link wb-more-teams" data-wb="teams-all">${WB.teamsAll ? 'Nur Favoriten zeigen' : `Alle ${alive.length} Teams zeigen`}</button>` : ''}`;
 }
 
 // ---------- Actions ----------
 
 function wbWire(el) {
-  el.querySelectorAll('[data-m][data-o]').forEach(b => b.addEventListener('click', () => {
-    const same = WB.slip?.id === b.dataset.m && WB.slip.o === Number(b.dataset.o);
-    WB.slip = same ? null : { id: b.dataset.m, o: Number(b.dataset.o) };
-    WB.msg = null; renderWorlds();
-    if (WB.slip) el.querySelector('#wb-stake')?.focus({ preventScroll: true });
+  el.querySelectorAll('[data-tip]').forEach(b => b.addEventListener('click', async () => {
+    if (!WB.me) { WB.msg = 'Zum Tippen erst einloggen oder registrieren.'; renderWorlds(); el.querySelector('.wb-login input')?.focus(); return; }
+    if (WB.busy) return;
+    WB.busy = true;
+    const m = WB.st.matches.find(x => x.id === b.dataset.tip), a = Number(b.dataset.a), bb = Number(b.dataset.b);
+    try {
+      const r = await wbCall('wb_tip', { p_token: WB.me.token, p_match: m.id, p_a: a, p_b: bb });
+      if (r.relogin) wbSaveMe(null);
+      if (r.error) alert(r.error); else wbToast(`Tipp gespeichert: ${wbScoreText(m, a, bb)}`);
+    } catch (err) { alert(err.message); }
+    finally { WB.busy = false; }
+    await wbLoad(true);
   }));
   el.querySelectorAll('[data-day]').forEach(b => b.addEventListener('click', () => { WB.day = b.dataset.day; renderWorlds(); }));
-  el.querySelectorAll('[data-more]').forEach(b => b.addEventListener('click', () => {
-    const id = b.dataset.more; WB.open.has(id) ? WB.open.delete(id) : WB.open.add(id); renderWorlds();
-  }));
-  el.querySelectorAll('[data-wb="cancel"]').forEach(b => b.addEventListener('click', () => { WB.slip = null; WB.msg = null; renderWorlds(); }));
-  el.querySelectorAll('[data-wb="focus-login"]').forEach(a => a.addEventListener('click', e => {
-    e.preventDefault(); const f = el.querySelector('.wb-login input'); f?.scrollIntoView({ behavior: 'smooth', block: 'center' }); f?.focus({ preventScroll: true });
-  }));
+  el.querySelectorAll('[data-kind]').forEach(b => b.addEventListener('click', () => { WB.kind = b.dataset.kind; renderWorlds(); }));
+  el.querySelector('[data-wb="jump-missing"]')?.addEventListener('click', () => {
+    const m = wbMissing()[0]; if (!m) return;
+    WB.day = wbDayKey(m.starts_at); renderWorlds();
+    document.getElementById('wb-m-' + m.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
   el.querySelector('[data-wb="board-all"]')?.addEventListener('click', () => { WB.boardAll = !WB.boardAll; renderWorlds(); });
   el.querySelector('[data-wb="teams-all"]')?.addEventListener('click', () => { WB.teamsAll = !WB.teamsAll; renderWorlds(); });
   el.querySelector('[data-wb="logout"]')?.addEventListener('click', async () => {
-    const t = WB.me?.token; wbSaveMe(null); WB.slip = null; WB.msg = null; renderWorlds();
+    const t = WB.me?.token; wbSaveMe(null); WB.msg = null;
+    await wbLoad(true);
     try { await wbCall('wb_logout', { p_token: t }); } catch {}
   });
   const login = el.querySelector('.wb-login');
@@ -364,68 +301,32 @@ function wbWire(el) {
       await wbLoad(true);
     } catch (err) { WB.msg = err.message; renderWorlds(); }
   }));
-  const slip = el.querySelector('form.wb-slip-in');
-  if (slip) {
-    const input = slip.querySelector('input[name="stake"]'), win = slip.querySelector('.wb-win'), cta = slip.querySelector('.wb-cta');
-    const m = WB.st.markets.find(x => x.id === slip.dataset.m);
-    const update = () => {
-      WB.slip.stake = input.value;
-      win.textContent = wbMoney(Math.round((Number(input.value) || 0) * m.odds[WB.slip.o] * 100) / 100);
-      cta.textContent = wbMoney(Number(input.value) || 0);
-    };
-    input.addEventListener('input', update);
-    slip.querySelectorAll('[data-stake]').forEach(c => c.addEventListener('click', () => { input.value = c.dataset.stake; update(); }));
-    slip.addEventListener('submit', async e => {
-      e.preventDefault();
-      if (WB.busy) return;
-      WB.busy = true;
-      const stake = Number(input.value), odds = m.odds[WB.slip.o];
-      try {
-        const r = await wbCall('wb_bet', { p_token: WB.me.token, p_market: m.id, p_outcome: WB.slip.o, p_stake: stake, p_odds: odds });
-        if (r.relogin) wbSaveMe(null);
-        if (r.error) { WB.msg = r.error; await wbLoad(true); return; }
-        WB.slip = null; WB.msg = null;
-        await wbLoad(true);
-        wbToast(`Wette gesetzt: ${wbMoney(stake)} @ ${wbOdds(odds)}`);
-      } catch (err) { WB.msg = err.message; renderWorlds(); }
-      finally { WB.busy = false; }
-    });
-  }
-  el.querySelectorAll('[data-pmode]').forEach(b => b.addEventListener('click', () => { WB.pickMode = b.dataset.pmode; renderWorlds(); }));
   el.querySelectorAll('[data-team]').forEach(b => b.addEventListener('click', async () => {
-    const me = wbPlayer(WB.me?.name), mine = me?.picks || {}, team = b.dataset.team;
-    let slot = 1, value = team;
-    if (WB.pickMode === 'winner') value = mine.winner1 === team ? null : team;
-    else if (mine.finalist1 === team) value = null;
-    else if (mine.finalist2 === team) { slot = 2; value = null; }
-    else if (!mine.finalist1) slot = 1;
-    else if (!mine.finalist2) slot = 2;
-    else { alert('Du hast schon zwei Finalisten. Tipp erst einen an, um ihn abzuwählen.'); return; }
+    const team = b.dataset.team;
     try {
-      const r = await wbCall('wb_pick', { p_token: WB.me.token, p_kind: WB.pickMode, p_slot: slot, p_team: value });
+      const r = await wbCall('wb_pick', { p_token: WB.me.token, p_kind: WB.kind, p_team: team });
       if (r.relogin) wbSaveMe(null);
-      if (r.error) alert(r.error); else wbToast(value ? `Tipp gespeichert: ${value}` : 'Tipp entfernt');
+      if (r.error) alert(r.error); else wbToast(r.picked ? `Gewählt: ${team}` : `Abgewählt: ${team}`);
     } catch (err) { alert(err.message); }
     await wbLoad(true);
   }));
-  el.querySelectorAll('[data-hist]').forEach(b => b.addEventListener('click', () => { WB.histMine = b.dataset.hist === 'mine'; renderWorlds(); }));
 }
 
 function wbToast(text) {
   const t = document.createElement('div');
   t.className = 'wb-toast'; t.textContent = text;
   document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2600);
+  setTimeout(() => t.remove(), 2400);
 }
 
 async function wbLoad(force) {
   if (!wbCfg()) { renderWorlds(); return; }
   try {
-    WB.st = await wbCall('wb_state');
-    if (WB.me && !wbPlayer(WB.me.name)) wbSaveMe(null); // account was removed
-  } catch (err) { if (!WB.st) WB.msg = 'Konnte das Wettspiel nicht laden: ' + err.message; }
-  // Keep a half-typed stake or login while the page refreshes in the background.
-  const typing = !force && document.activeElement?.matches?.('#tab-worlds input, #tab-worlds select');
+    WB.st = await wbCall('wb_state', WB.me ? { p_token: WB.me.token } : {});
+    if (WB.me && WB.st.me !== WB.me.name) wbSaveMe(null); // session gone or account removed
+  } catch (err) { if (!WB.st) WB.msg = 'Konnte das Tippspiel nicht laden: ' + err.message; }
+  // Keep a half-typed login while the page refreshes in the background.
+  const typing = !force && document.activeElement?.matches?.('#tab-worlds input');
   if (!typing) renderWorlds();
 }
 

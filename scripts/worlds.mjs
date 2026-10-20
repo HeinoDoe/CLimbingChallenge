@@ -1,21 +1,22 @@
-// Worlds betting game: copies Worlds odds and results from Polymarket into the Supabase
-// database (supabase/worlds.sql). Runs in the "Update squad data" workflow.
+// Worlds Tippspiel: copies the Worlds schedule, odds and results from Polymarket into the
+// Supabase database (supabase/worlds.sql). Runs in the "Update squad data" workflow.
 //
 //   SUPABASE_SECRET_KEY   GitHub secret (Supabase → Project Settings → API Keys → secret key)
-//   squad.config.json     "worlds": { supabaseUrl, start, end, ... }
+//   squad.config.json     "worlds": { supabaseUrl, start, end, points, bonus: [...] }
 //
-// Bets are only possible on markets with a real price: Polymarket shows the midpoint of
-// the order book when the spread is at most 10 cents, so we do the same and skip the rest.
+// Polymarket has one event per match. Its "Match Winner" price gives the chance bar and the
+// auto-tip for players who forget to tip (the favourite's most likely score); the per-game
+// winner markets give the exact series score once the match is over.
 import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 
 const GAMMA = 'https://gamma-api.polymarket.com';
 const MAX_SPREAD = 0.1;
-const MIN_PRICE = 0.02, MAX_PRICE = 0.98; // odds between 1.02 and 50
 
 const num = (v) => (v == null || v === '' ? null : Number(v));
 const parse = (v) => (typeof v === 'string' ? JSON.parse(v) : v);
 const isoOf = (v) => (v ? new Date(String(v).replace(' ', 'T').replace(/\+00$/, 'Z')).toISOString() : null);
+const yesPrice = (m) => num(parse(m.outcomePrices || '[]')[0]);
 
 // "LoL: Gen.G vs Invictus Gaming (BO1) - Worlds Group Stage"
 export function parseTitle(title) {
@@ -23,20 +24,18 @@ export function parseTitle(title) {
   return m ? { title: m[1], bestOf: m[2] ? Number(m[2]) : null, stage: m[3] } : { title: title || '', bestOf: null, stage: null };
 }
 
-// Fair prices of both outcomes, or null when there is no real market right now.
-export function pricesOf(m) {
-  if (m.closed || m.acceptingOrders === false) return null;
+// Polymarket's price for the first outcome while it is a real market (spread ≤ 10 cents).
+export function priceOf(m) {
+  if (!m || m.closed) return null;
   const bid = num(m.bestBid), ask = num(m.bestAsk);
   if (bid == null || ask == null || ask - bid > MAX_SPREAD + 1e-9) return null;
-  const p = parse(m.outcomePrices || '[]').map(Number);
-  if (p.length !== 2 || !(p[0] >= MIN_PRICE && p[0] <= MAX_PRICE)) return null;
-  const p0 = Math.round(p[0] * 10000) / 10000;
-  return [p0, Math.round((1 - p0) * 10000) / 10000];
+  const p = yesPrice(m);
+  return p > 0 && p < 1 ? Math.round(p * 10000) / 10000 : null;
 }
 
-// Winning outcome once Polymarket has settled the market; -1 = void (e.g. game 4 not played).
+// Winning outcome once Polymarket has settled a market; -1 = not played (50/50).
 export function resultOf(m) {
-  if (!m.closed) return null;
+  if (!m?.closed) return null;
   const p = parse(m.outcomePrices || '[]').map(Number);
   if (p.length !== 2) return null;
   if (p[0] === 1 && p[1] === 0) return 0;
@@ -45,62 +44,96 @@ export function resultOf(m) {
   return null;
 }
 
-const KINDS = new Set(['moneyline', 'child_moneyline', 'totals', 'map_handicap', 'lol_both_teams_baron', 'lol_both_teams_dragon',
-  'lol_both_teams_inhibitors', 'lol_quadra_kill', 'lol_penta_kill', 'lol_odd_even_total_kills']);
+// Chance to win one game, from the chance to win the series (games independent).
+export function gameChance(series, bo) {
+  const need = (bo + 1) / 2;
+  const win = (p) => { // P(first to `need` wins)
+    let s = 0;
+    for (let lost = 0; lost < need; lost++) s += binom(need - 1 + lost, lost) * p ** need * (1 - p) ** lost;
+    return s;
+  };
+  let lo = 0, hi = 1;
+  for (let i = 0; i < 50; i++) { const mid = (lo + hi) / 2; if (win(mid) < series) lo = mid; else hi = mid; }
+  return (lo + hi) / 2;
+}
+const binom = (n, k) => { let r = 1; for (let i = 1; i <= k; i++) r = r * (n - k + i) / i; return r; };
 
-// One Polymarket match event → rows for wb_markets.
-export function marketsOf(e) {
-  const head = parseTitle(e.title);
-  const ml = (e.markets || []).find((m) => m.sportsMarketType === 'moneyline');
-  if (!ml) return [];
-  const startsAt = isoOf(e.startTime) || isoOf(ml.gameStartTime);
-  if (!startsAt) return [];
-  return (e.markets || []).filter((m) => KINDS.has(m.sportsMarketType)).map((m) => ({
-    id: String(m.id),
-    event_id: String(e.id),
-    event_title: head.title,
-    stage: head.stage,
-    best_of: head.bestOf,
-    kind: m.sportsMarketType,
-    label: m.sportsMarketType === 'moneyline' ? 'Match Winner'
-      : ['child_moneyline', 'totals'].includes(m.sportsMarketType) ? (m.groupItemTitle || m.question) : m.question,
-    outcomes: parse(m.outcomes || '[]'),
-    prices: pricesOf(m),
-    starts_at: startsAt,
-    score: e.score || null,
-    result: resultOf(m),
-  }));
+// The auto-tip: the favourite's most likely series score, [a, b].
+export function favourite(priceA, bo) {
+  if (priceA == null) return null;
+  const aFav = priceA >= 0.5, need = (bo + 1) / 2;
+  let loser = 0;
+  if (bo > 1) {
+    // P(need:k) ∝ C(need-1+k, k)·q^k; the next score is likelier while that ratio > 1
+    const q = 1 - gameChance(Math.max(priceA, 1 - priceA), bo);
+    while (loser < need - 1 && (need + loser) / (loser + 1) * q > 1) loser++;
+  }
+  return aFav ? [need, loser] : [loser, need];
+}
+
+// Final series score [a, b] once the match is over; null while unknown.
+export function seriesScore(e, bo, winner) {
+  const need = (bo + 1) / 2;
+  if (bo === 1) return winner === 0 ? [1, 0] : [0, 1];
+  const wins = [0, 0];
+  for (const m of e.markets || []) if (m.sportsMarketType === 'child_moneyline') { const r = resultOf(m); if (r === 0 || r === 1) wins[r]++; }
+  if (wins[winner] === need && wins[1 - winner] < need) return wins;
+  const s = /\|(\d+)-(\d+)\|/.exec(e.score || '');
+  if (s) {
+    const sc = [Number(s[1]), Number(s[2])];
+    if (sc[winner] === need && sc[1 - winner] < need) return sc;
+  }
+  return null;
 }
 
 export const isWorldsMatch = (e, word = 'Worlds') => /^lol-/.test(e.slug || '') && (e.title || '').includes(word)
   && (e.markets || []).some((m) => m.sportsMarketType === 'moneyline');
 
-// Teams for the free picks, from the "Worlds winner" and "make the grand final" events.
-export function teamsOf(winnerEvent, finalEvent) {
-  const yes = (m) => num(parse(m.outcomePrices || '[]')[0]);
-  const real = (m) => m.closed || (num(m.bestAsk) ?? 1) - (num(m.bestBid) ?? 0) < 0.9; // skip empty placeholders ("Other")
-  const finals = new Map((finalEvent?.markets || []).map((m) => [m.groupItemTitle, m]));
-  return (winnerEvent?.markets || []).filter((m) => m.groupItemTitle && m.groupItemTitle !== 'Other' && real(m)).map((m) => {
-    const f = finals.get(m.groupItemTitle);
-    const won = m.closed ? yes(m) === 1 : null;
-    const finalist = f?.closed ? yes(f) === 1 : null;
-    return {
-      team: m.groupItemTitle,
-      win_price: yes(m),
-      final_price: f ? yes(f) : null,
-      out: Boolean(m.closed && yes(m) === 0 && finalist !== true),
-      won,
-      finalist,
-    };
+// One Polymarket match event → a wb_matches row (with result once it is over).
+export function matchOf(e) {
+  const ml = (e.markets || []).find((m) => m.sportsMarketType === 'moneyline');
+  if (!ml) return null;
+  const head = parseTitle(e.title);
+  const [teamA, teamB] = parse(ml.outcomes || '[]');
+  const startsAt = isoOf(e.startTime) || isoOf(ml.gameStartTime);
+  if (!teamA || !teamB || !startsAt) return null;
+  const bo = [1, 3, 5].includes(head.bestOf) ? head.bestOf : 1;
+  const priceA = priceOf(ml);
+  const fav = favourite(priceA, bo);
+  const row = { id: String(e.id), title: head.title, team_a: teamA, team_b: teamB, stage: head.stage, best_of: bo,
+    starts_at: startsAt, price_a: priceA, fav_a: fav?.[0] ?? null, fav_b: fav?.[1] ?? null };
+  const winner = resultOf(ml);
+  if (winner === -1) row.void = true;
+  else if (winner != null) { const sc = seriesScore(e, bo, winner); if (sc) row.result = sc; }
+  return row;
+}
+
+const real = (m) => m.groupItemTitle && m.groupItemTitle !== 'Other' && (m.closed || (num(m.bestAsk) ?? 1) - (num(m.bestBid) ?? 0) < 0.9);
+
+// One bonus question's Polymarket event → [{kind, team, price, hit}].
+export function teamOddsOf(kind, event) {
+  return (event?.markets || []).filter(real).map((m) => {
+    const spread = (num(m.bestAsk) ?? 1) - (num(m.bestBid) ?? 0);
+    return { kind, team: m.groupItemTitle, price: m.closed ? yesPrice(m) : spread <= 0.3 ? yesPrice(m) : null,
+      hit: m.closed ? yesPrice(m) === 1 : null };
   });
 }
 
-export function settingsOf(w) {
-  return {
-    start_day: w.start, end_day: w.end, start_balance: w.startBalance, daily: w.daily,
-    winner_bonus: w.winnerBonus, finalist_bonus: w.finalistBonus, picks_lock: w.picksLock,
-  };
+// All teams of the bonus questions; a team is out once it can no longer win or reach the knockouts.
+export function teamsOf(odds) {
+  const teams = new Map();
+  for (const o of odds) {
+    const t = teams.get(o.team) || { team: o.team, out: false };
+    if ((o.kind === 'winner' || o.kind === 'knockout') && o.hit === false) t.out = true;
+    teams.set(o.team, t);
+  }
+  return [...teams.values()];
 }
+
+export function settingsOf(w) {
+  return { start_day: w.start, end_day: w.end, pts_bo1: w.points?.bo1, pts_winner: w.points?.winner, pts_exact: w.points?.exact };
+}
+export const pickTypesOf = (w) => (w.bonus || []).map((b, i) => ({ kind: b.kind, title: b.title, slots: b.slots, points: b.points, lock_at: b.lock, sort: i + 1 }));
 
 // ---------- I/O ----------
 
@@ -124,8 +157,8 @@ async function main() {
   const w = cfg.worlds;
   const key = process.env.SUPABASE_SECRET_KEY;
   const url = process.env.SUPABASE_URL || w?.supabaseUrl; // env only for local testing
-  if (!url || !key) {
-    console.log('Worlds betting: no Supabase URL or SUPABASE_SECRET_KEY yet, skipping.');
+  if (!w || !url || !key) {
+    console.log('Worlds Tippspiel: no Supabase URL or SUPABASE_SECRET_KEY yet, skipping.');
     return;
   }
   const events = new Map();
@@ -133,31 +166,29 @@ async function main() {
     for (let offset = 0; offset < (closed ? 100 : 400); offset += 100) {
       const order = closed ? '&order=endDate&ascending=false' : '';
       const page = await get(`/events?tag_slug=league-of-legends&closed=${closed}&limit=100&offset=${offset}${order}`);
-      for (const e of page) if (isWorldsMatch(e, w.match || 'Worlds')) events.set(e.id, e);
+      for (const e of page) if (isWorldsMatch(e, w.match || 'Worlds')) events.set(String(e.id), e);
       if (page.length < 100) break;
     }
   }
-  const markets = [...events.values()].flatMap(marketsOf);
-  const [winner] = w.winnerEvent ? await get(`/events?slug=${w.winnerEvent}`) : [];
-  const [final] = w.finalistEvent ? await get(`/events?slug=${w.finalistEvent}`) : [];
-  const teams = teamsOf(winner, final);
-  const out = await rpc(url, key, 'wb_sync', { p: { settings: settingsOf(w), markets, teams } });
-  console.log(`Worlds betting: ${events.size} matches, ${markets.length} markets (${markets.filter((m) => m.prices).length} with odds), ${teams.length} teams, ${out.settled} bets settled.`);
-
-  // Started markets that were not in the lists above: look them up one by one.
-  const known = new Set(markets.map((m) => m.id));
-  const missing = (out.pending || []).filter((id) => !known.has(id));
-  const results = [];
-  for (let i = 0; i < missing.length; i += 20) {
-    const list = await get(`/markets?${missing.slice(i, i + 20).map((id) => `id=${id}`).join('&')}`);
-    for (const m of list) {
-      const result = resultOf(m);
-      if (result != null) results.push({ id: String(m.id), result });
-    }
+  const matches = [...events.values()].map(matchOf).filter(Boolean);
+  const odds = [];
+  for (const b of w.bonus || []) {
+    if (!b.event) continue;
+    const [e] = await get(`/events?slug=${encodeURIComponent(b.event)}`);
+    odds.push(...teamOddsOf(b.kind, e));
   }
-  if (results.length) {
-    const r = await rpc(url, key, 'wb_sync', { p: { results } });
-    console.log(`Worlds betting: ${r.settled} more bets settled from ${results.length} finished markets.`);
+  const out = await rpc(url, key, 'wb_sync', { p: { settings: settingsOf(w), pick_types: pickTypesOf(w), teams: teamsOf(odds), team_odds: odds, matches } });
+  console.log(`Worlds Tippspiel: ${matches.length} matches (${matches.filter((m) => m.price_a != null).length} with odds), ${odds.length} bonus answers, ${out.finished} matches finished.`);
+
+  // Started matches that were not in the lists above: look them up one by one.
+  const late = [];
+  for (const id of (out.pending || []).filter((id) => !events.has(id))) {
+    const row = matchOf(await get(`/events/${encodeURIComponent(id)}`));
+    if (row && (row.result || row.void)) late.push(row);
+  }
+  if (late.length) {
+    const r = await rpc(url, key, 'wb_sync', { p: { matches: late } });
+    console.log(`Worlds Tippspiel: ${r.finished} more matches finished.`);
   }
 }
 

@@ -65,23 +65,21 @@ To prepare a new game day:
 
 **Results** come in by themselves: from the game day's start time, every update looks for our tournament games (2 hours before to 10 hours after the start) and saves the result, both lineups with KDA and the bans to `docs/prime/results.json` (`scripts/results.mjs`). The game day page then shows the result above the plan, including how many of our picks came from it, and the day's Discord post lists it.
 
-## Worlds betting game
+## Worlds Tippspiel
 
-The **Worlds** tab is a betting game with play money ("Justus Bucks"). Anyone with the link registers with a name and a PIN (4–8 digits). Everyone starts with $100 and gets $10 more every day until the final (14.11.), counted from 20.10., so joining late costs nothing. Whoever has the most money at the end wins; the leaderboard counts free money plus money in open bets.
+The **Worlds** tab is the front page: a tipping game like Kicktipp, no money involved. Anyone with the link registers with a name and a PIN (4–8 digits) and tips every Worlds match from `worlds.start` on:
 
-- **Odds** come from Polymarket (free public API, no key): every Worlds match with match winner, game winners, handicaps, total games and per-game props (both teams Baron, any pentakill, …). Odds = 1 ÷ price, no bookmaker margin. A market only gets odds while Polymarket has a real price (spread of at most 10 cents), so props often only show up shortly before a match.
-- **Bets** lock the odds at the moment you bet and close at the scheduled start. The database checks everything (logged in, match not started, odds unchanged, enough money), so editing the page does not help.
-- **Results** are settled automatically once Polymarket settles the market, usually 1–3 hours after the match. Unplayed games (game 4 at 3:0) are void: stakes back.
-- **Free picks** cost nothing: the right Worlds winner +$20, each right finalist +$10, paid once known. Picks can be changed until `worlds.picksLock` (3.11. 12:00, before the quarterfinals).
-- **Where it lives:** a free Supabase database (`supabase/worlds.sql`). The website talks to it only through the `wb_*` functions with the public publishable key; the tables themselves are closed. Every update run copies odds and results with `scripts/worlds.mjs` and the secret key. The tab stays hidden until `worlds.supabaseUrl` and `worlds.publishableKey` are filled in.
+- **BO1:** the winner, 2 points if right.
+- **BO3/BO5:** the exact series score (2:1, 3:1, …): 4 points for the exact score, 2 if only the winner is right.
+- **No tip?** Then the favourite counts automatically, with its most likely score (Polymarket's match odds; for a series the game-by-game chance is worked out from them). It is marked "auto" and also applies to matches before someone signed up.
+- **Bonus questions** (`worlds.bonus`), each settled from its Polymarket market: Weltmeister (10), Finalisten (5 per team), 3:0 in der Swiss Stage (3 per team), 0:3 in der Swiss Stage (3), Viertelfinalisten (1 per team). Each has its own lock time; the Swiss ones lock when the Swiss Stage starts.
+- Tips can be changed until the scheduled start. After that everyone sees all tips; bonus answers become visible when they lock. Ties in the leaderboard go to more exact scores.
 
-**Setup (once):**
-1. Create a free project on [supabase.com](https://supabase.com) (sign in with GitHub, region Frankfurt).
-2. In the project: **SQL Editor → New query**, paste all of `supabase/worlds.sql`, **Run**. Running it again later is safe.
-3. **Project Settings → API Keys**: put the project URL and the **publishable** key into `squad.config.json` → `worlds.supabaseUrl` / `worlds.publishableKey` (both are public by design).
-4. Copy the **secret** key into a repository secret named `SUPABASE_SECRET_KEY` (Settings → Secrets and variables → Actions). Never put it into a file.
+**How it works:** schedule, odds and results come from Polymarket (free public API, no key). Every update run (`scripts/worlds.mjs`) copies the Worlds matches into a free Supabase database (`supabase/worlds.sql`): the match-winner price (chance bar and auto-tip, frozen at the start), the final series score (from the per-game winner markets, usually 1–3 hours after the match), and the bonus-question chances and results. The website talks to the database only through the `wb_*` functions with the public publishable key; the tables themselves are closed.
 
-**Admin:** forgotten PIN or a troll account: Supabase → Table Editor → `wb_players` → delete the row (their bets go with it); the player registers again. Settings like the daily amount live in `squad.config.json` → `worlds` and are copied into the database on every run.
+**Setup (done once):** a Supabase project, `supabase/worlds.sql` run in its SQL editor (or `npx supabase db query --linked --project-ref <ref> -f supabase/worlds.sql`; re-running is safe), the project URL and publishable key in `squad.config.json` → `worlds`, and the secret key as the repository secret `SUPABASE_SECRET_KEY`. Never put the secret key into a file.
+
+**Admin:** forgotten PIN or a troll account: Supabase → Table Editor → `wb_players` → delete the row (their tips go with it); the player registers again. Points and bonus questions live in `squad.config.json` → `worlds` and are copied into the database on every run.
 
 ## Discord posts
 
@@ -193,9 +191,9 @@ scripts/notify.mjs              the daily Discord post (built in the update, sen
 scripts/notify.test.mjs         tests for Discord posts, results and ▲/▼ places
 scripts/bingo.mjs               the bingo cards: fields, per-game facts, scoring
 scripts/bingo.test.mjs          bingo tests (npm test)
-scripts/worlds.mjs              Worlds betting: copies Polymarket odds and results into Supabase
-scripts/worlds.test.mjs         Worlds betting sync tests (npm test)
-supabase/worlds.sql             Worlds betting database: tables and wb_* functions (run in Supabase)
+scripts/worlds.mjs              Worlds Tippspiel: copies Polymarket schedule, odds and results into Supabase
+scripts/worlds.test.mjs         Worlds Tippspiel sync tests (npm test)
+supabase/worlds.sql             Worlds Tippspiel database: tables and wb_* functions (run in Supabase)
 scripts/results.mjs             finds our Prime League games and saves the results
 scripts/riot.mjs                small Riot API client used by scout.mjs and results.mjs
 scripts/make-sample.mjs         builds docs/data.sample.json (npm run sample)
@@ -208,7 +206,7 @@ docs/prime/gamedays.json        Prime League game days: opponents and draft plan
 docs/prime/scout-day<N>.json    scouting data for a game day (written by the scout)
 docs/prime/results.json         our Prime League results (written by the update)
 docs/index.html                 the website
-docs/worlds.js                  the Worlds betting tab
+docs/worlds.js                  the Worlds Tippspiel tab
 docs/data.json                  the data (written by the script, don't edit)
 docs/data.sample.json           sample data for ?demo=1
 ```
