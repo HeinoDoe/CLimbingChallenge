@@ -36,7 +36,7 @@ jobs:
         env:
           RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
 
-      - name: Worlds betting odds and results
+      - name: Worlds Tippspiel (Polymarket → Supabase)
         run: node scripts/worlds.mjs
         continue-on-error: true   # never blocks the data update
         env:
