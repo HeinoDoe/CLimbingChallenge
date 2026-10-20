@@ -37,8 +37,8 @@
     ]
   },
   "worlds": {
-    "supabaseUrl": "",
-    "publishableKey": "",
+    "supabaseUrl": "https://dnopdnxzqryzpygwpubj.supabase.co",
+    "publishableKey": "sb_publishable_frol_MPdKJAFoXMTegbIvw_fcNf2g0Y",
     "start": "2026-10-20", "end": "2026-11-14",
     "startBalance": 100, "daily": 10,
     "winnerBonus": 20, "finalistBonus": 10,
