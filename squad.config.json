@@ -36,6 +36,17 @@
       }
     ]
   },
+  "worlds": {
+    "supabaseUrl": "",
+    "publishableKey": "",
+    "start": "2026-10-20", "end": "2026-11-14",
+    "startBalance": 100, "daily": 10,
+    "winnerBonus": 20, "finalistBonus": 10,
+    "picksLock": "2026-11-03T12:00:00+01:00",
+    "match": "Worlds",
+    "winnerEvent": "worlds-2026-winner",
+    "finalistEvent": "worlds-2026-team-to-make-grand-finals"
+  },
   "queues": [420, 440],
   "maxNewMatchesPerPlayerPerRun": 60,
   "players": [

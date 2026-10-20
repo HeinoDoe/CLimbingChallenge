@@ -270,6 +270,7 @@ try {
     awards,
     bounties,
     bingos,
+    worlds: cfg.worlds?.supabaseUrl && cfg.worlds?.publishableKey ? { url: cfg.worlds.supabaseUrl, key: cfg.worlds.publishableKey } : null,
     reviews,
     reviewsKey: STATS_KEY,
     places,

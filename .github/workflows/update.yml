@@ -23,7 +23,7 @@ jobs:
           node-version: 20
 
       - name: Test the scoring
-        run: node --test scripts/challenge.test.mjs scripts/review.test.mjs scripts/notify.test.mjs scripts/bingo.test.mjs
+        run: node --test scripts/challenge.test.mjs scripts/review.test.mjs scripts/notify.test.mjs scripts/bingo.test.mjs scripts/worlds.test.mjs
 
       - name: Fetch data from the Riot API
         run: node scripts/update.mjs
@@ -35,6 +35,12 @@ jobs:
         continue-on-error: true   # never blocks the data update
         env:
           RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
+
+      - name: Worlds betting odds and results
+        run: node scripts/worlds.mjs
+        continue-on-error: true   # never blocks the data update
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
 
       - name: Save data
         run: |

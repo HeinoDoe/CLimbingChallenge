@@ -330,7 +330,7 @@
   .ticker:hover span { animation-play-state: paused; }
   @keyframes ticker { to { transform: translateX(-50%); } }
   @media (prefers-reduced-motion: reduce) { .ticker span { animation: none; white-space: normal; } }
-  #app, #tab-flex, #tab-prime { padding-top: 14px; }
+  #app, #tab-flex, #tab-prime, #tab-worlds { padding-top: 14px; }
   .badge { display: inline-block; font: 600 12px var(--body); background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 0 7px; margin-left: 6px; color: var(--ink); white-space: nowrap; }
   .quip { display: block; font-style: italic; font-size: 14px; }
 
@@ -404,6 +404,78 @@
   .btn { display: inline-block; font: 600 15px var(--body); background: var(--ink); color: var(--bg); border: 0; border-radius: 999px; padding: 8px 18px; cursor: pointer; text-decoration: none; margin-top: 8px; }
 
   @media (max-width: 860px) { .wall-grid { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Worlds betting tab (docs/worlds.js) */
+  #tab-worlds h2 { margin-top: 0; }
+  #tab-worlds section { margin-top: 36px; }
+  .wb-top { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px 32px; align-items: start; margin-bottom: 28px; }
+  .wb-top .lede { margin-bottom: 0; }
+  .wb-acct { background: var(--panel); border: 1px solid var(--accent); border-radius: 8px; padding: 14px 16px; }
+  .wb-hi { margin: 0 0 8px; font-size: 15px; }
+  .wb-cash { font: 700 46px/1 var(--display); color: var(--accent); margin: 6px 0 2px; }
+  .wb-acct .hint { margin: 0; }
+  .wb-fields { display: grid; grid-template-columns: minmax(0, 1fr) 110px; gap: 8px; }
+  .wb-fields input, .wb-stake input, .wb-picks select { font: 16px var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; min-width: 0; }
+  .wb-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn.wb-ghost { background: none; color: var(--ink); border: 1px solid var(--line); }
+  .btn:disabled { opacity: .5; cursor: wait; }
+  .wb-err { color: var(--down); font-weight: 600; margin: 8px 0 0; }
+  .linkish { background: none; border: 0; padding: 0; color: var(--muted); text-decoration: underline; cursor: pointer; font: inherit; }
+  .wb-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+  .wb-h { font: 700 26px/1 var(--display); margin: 0 0 12px; }
+  .wb-day { font: 700 13px var(--body); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin: 18px 0 8px; }
+  .wb-h + .wb-day { margin-top: 0; }
+  .wb-match { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+  .wb-mhead { display: flex; justify-content: space-between; gap: 4px 8px; flex-wrap: wrap; font-size: 14px; color: var(--muted); margin-bottom: 8px; }
+  .wb-mhead b { color: var(--ink); }
+  .wb-live { color: var(--accent); font-weight: 600; }
+  .wb-odds { display: flex; align-items: center; gap: 8px; }
+  .wb-odd { flex: 1 1 0; min-width: 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; font: 600 16px var(--body); cursor: pointer; text-align: left; }
+  .wb-odd span { overflow-wrap: anywhere; }
+  .wb-odd b { font: 700 21px var(--display); color: var(--accent); }
+  .wb-odd:hover { border-color: var(--accent); }
+  .wb-odd.on { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .wb-odd.on b { color: var(--bg); }
+  .wb-odds.small .wb-odd { padding: 6px 10px; font-size: 14px; }
+  .wb-odds.small .wb-odd b { font-size: 17px; }
+  .wb-vs { color: var(--muted); font-size: 13px; }
+  .wb-teams { font: 700 20px var(--display); margin: 0; }
+  .wb-slip { margin-top: 10px; background: var(--bg); border: 1px solid var(--accent); border-radius: 6px; padding: 10px 12px; }
+  .wb-slip p { margin: 0 0 8px; }
+  .wb-slip .wb-err { margin: 8px 0 0; }
+  .wb-stake { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 8px; }
+  .wb-stake input { width: 110px; margin-left: 6px; }
+  .chip { font: 600 13px var(--body); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+  .wb-who { display: flex; flex-wrap: wrap; gap: 4px 6px; margin: 8px 0 0; font-size: 13px; color: var(--muted); }
+  .wb-who span { background: var(--bg); border-radius: 999px; padding: 2px 8px; }
+  .wb-who span.me { box-shadow: inset 0 0 0 1px var(--accent); }
+  .wb-who .up { color: var(--up); } .wb-who .down { color: var(--down); }
+  .wb-more { margin-top: 8px; }
+  .wb-more summary { cursor: pointer; color: var(--muted); font-weight: 600; font-size: 14px; }
+  .wb-row { padding: 8px 0; border-top: 1px dashed var(--line); }
+  .wb-q { display: block; font-size: 14px; margin-bottom: 6px; }
+  .wb-board { list-style: none; margin: 0; padding: 0; }
+  .wb-board li { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+  .wb-board li.me { background: var(--panel); }
+  .wb-rank { font: 700 20px var(--display); color: var(--muted); text-align: center; }
+  .wb-board li:first-child .wb-rank { color: var(--accent); }
+  .wb-name { font: 700 18px/1.2 var(--display); min-width: 0; overflow-wrap: anywhere; }
+  .wb-name small { display: block; font: 500 13px var(--body); color: var(--muted); }
+  .wb-board b { font: 700 22px var(--display); }
+  .wb-picks { display: grid; gap: 8px; margin-bottom: 12px; }
+  .wb-picks label { display: grid; gap: 4px; font-weight: 600; font-size: 14px; }
+  table.wb-ptable { min-width: 0; font-size: 14px; }
+  .wb-ptable td, .wb-ptable th { padding: 5px 6px; text-align: left; }
+  .wb-ptable tr.me td { color: var(--accent); }
+  .wb-res, .wb-hist { list-style: none; margin: 0; padding: 0; }
+  .wb-res li { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .wb-res .w { font-weight: 700; color: var(--up); }
+  .wb-res small { display: block; color: var(--muted); }
+  .wb-hist li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+  .wb-hist .up { color: var(--up); font-weight: 700; } .wb-hist .down { color: var(--down); font-weight: 700; }
+  .wb-toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: var(--bg); font-weight: 600; padding: 10px 18px; border-radius: 999px; z-index: 50; }
+  @media (max-width: 860px) { .wb-top, .wb-grid { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 640px) { nav.tabs a { padding: 6px 11px; font-size: 14px; } }
 </style>
 </head>
 <body>
@@ -416,6 +488,7 @@
         <a href="#ladder" data-tab="ladder" aria-current="page">Solo/Duo</a>
         <a href="#flex" data-tab="flex">Flex</a>
         <a href="#prime" data-tab="prime">Prime League</a>
+        <a href="#worlds" data-tab="worlds" hidden>Worlds</a>
       </nav>
     </div>
   </div>
@@ -427,6 +500,8 @@
 </div>
 
 <div class="wrap" id="tab-flex" hidden></div>
+
+<div class="wrap" id="tab-worlds" hidden></div>
 
 <div class="wrap prime" id="tab-prime" hidden>
   <section style="margin-top:0" id="gamedays"></section>
@@ -487,6 +562,7 @@
   </section>
 </div>
 
+<script src="worlds.js"></script>
 <script>
 // ---------- Settings you may want to change ----------
 const PLAYER_COLORS = ['#2B59C3', '#1E8C6E', '#8E3BB5', '#C0392B', '#C08A0E', '#3D7A96', '#D0587E', '#5B8C2A', '#7A5230', '#5E6AD2'];
@@ -1151,10 +1227,12 @@ const champIcon = (c, size = 30) => `<img src="${champImg(c)}" alt="" width="${s
 
 // ---------- Tabs ----------
 function showTab() {
-  const tab = { '#prime': 'prime', '#flex': 'flex' }[location.hash] || 'ladder';
+  const tab = { '#prime': 'prime', '#flex': 'flex', '#worlds': 'worlds' }[location.hash] || 'ladder';
   document.getElementById('app').hidden = tab !== 'ladder';
   document.getElementById('tab-flex').hidden = tab !== 'flex';
   document.getElementById('tab-prime').hidden = tab !== 'prime';
+  document.getElementById('tab-worlds').hidden = tab !== 'worlds';
+  if (tab === 'worlds') openWorlds();
   document.querySelectorAll('nav.tabs a').forEach(a => {
     if (a.dataset.tab === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   });
@@ -1377,6 +1455,7 @@ async function main() {
   } catch {
     return renderEmpty('The data file could not be loaded. If you just set things up, the first update has not run yet.');
   }
+  document.querySelector('nav.tabs [data-tab="worlds"]').hidden = !data.worlds?.url;
   players = data.players || [];
   if (!players.length) return renderEmpty('The tracker is set up, but the first update has not run yet.');
   if (demo) { // move the sample's clock so it always looks mid-challenge, updated 35 min ago
