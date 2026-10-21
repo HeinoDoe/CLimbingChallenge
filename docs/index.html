@@ -414,131 +414,140 @@
   }
   .wb { --raised: #172131; --blue: #6BB3FF; padding-bottom: 8px; }
   .wb-muted { color: var(--muted); margin: 0; }
-  .wb-small { font-size: 14px; }
-  .wb-k { display: block; font: 700 11px var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .wb-small { font-size: 13px; }
   .wb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .wb-eyebrow { margin: 0 0 10px; font: 600 14px var(--display); letter-spacing: .14em; color: var(--accent); text-transform: uppercase; }
-  .wb-title { margin: 0; font: 700 clamp(40px, 6vw, 64px)/.98 var(--display); }
-  .wb-lede { margin: 16px 0 0; max-width: 54ch; color: var(--muted); font-size: 17px; }
-  .wb-h { margin: 0; font: 700 clamp(24px, 3vw, 30px)/1 var(--display); }
-  .wb-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; padding: 4px 0; }
-  .wb-wallet { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px 14px; }
-  .wb-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--raised); border: 1px solid var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; font: 700 14px var(--display); text-transform: uppercase; }
-  .wb-wallet-txt b { font: 700 22px/1.1 var(--display); color: var(--accent); }
-  .wb-banner { margin: 12px 0 0; padding: 12px 16px; border-radius: 12px; background: var(--panel); border: 1px solid var(--accent); }
-  .wb-banner .wb-link { margin-left: 6px; color: var(--accent); }
-  .wb-login { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  .wb-login input { height: 44px; font: 600 16px var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 0 12px; min-width: 0; }
-  .wb-login input[name="name"] { width: 170px; }
-  .wb-login input[name="pin"] { width: 110px; }
-  .wb-btn { height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid var(--line); background: var(--raised); color: var(--ink); font: 600 15px var(--body); cursor: pointer; }
-  .wb-btn.gold { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-  .wb-link { background: none; border: 0; padding: 0; color: var(--muted); text-decoration: underline; cursor: pointer; font: 600 14px var(--body); }
-  .wb-link:hover { color: var(--ink); }
-  .wb-err { flex-basis: 100%; color: var(--down); font-weight: 600; margin: 4px 0 0; }
-  .wb-hero { display: flex; flex-wrap: wrap; gap: 28px 40px; padding: 20px 0 36px; align-items: stretch; }
-  .wb-hero-text { flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
-  .wb-stages { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-  .wb-stages li { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; font-weight: 600; font-size: 14px; color: var(--muted); }
-  .wb-stages li.now { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 700; }
-  .wb-stages li.done { text-decoration: line-through; }
-  .wb-top { flex: 1 1 440px; min-width: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px; }
-  .wb-top.wb-empty { justify-content: center; }
-  .wb-top-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 10px; }
-  .wb-top-head .wb-eyebrow { margin: 0; font-size: 13px; }
-  .wb-versus { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .wb-versus > div { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
-  .wb-versus b { font: 700 20px/1.1 var(--display); overflow-wrap: anywhere; }
-  .wb-vs { font: 700 18px var(--display); color: var(--muted); }
-  .wb-crest { width: 38px; height: 38px; flex: none; border-radius: 50%; background: var(--raised); border: 2px solid var(--accent); display: inline-flex; align-items: center; justify-content: center; font: 700 11px var(--display); }
-  .wb-crest.b { border-color: var(--blue); }
-  .wb-crest.big { width: 76px; height: 76px; border-width: 3px; font-size: 20px; }
-  .wb-chance { display: flex; gap: 3px; height: 8px; }
-  .wb-chance i { display: block; border-radius: 999px; background: var(--accent); }
-  .wb-chance i.b { background: var(--blue); }
-  .wb-chance.thin { height: 5px; }
-  .wb-chance-txt { display: flex; justify-content: space-between; margin-top: -8px; font-size: 13px; font-weight: 700; }
-  .wb-chance-txt .a { color: var(--accent); }
-  .wb-chance-txt .b { color: var(--blue); }
-  .wb-tips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-  .wb-tip { position: relative; min-height: 44px; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--raised); color: var(--ink); font: 700 16px var(--display); cursor: pointer; overflow-wrap: anywhere; }
-  .wb-tip.a { border-left: 3px solid var(--accent); }
-  .wb-tip.b { border-left: 3px solid var(--blue); }
+  .wb-title { margin: 0; font: 700 clamp(26px, 3vw, 34px)/1.05 var(--display); }
+  .wb-h { margin: 0 0 10px; font: 700 20px/1.1 var(--display); }
+  .wb-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 20px; margin: 4px 0 14px; }
+  .wb-head .wb-muted { font-size: 14px; margin-top: 4px; }
+  .wb-head a { color: var(--accent); }
+  .wb-seg { display: inline-flex; flex-wrap: wrap; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 3px; }
+  .wb-seg button { min-height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font: 600 14px var(--body); cursor: pointer; }
+  .wb-seg button[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+  .wb-seg button small { font-size: 11px; opacity: .8; }
+  .wb section { margin-top: 0; }
+  .wb-main { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 16px; align-items: start; }
+  .wb-tablewrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
+  table.wb-table { width: 100%; min-width: 0; border-collapse: collapse; font-size: 14px; }
+  .wb-table th { text-align: left; font: 700 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 9px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .wb-table td { padding: 6px 8px; border-top: 1px solid var(--line); vertical-align: middle; }
+  .wb-table tbody tr:first-child td { border-top: 0; }
+  .wb-c-time { width: 58px; white-space: nowrap; }
+  .wb-c-time b { display: block; font: 700 16px/1.1 var(--display); }
+  .wb-c-time small { display: block; font-size: 11px; color: var(--muted); }
+  .wb-state { display: block; font: 700 10px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .wb-state.live { color: var(--accent); }
+  .wb-table th.wb-c-p, .wb-table td.wb-c-p { width: 54px; text-align: center; padding-left: 3px; padding-right: 3px; }
+  .wb-table td.wb-c-p { font: 700 13px var(--display); color: var(--muted); }
+  .wb-table td.wb-c-p span { color: var(--ink); }
+  .wb-table td.wb-c-p small { display: block; font: 700 11px var(--body); }
+  .wb-table .wb-c-p.me { background: rgb(232 190 98 / .07); }
+  .wb-table th.wb-c-p.me { color: var(--accent); }
+  .wb-table td.wb-c-p.ok { color: var(--up); }
+  .wb-table td.wb-c-p.auto span, .wb-miss { color: var(--muted) !important; font-style: italic; }
+  .wb-table td.wb-c-p.up small { color: var(--up); }
+  .wb-table td.wb-c-p.down small, .wb-table td.wb-c-p.down span { color: var(--down); }
+  .wb-table tr.todo .wb-c-time { box-shadow: inset 3px 0 0 var(--accent); }
+  .wb-table tr.live td { background: rgb(232 190 98 / .05); }
+  .wb-bo1 { display: flex; align-items: center; gap: 6px; }
+  .wb-vs { color: var(--muted); font: 600 12px var(--body); flex: none; }
+  .wb-tip { min-height: 38px; border-radius: 9px; border: 1px solid var(--line); background: var(--raised); color: var(--ink); font: 700 14px var(--display); cursor: pointer; }
   .wb-tip:hover { border-color: var(--accent); }
   .wb-tip.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-  .wb-tip small { position: absolute; top: -8px; right: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 0 6px; font: 600 10px var(--body); color: var(--muted); letter-spacing: .04em; }
-  .wb-sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 12px; margin-bottom: 16px; }
-  .wb-seg { display: inline-flex; flex-wrap: wrap; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 3px; }
-  .wb-seg button { height: 38px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font: 600 14px var(--body); cursor: pointer; }
-  .wb-seg button[aria-selected="true"] { background: var(--ink); color: var(--bg); }
-  .wb-kinds { margin-bottom: 12px; }
-  .wb-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
-  .wb-tile { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-  .wb-tile.live { border-color: var(--accent); }
-  .wb-tile.todo { box-shadow: inset 0 0 0 1px var(--accent); }
-  .wb-tile-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .wb-tile-top b { font: 700 18px var(--display); }
-  .wb-tile-top span { font-size: 12px; font-weight: 700; letter-spacing: .08em; color: var(--muted); text-align: right; }
-  .wb-tile.live .wb-tile-top span { color: var(--accent); }
-  .wb-team { display: flex; align-items: center; gap: 10px; }
-  .wb-team.lost { opacity: .55; }
-  .wb-name { flex: 1; min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
-  .wb-name small { display: block; font-size: 12px; font-weight: 500; color: var(--muted); }
-  .wb-score { font: 700 22px var(--display); }
-  .wb-tile-foot { margin: 0; padding-top: 10px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
-  .wb-tile-foot b { color: var(--ink); }
-  .wb-who { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 10px 0 0; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
-  .wb-who li { background: var(--raised); border-radius: 999px; padding: 3px 10px; }
-  .wb-who li b { color: var(--ink); }
-  .wb-who li small { font-size: 10px; letter-spacing: .04em; }
-  .wb-who li em { font-style: normal; font-weight: 700; }
-  .wb-who li.up em { color: var(--up); }
-  .wb-who li.down em { color: var(--down); }
-  .wb-who li.me { box-shadow: inset 0 0 0 1px var(--accent); }
-  .wb-row { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 28px; align-items: flex-start; }
-  .wb-row > .wb-panel { flex: 1 1 420px; min-width: 0; }
-  .wb-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
-  .wb-panel > .wb-h { margin-bottom: 16px; }
-  .wb-empty { color: var(--muted); }
-  .wb-podium { display: grid; gap: 10px; align-items: end; }
-  .wb-pod { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; min-width: 0; }
-  .wb-pod-name { overflow-wrap: anywhere; }
-  .wb-pod-money { font: 700 18px var(--display); }
-  .wb-pod small { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
-  .wb-pod-step { width: 100%; height: 50px; border-radius: 10px 10px 0 0; background: var(--raised); display: flex; align-items: center; justify-content: center; font: 700 22px var(--display); color: var(--muted); }
-  .wb-pod.r1 .wb-pod-step { height: 100px; background: var(--accent); color: var(--on-accent); font-size: 30px; }
-  .wb-pod.r1 .wb-pod-money { color: var(--accent); font-size: 20px; }
-  .wb-pod.r2 .wb-pod-step { height: 72px; }
-  .wb-pod.me .wb-pod-name { color: var(--accent); }
-  .wb-list { list-style: none; margin: 0 0 10px; padding: 0; border-top: 1px solid var(--line); }
-  .wb-list li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 4px; border-bottom: 1px solid var(--line); }
+  .wb-tip.on .wb-crest { color: var(--ink); }
+  .wb-tip.fav:not(.on) { border-style: dashed; border-color: var(--muted); }
+  .wb-tip.team { flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0 10px; text-align: left; font: 600 14px var(--body); }
+  .wb-tip.team small { margin-left: auto; font: 600 12px var(--display); opacity: .75; white-space: nowrap; }
+  .wb-tip.a:not(.team) { min-width: 42px; border-bottom: 3px solid var(--accent); }
+  .wb-tip.b:not(.team) { min-width: 42px; border-bottom: 3px solid var(--blue); }
+  .wb-tip.on:not(.team) { border-bottom-color: var(--on-accent); }
+  .wb-series { display: flex; align-items: center; gap: 8px; }
+  .wb-scorebtns { display: flex; align-items: center; gap: 4px; flex: none; }
+  .wb-scorebtns i { width: 6px; }
+  .wb-team { flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .wb-team.b { flex-direction: row-reverse; text-align: right; }
+  .wb-team.lost { opacity: .5; }
+  .wb-tname { min-width: 0; overflow-wrap: anywhere; line-height: 1.2; }
+  .wb-score { font: 700 18px var(--display); }
+  .wb-crest { width: 28px; height: 28px; flex: none; border-radius: 50%; background: var(--raised); border: 2px solid var(--accent); display: inline-flex; align-items: center; justify-content: center; font: 700 9px var(--display); color: var(--ink); }
+  .wb-crest.b { border-color: var(--blue); }
+  .wb-chance { display: flex; gap: 3px; height: 4px; margin-top: 5px; }
+  .wb-chance i { display: block; border-radius: 999px; background: var(--accent); opacity: .7; }
+  .wb-chance i.b { background: var(--blue); }
+  .wb-side { display: flex; flex-direction: column; gap: 12px; }
+  .wb-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+  .wb-acct-top { display: flex; align-items: center; gap: 10px; }
+  .wb-acct-top small { display: block; color: var(--muted); font-size: 13px; }
+  .wb-avatar { width: 36px; height: 36px; flex: none; border-radius: 50%; background: var(--raised); border: 1px solid var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; font: 700 15px var(--display); text-transform: uppercase; }
+  .wb-warn { margin: 10px 0 6px; color: var(--accent); font-weight: 600; font-size: 14px; }
+  .wb-warn .wb-link { color: var(--accent); margin-left: 4px; }
+  .wb-ok { margin: 10px 0 6px; color: var(--up); font-weight: 600; font-size: 14px; }
+  .wb-login { display: flex; flex-direction: column; gap: 8px; }
+  .wb-login input { height: 40px; font: 600 15px var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 9px; padding: 0 10px; min-width: 0; }
+  .wb-btns { display: flex; gap: 6px; }
+  .wb-btns .wb-btn { flex: 1; }
+  .wb-btn { min-height: 40px; padding: 0 14px; border-radius: 9px; border: 1px solid var(--line); background: var(--raised); color: var(--ink); font: 600 14px var(--body); cursor: pointer; }
+  .wb-btn.gold { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .wb-btn-link { display: inline-flex; align-items: center; margin-top: 8px; text-decoration: none; }
+  .wb-link { background: none; border: 0; padding: 0; color: var(--muted); text-decoration: underline; cursor: pointer; font: 600 13px var(--body); }
+  .wb-link:hover { color: var(--ink); }
+  .wb-err { color: var(--down); font-weight: 600; margin: 2px 0 0; font-size: 14px; }
+  .wb-list { list-style: none; margin: 0; padding: 0; }
+  .wb-list li { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-top: 1px solid var(--line); }
+  .wb-list li:first-child { border-top: 0; }
   .wb-list li.me { color: var(--accent); }
-  .wb-list small { color: var(--muted); font-size: 12px; margin-left: 4px; }
-  .wb-rank { color: var(--muted); margin-right: 10px; }
-  .wb-money { font: 600 17px var(--display); white-space: nowrap; }
+  .wb-list li.top b { color: var(--accent); }
+  .wb-rank { width: 20px; flex: none; color: var(--muted); font: 700 14px var(--display); text-align: center; }
+  .wb-lname { flex: 1; min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+  .wb-lname small { display: block; color: var(--muted); font-size: 11px; font-weight: 500; }
+  .wb-list b { font: 700 18px var(--display); }
+  .wb-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .wb-empty { color: var(--muted); }
+  .wb section.wb-bonus { margin-top: 16px; }
+  .wb-sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 12px; }
+  .wb-kinds { margin: 4px 0 10px; }
   .wb-q { font-size: 14px; }
   .wb-q b { color: var(--ink); }
-  .wb-picks { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-  .wb-pick { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 6px 14px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--ink); font: 15px var(--body); text-align: left; cursor: pointer; }
+  .wb-picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px; margin-top: 10px; }
+  .wb-pick { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 12px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--ink); font: 14px var(--body); text-align: left; cursor: pointer; }
   .wb-pick:hover:not(:disabled) { border-color: var(--accent); }
   .wb-pick:disabled { cursor: default; }
   .wb-pick.on { background: var(--raised); border-color: var(--accent); }
-  .wb-dot { width: 20px; height: 20px; flex: none; border-radius: 50%; border: 2px solid var(--line); }
+  .wb-dot { width: 18px; height: 18px; flex: none; border-radius: 50%; border: 2px solid var(--line); }
   .wb-pick.on .wb-dot { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 3px var(--raised); }
+  .wb-name { flex: 1; min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+  .wb-name small { display: block; font-size: 12px; font-weight: 500; color: var(--muted); }
   .wb-hit { margin-left: 6px; font-weight: 700; }
   .wb-hit.up { color: var(--up); } .wb-hit.down { color: var(--down); }
-  .wb-pbar { width: 90px; height: 6px; border-radius: 999px; background: var(--raised); overflow: hidden; flex: none; }
+  .wb-pbar { width: 60px; height: 5px; border-radius: 999px; background: var(--raised); overflow: hidden; flex: none; }
   .wb-pbar i { display: block; height: 100%; background: var(--accent); }
-  .wb-ppct { width: 56px; text-align: right; font: 600 14px var(--display); color: var(--muted); flex: none; }
+  .wb-ppct { width: 40px; text-align: right; font: 600 13px var(--display); color: var(--muted); flex: none; }
   .wb-more-teams { margin-top: 10px; }
-  .wb-rules { margin-top: 24px; color: var(--muted); }
-  .wb-rules summary { cursor: pointer; font: 700 18px var(--display); color: var(--ink); }
+  .wb-rules { margin-top: 16px; color: var(--muted); }
+  .wb-rules summary { cursor: pointer; font: 700 16px var(--display); color: var(--ink); }
   .wb-rules li { margin: 4px 0; max-width: 90ch; }
   .wb-toast { position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%); background: var(--ink); color: var(--bg); font-weight: 600; padding: 10px 18px; border-radius: 999px; z-index: 50; }
-  @media (max-width: 520px) {
-    .wb-pbar { width: 44px; }
-    .wb-login input[name="name"] { flex: 1 1 140px; }
-    .wb-crest.big { width: 60px; height: 60px; font-size: 16px; }
+  @media (max-width: 1000px) { .wb-main { grid-template-columns: minmax(0, 1fr); } }
+  /* Phones: the table becomes one card per game, the players' tips become chips */
+  @media (max-width: 700px) {
+    .wb-tablewrap { overflow: visible; }
+    .wb-table thead { display: none; }
+    .wb-table, .wb-table tbody { display: block; }
+    .wb-table tr { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; border-top: 1px solid var(--line); }
+    .wb-table tbody tr:first-child { border-top: 0; }
+    .wb-table td { display: block; border: 0 !important; padding: 0; }
+    .wb-table td.wb-c-time { flex-basis: 100%; width: auto; display: flex; align-items: baseline; gap: 8px; }
+    .wb-table td.wb-c-time b, .wb-table td.wb-c-time small, .wb-table td.wb-c-time .wb-state { display: inline; }
+    .wb-table td.wb-c-match { flex-basis: 100%; }
+    .wb-table td.wb-c-p { width: auto; display: inline-flex; align-items: baseline; gap: 4px; padding: 2px 8px; border-radius: 999px; background: var(--raised); font-size: 12px; }
+    .wb-table td.wb-c-p::before { content: attr(data-name); font: 500 12px var(--body); color: var(--muted); }
+    .wb-table td.wb-c-p small { display: inline; }
+    .wb-table tr.todo { box-shadow: inset 3px 0 0 var(--accent); }
+    .wb-table tr.todo .wb-c-time { box-shadow: none; }
+    .wb-series { flex-wrap: wrap; }
+    .wb-scorebtns { order: 3; flex-basis: 100%; justify-content: space-between; }
+    .wb-scorebtns .wb-tip { flex: 1; }
+    .wb-pbar { width: 40px; }
   }
   @media (max-width: 640px) { nav.tabs a { padding: 6px 11px; font-size: 14px; } }
 </style>

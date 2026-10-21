@@ -86,6 +86,10 @@ export function seriesScore(e, bo, winner) {
   return null;
 }
 
+// The tournament's game day: Polymarket's event date (local to the venue), else the date in US Central time.
+export const gameDay = (e, startsAt) => (/^\d{4}-\d{2}-\d{2}$/.test(e.eventDate || '') ? e.eventDate
+  : new Date(startsAt).toLocaleDateString('sv-SE', { timeZone: 'America/Chicago' }));
+
 export const isWorldsMatch = (e, word = 'Worlds') => /^lol-/.test(e.slug || '') && (e.title || '').includes(word)
   && (e.markets || []).some((m) => m.sportsMarketType === 'moneyline');
 
@@ -101,7 +105,7 @@ export function matchOf(e) {
   const priceA = priceOf(ml);
   const fav = favourite(priceA, bo);
   const row = { id: String(e.id), title: head.title, team_a: teamA, team_b: teamB, stage: head.stage, best_of: bo,
-    starts_at: startsAt, price_a: priceA, fav_a: fav?.[0] ?? null, fav_b: fav?.[1] ?? null };
+    starts_at: startsAt, day: gameDay(e, startsAt), price_a: priceA, fav_a: fav?.[0] ?? null, fav_b: fav?.[1] ?? null };
   const winner = resultOf(ml);
   if (winner === -1) row.void = true;
   else if (winner != null) { const sc = seriesScore(e, bo, winner); if (sc) row.result = sc; }

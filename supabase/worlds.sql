@@ -74,6 +74,9 @@ create table if not exists public.wb_matches (
   score_b int,
   updated_at timestamptz not null default now()
 );
+-- The tournament's game day (local date where it is played, e.g. North America), so a
+-- day's matches stay together even when they run past midnight in Germany.
+alter table public.wb_matches add column if not exists day date;
 
 create table if not exists public.wb_tips (
   player_id bigint not null references public.wb_players on delete cascade,
@@ -297,10 +300,13 @@ language sql stable security definer set search_path = public as $$
             where k.player_id = x.id and (now() >= pt.lock_at or k.player_id = (select id from me)) group by k.kind) z))
       order by x.match_points + x.bonus desc, x.exact desc, x.name) from totals x), '[]'::json),
     'matches', coalesce((select json_agg(j order by j.starts_at, j.id) from (
-        select m.id, m.title, m.team_a, m.team_b, m.stage, m.best_of, m.starts_at, m.price_a, m.fav_a, m.fav_b,
+        select m.id, m.title, m.team_a, m.team_b, m.stage, m.best_of, m.starts_at,
+          coalesce(m.day, (m.starts_at at time zone 'America/Chicago')::date) as day, m.price_a, m.fav_a, m.fav_b,
           m.status, m.score_a, m.score_b,
           (select json_build_object('a', t.a, 'b', t.b) from wb_tips t where t.match_id = m.id and t.player_id = (select id from me)) as mine,
           (select count(*) from wb_tips t where t.match_id = m.id) as tipped,
+          -- who has tipped already (not what), for the overview before the start
+          (select json_agg(p.name order by p.name) from wb_tips t join wb_players p on p.id = t.player_id where t.match_id = m.id) as tipped_by,
           (select json_agg(json_build_object('name', b.name, 'a', b.a, 'b', b.b, 'auto', b.auto, 'pts', b.pts)
                   order by b.pts desc nulls last, b.name) from board b where b.match_id = m.id) as tips
         from ms m) j), '[]'::json),
@@ -349,11 +355,12 @@ begin
   end loop;
 
   for m in select * from jsonb_array_elements(coalesce(p -> 'matches', '[]')) loop
-    insert into wb_matches (id, title, team_a, team_b, stage, best_of, starts_at, price_a, fav_a, fav_b, updated_at)
+    insert into wb_matches (id, title, team_a, team_b, stage, best_of, starts_at, day, price_a, fav_a, fav_b, updated_at)
     values (m ->> 'id', m ->> 'title', m ->> 'team_a', m ->> 'team_b', m ->> 'stage', coalesce((m ->> 'best_of')::int, 1),
-            (m ->> 'starts_at')::timestamptz, (m ->> 'price_a')::numeric, (m ->> 'fav_a')::int, (m ->> 'fav_b')::int, now())
+            (m ->> 'starts_at')::timestamptz, (m ->> 'day')::date, (m ->> 'price_a')::numeric, (m ->> 'fav_a')::int, (m ->> 'fav_b')::int, now())
     on conflict (id) do update set
       title = excluded.title, team_a = excluded.team_a, team_b = excluded.team_b, stage = excluded.stage, best_of = excluded.best_of,
+      day = coalesce(excluded.day, wb_matches.day),
       starts_at = case when wb_matches.status = 'open' then excluded.starts_at else wb_matches.starts_at end,
       -- odds and the auto-tip freeze at the start
       price_a = case when wb_matches.status = 'open' and wb_matches.starts_at > now() then coalesce(excluded.price_a, wb_matches.price_a) else wb_matches.price_a end,

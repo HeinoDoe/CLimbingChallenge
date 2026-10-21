@@ -3,15 +3,11 @@
 // functions; schedule, odds and results come from Polymarket via scripts/worlds.mjs. The
 // connection (project URL + publishable key, both public) is in squad.config.json →
 // data.json → data.worlds.
-const WB = { st: null, me: null, msg: null, timer: null, busy: false, day: null, kind: null, boardAll: false, teamsAll: false };
+//
+// Layout: one game day at a time as a compact table (time, match with your tip buttons,
+// one column per player), a small sidebar with account and leaderboard, bonus questions below.
+const WB = { st: null, me: null, msg: null, timer: null, busy: false, day: null, kind: null, teamsAll: false };
 const WB_TZ = 'Europe/Berlin';
-// Worlds 2026 schedule, for the timeline in the header.
-const WB_STAGES = [
-  { name: 'Swiss', from: '2026-10-23', to: '2026-10-31', text: '23.–31.10.' },
-  { name: 'Viertelfinale', from: '2026-11-03', to: '2026-11-06', text: '3.–6.11.' },
-  { name: 'Halbfinale', from: '2026-11-07', to: '2026-11-08', text: '7.–8.11.' },
-  { name: 'Finale', from: '2026-11-14', to: '2026-11-14', text: '14.11.' },
-];
 const WB_ABBR = {
   'Gen.G': 'GEN', T1: 'T1', 'Hanwha Life Esports': 'HLE', 'Dplus KIA': 'DK', 'Bilibili Gaming': 'BLG', 'Top Esports': 'TES',
   'Invictus Gaming': 'IG', "Anyone's Legend": 'AL', 'G2 Esports': 'G2', 'Karmine Corp': 'KC', 'Movistar KOI': 'MKOI',
@@ -25,12 +21,13 @@ const wbSaveMe = me => { WB.me = me; try { me ? localStorage.setItem('wb-auth', 
 
 const wbCfg = () => (typeof data !== 'undefined' && data?.worlds?.url && data?.worlds?.key) ? data.worlds : null;
 const wbDayKey = t => new Date(t).toLocaleDateString('sv-SE', { timeZone: WB_TZ });
-const wbDay = t => new Date(t).toLocaleDateString('de-DE', { timeZone: WB_TZ, weekday: 'long', day: 'numeric', month: 'numeric' });
+const wbWeekday = t => new Date(t).toLocaleDateString('de-DE', { timeZone: WB_TZ, weekday: 'short' }).replace('.', '');
 const wbDayShort = t => new Date(t).toLocaleDateString('de-DE', { timeZone: WB_TZ, weekday: 'short', day: 'numeric', month: 'numeric' });
+const wbGameDay = d => new Date(d + 'T12:00:00Z').toLocaleDateString('de-DE', { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'numeric' });
 const wbTime = t => new Date(t).toLocaleTimeString('de-DE', { timeZone: WB_TZ, hour: '2-digit', minute: '2-digit' });
 const wbDateShort = d => new Date(d + 'T12:00:00Z').toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric' });
-const wbStage = s => (s || '').replace(/^Worlds\s*/, '').replace('Group Stage', 'Swiss');
-const wbPct = p => `${Math.round(p * 1000) / 10} %`.replace('.', ',');
+const wbStage = s => (s || '').replace(/^Worlds\s*/, '').replace('Group Stage', 'Swiss Stage');
+const wbPct = p => `${Math.round(p * 100)} %`;
 const wbPts = n => `${n} ${Number(n) === 1 ? 'Punkt' : 'Punkte'}`;
 
 async function wbCall(fn, args = {}) {
@@ -46,18 +43,26 @@ async function wbCall(fn, args = {}) {
 const wbOpen = m => m.status === 'open' && Date.parse(m.starts_at) > Date.now();
 const wbLive = m => m.status === 'open' && !wbOpen(m);
 const wbPlayer = name => WB.st?.players.find(p => p.name === name);
-const wbRows = () => WB.st.players.map((p, i, all) => ({ ...p, rank: i && all[i - 1].points === p.points && all[i - 1].exact === p.exact ? null : i + 1 }))
-  .map((p, i, all) => ({ ...p, rank: p.rank ?? all.slice(0, i).reverse().find(x => x.rank)?.rank }));
+// Leaderboard with shared places for equal points and exact scores.
+const wbRows = () => {
+  let rank = 0;
+  return WB.st.players.map((p, i, all) => {
+    if (!i || all[i - 1].points !== p.points || all[i - 1].exact !== p.exact) rank = i + 1;
+    return { ...p, rank };
+  });
+};
 // All possible results of a match, [a, b]: BO1 1:0 0:1, BO3 2:0 2:1 1:2 0:2, BO5 3:0 … 0:3.
 function wbScores(bo) {
   if (bo === 1) return [[1, 0], [0, 1]];
-  const need = (bo + 1) / 2, out = [];
-  for (let k = 0; k < need; k++) out.push([need, k], [k, need]);
-  return out;
+  const need = (bo + 1) / 2, a = [], b = [];
+  for (let k = 0; k < need; k++) { a.push([need, k]); b.unshift([k, need]); }
+  return [...a, ...b]; // A's wins from clearest, then B's wins ending with the clearest
 }
 // "GEN 2:1" — the winner first; BO1 just the team.
 const wbScoreText = (m, a, b) => m.best_of === 1 ? (a > b ? m.team_a : m.team_b)
   : a > b ? `${wbAbbr(m.team_a)} ${a}:${b}` : `${wbAbbr(m.team_b)} ${b}:${a}`;
+// Short form for the player columns: BO1 the team, BO3/BO5 the score as A:B.
+const wbCellText = (m, a, b) => m.best_of === 1 ? wbAbbr(a > b ? m.team_a : m.team_b) : `${a}:${b}`;
 const wbMissing = () => WB.me ? WB.st.matches.filter(m => wbOpen(m) && !m.mine) : [];
 
 // ---------- Rendering ----------
@@ -71,29 +76,32 @@ function renderWorlds() {
   }
   const st = WB.st;
   if (!st) { el.innerHTML = `<div class="wb"><h1 class="wb-title">Worlds Tippspiel</h1><p class="wb-muted">${WB.msg ? esc(WB.msg) : 'Lade Spiele…'}</p></div>`; return; }
-  const s = st.settings, missing = wbMissing();
+  const s = st.settings;
+  const days = [...new Set(st.matches.map(m => m.day))];
+  if (!days.includes(WB.day)) WB.day = (st.matches.find(m => m.status === 'open') || st.matches.at(-1))?.day ?? null;
+  const list = st.matches.filter(m => m.day === WB.day);
   el.innerHTML = `<div class="wb">
-    <div class="wb-bar">${wbAccount()}</div>
-    ${missing.length ? `<p class="wb-banner"><b>${missing.length === 1 ? 'Dir fehlt noch 1 Tipp' : `Dir fehlen noch ${missing.length} Tipps`}.</b> Ohne Tipp wird automatisch der Favorit getippt. <button type="button" class="wb-link" data-wb="jump-missing">Zum nächsten</button></p>` : ''}
-    <section class="wb-hero">
-      <div class="wb-hero-text">
-        <p class="wb-eyebrow">${esc(wbEyebrow())}</p>
-        <h1 class="wb-title">Tipp jedes<br>Worlds-Spiel.</h1>
-        <p class="wb-lede">Wie Kicktipp: richtiger Sieger ${wbPts(s.pts_bo1)}, bei BO3 und BO5 das genaue Ergebnis ${wbPts(s.pts_exact)}. Dazu Bonusfragen. Wer am ${wbDateShort(s.end_day)} vorne liegt, gewinnt.</p>
-        <ol class="wb-stages" aria-label="Turnier">${WB_STAGES.map(x => `<li class="${wbStageState(x)}">${x.name} · ${x.text}</li>`).join('')}</ol>
+    <header class="wb-head">
+      <div>
+        <h1 class="wb-title">Worlds Tippspiel</h1>
+        <p class="wb-muted">${list.length ? `${esc(wbStage(list[0].stage))} · ${list.length} ${list.length === 1 ? 'Spiel' : 'Spiele'} · Zeiten in deutscher Zeit · ` : ''}BO1: Sieger ${wbPts(s.pts_bo1)} · BO3/BO5: genaues Ergebnis ${wbPts(s.pts_exact)}, Sieger ${wbPts(s.pts_winner)} · <a href="#wb-rules" data-wb="rules">Regeln</a></p>
       </div>
-      ${wbNext()}
-    </section>
-    <section class="wb-sec" aria-label="Spiele" id="wb-games">${wbMatches()}</section>
-    <div class="wb-row">
-      <section class="wb-panel" aria-label="Rangliste"><h2 class="wb-h">Rangliste</h2>${wbBoard()}</section>
-      <section class="wb-panel" aria-label="Bonusfragen">${wbBonus()}</section>
+      ${days.length > 1 ? `<div class="wb-seg wb-days" role="tablist" aria-label="Spieltag">${days.map(d => {
+        const dm = st.matches.filter(m => m.day === d);
+        const done = dm.every(m => m.status !== 'open'), todo = WB.me && dm.some(m => wbOpen(m) && !m.mine);
+        return `<button type="button" role="tab" data-day="${d}" aria-selected="${d === WB.day}" title="${dm.length} Spiele${todo ? ', noch nicht alle getippt' : ''}">${wbGameDay(d)}${done ? ' ✓' : todo ? ' •' : ''}</button>`;
+      }).join('')}</div>` : ''}
+    </header>
+    <div class="wb-main">
+      <section class="wb-games" aria-label="Spiele">${wbTable(list)}</section>
+      <aside class="wb-side">${wbAccount()}${wbBoard()}${wbBonusTeaser()}</aside>
     </div>
-    <details class="wb-rules"><summary>Regeln</summary><ul>
-      <li>Getippt wird jedes Worlds-Spiel ab ${wbDateShort(s.start_day)}: bei BO1 der Sieger, bei BO3 und BO5 das genaue Ergebnis (z. B. 2:1 oder 3:1).</li>
+    <section class="wb-panel wb-bonus" id="wb-bonus" aria-label="Bonusfragen">${wbBonus()}</section>
+    <details class="wb-rules" id="wb-rules"><summary>Regeln</summary><ul>
+      <li>Getippt wird jedes Worlds-Spiel ab ${wbDateShort(s.start_day)}: bei BO1 der Sieger, bei BO3 und BO5 das genaue Ergebnis (z. B. 2:1 oder 3:1). Ein Spieltag ist ein Turniertag in Nordamerika, darum laufen manche Spiele in deutscher Zeit bis nach Mitternacht.</li>
       <li>Punkte: BO1 richtiger Sieger ${wbPts(s.pts_bo1)}. BO3/BO5: genaues Ergebnis ${wbPts(s.pts_exact)}, nur der Sieger richtig ${wbPts(s.pts_winner)}.</li>
-      <li>Tipps lassen sich bis zum geplanten Spielbeginn ändern. Danach sieht jeder, was die anderen getippt haben.</li>
-      <li>Kein Tipp abgegeben? Dann zählt automatisch der Favorit laut Polymarket, mit seinem wahrscheinlichsten Ergebnis (markiert mit „auto“). Das gilt auch für Spiele vor deiner Anmeldung.</li>
+      <li>Tipps lassen sich bis zum geplanten Spielbeginn ändern. Vorher siehst du nur, wer schon getippt hat (✓), ab dem Start auch was.</li>
+      <li>Kein Tipp abgegeben? Dann zählt automatisch der Favorit laut Polymarket, mit seinem wahrscheinlichsten Ergebnis (grau, „auto“). Das gilt auch für Spiele vor deiner Anmeldung.</li>
       <li>Bonusfragen: ${st.pick_types.map(pt => `${esc(pt.title)} ${pt.slots > 1 ? `je Team ${wbPts(pt.points)}` : wbPts(pt.points)} (bis ${wbDayShort(pt.lock_at)} ${wbTime(pt.lock_at)})`).join(', ')}. Die Antworten der anderen sind ab dann sichtbar.</li>
       <li>Ergebnisse kommen automatisch von Polymarket, meist 1–3 Stunden nach dem Spiel. Gleichstand in der Rangliste: mehr genaue Ergebnisse gewinnt. PIN vergessen? Sag Heino Bescheid.</li>
     </ul></details>
@@ -101,128 +109,106 @@ function renderWorlds() {
   wbWire(el);
 }
 
-function wbStageState(x) {
-  const today = wbDayKey(Date.now());
-  return today > x.to ? 'done' : today >= x.from || WB_STAGES.find(y => today <= y.to) === x ? 'now' : '';
+// The day's games: one row each, then one column per player (you first).
+function wbTable(list) {
+  if (!list.length) return '<div class="wb-panel wb-empty">Noch keine Spiele. Sie tauchen auf, sobald Polymarket sie anbietet.</div>';
+  const meName = WB.me && wbPlayer(WB.me.name) ? WB.me.name : null;
+  const cols = [...(meName ? [meName] : []), ...wbRows().map(p => p.name).filter(n => n !== meName)];
+  return `<div class="wb-tablewrap"><table class="wb-table">
+    <thead><tr><th class="wb-c-time">Zeit</th><th class="wb-c-match">Spiel${WB.me ? ' · dein Tipp' : ''}</th>
+      ${cols.map(n => `<th class="wb-c-p ${n === meName ? 'me' : ''}" title="${esc(n)}">${n === meName ? 'Du' : esc(n.length > 8 ? n.slice(0, 7) + '…' : n)}</th>`).join('')}</tr></thead>
+    <tbody>${list.map(m => wbRow(m, cols, meName)).join('')}</tbody>
+  </table></div>
+  ${!cols.length ? '<p class="wb-muted wb-small">Noch niemand angemeldet. Die Tipps der anderen erscheinen hier als Spalten.</p>' : ''}`;
 }
-function wbEyebrow() {
-  const next = WB.st.matches.find(wbOpen);
-  return next ? `${wbStage(next.stage)} · nächstes Spiel ${wbDayShort(next.starts_at)} ${wbTime(next.starts_at)}`.toUpperCase() : 'WORLDS 2026';
+
+function wbRow(m, cols, meName) {
+  const open = wbOpen(m), done = m.status === 'done', live = wbLive(m);
+  const nextDay = wbDayKey(m.starts_at) !== m.day;
+  const time = `<b>${wbTime(m.starts_at)}</b><small>${nextDay ? wbWeekday(m.starts_at) + ' · ' : ''}BO${m.best_of}</small>`;
+  const state = done ? `<span class="wb-state">Ende</span>` : m.status === 'void' ? '<span class="wb-state">abgesagt</span>' : live ? '<span class="wb-state live">läuft</span>' : '';
+  const team = (name, i) => {
+    const won = done && (i ? m.score_b > m.score_a : m.score_a > m.score_b);
+    return `<span class="wb-team ${i ? 'b' : 'a'} ${done && !won ? 'lost' : ''}"><span class="wb-crest ${i ? 'b' : 'a'}">${esc(wbAbbr(name))}</span><span class="wb-tname">${esc(name)}</span>${done ? `<b class="wb-score">${i ? m.score_b : m.score_a}</b>` : ''}</span>`;
+  };
+  let match;
+  if (open && m.best_of === 1) {
+    match = `<div class="wb-bo1">${[0, 1].map(i => wbTipBtn(m, i ? 0 : 1, i ? 1 : 0, `<span class="wb-crest ${i ? 'b' : 'a'}">${esc(wbAbbr(i ? m.team_b : m.team_a))}</span><span class="wb-tname">${esc(i ? m.team_b : m.team_a)}</span>${m.price_a != null ? `<small>${wbPct(i ? 1 - m.price_a : m.price_a)}</small>` : ''}`, 'team')).join('<span class="wb-vs">vs</span>')}</div>`;
+  } else if (open) {
+    const sc = wbScores(m.best_of), half = sc.length / 2;
+    match = `<div class="wb-series">${team(m.team_a, 0)}<span class="wb-scorebtns">${sc.slice(0, half).map(([a, b]) => wbTipBtn(m, a, b, `${a}:${b}`, 'a')).join('')}<i></i>${sc.slice(half).map(([a, b]) => wbTipBtn(m, a, b, `${a}:${b}`, 'b')).join('')}</span>${team(m.team_b, 1)}</div>
+      ${m.price_a != null ? `<div class="wb-chance thin" title="Siegchance laut Polymarket: ${wbPct(m.price_a)} : ${wbPct(1 - m.price_a)}"><i class="a" style="width:${m.price_a * 100}%"></i><i class="b" style="width:${(1 - m.price_a) * 100}%"></i></div>` : ''}`;
+  } else {
+    match = `<div class="wb-series">${team(m.team_a, 0)}<span class="wb-vs">${done ? ':' : 'vs'}</span>${team(m.team_b, 1)}</div>`;
+  }
+  const tips = new Map((m.tips || []).map(t => [t.name, t]));
+  const tipped = new Set(m.tipped_by || []);
+  const cell = n => {
+    const t = tips.get(n);
+    if (t) {
+      const cls = done ? (t.pts > 0 ? 'up' : 'down') : '';
+      return `<td class="wb-c-p ${n === meName ? 'me' : ''} ${cls} ${t.auto ? 'auto' : ''}" data-name="${esc(n)}" title="${esc(n)}: ${t.a == null ? 'kein Tipp' : esc(wbScoreText(m, t.a, t.b))}${t.auto ? ' (auto)' : ''}${done ? `, ${wbPts(t.pts)}` : ''}">
+        <span>${t.a == null ? '–' : esc(wbCellText(m, t.a, t.b))}</span>${done ? `<small>+${t.pts}</small>` : ''}</td>`;
+    }
+    if (n === meName) {
+      return `<td class="wb-c-p me" data-name="Du" title="${m.mine ? 'Dein Tipp' : 'Noch nicht getippt, sonst Auto-Tipp Favorit'}">${m.mine ? `<span>${esc(wbCellText(m, m.mine.a, m.mine.b))}</span>` : `<span class="wb-miss">${m.fav_a != null ? esc(wbCellText(m, m.fav_a, m.fav_b)) : '?'}</span><small>auto</small>`}</td>`;
+    }
+    return `<td class="wb-c-p ${tipped.has(n) ? 'ok' : ''}" data-name="${esc(n)}" title="${esc(n)}: ${tipped.has(n) ? 'hat getippt (sichtbar ab Spielbeginn)' : 'noch kein Tipp'}">${tipped.has(n) ? '✓' : '·'}</td>`;
+  };
+  return `<tr class="${open && WB.me && !m.mine ? 'todo' : ''} ${live ? 'live' : ''}" id="wb-m-${esc(m.id)}">
+    <td class="wb-c-time">${time}${state}</td>
+    <td class="wb-c-match">${match}</td>
+    ${cols.map(cell).join('')}
+  </tr>`;
+}
+
+function wbTipBtn(m, a, b, inner, kind) {
+  const on = m.mine && m.mine.a === a && m.mine.b === b, fav = m.fav_a === a && m.fav_b === b;
+  return `<button type="button" class="wb-tip ${kind} ${on ? 'on' : ''} ${fav && !m.mine ? 'fav' : ''}" data-tip="${esc(m.id)}" data-a="${a}" data-b="${b}" aria-pressed="${!!on}"
+    aria-label="Tipp ${esc(wbScoreText(m, a, b))}${fav ? ' (Favorit)' : ''}" title="${esc(wbScoreText(m, a, b))}${fav && !m.mine ? ' · ohne Tipp zählt dieser automatisch' : ''}">${inner}</button>`;
 }
 
 function wbAccount() {
   const me = WB.me && wbPlayer(WB.me.name);
   if (WB.me && me) {
-    const row = wbRows().find(p => p.name === me.name);
-    return `<p class="wb-muted">Platz <b>${row.rank}</b> von ${WB.st.players.length} · ${me.exact}× genau · ${me.hits} Treffer${me.bonus ? ` · +${me.bonus} Bonus` : ''}</p>
-      <div class="wb-wallet">
-        <span class="wb-avatar" aria-hidden="true">${esc(me.name[0] || '?')}</span>
-        <span class="wb-wallet-txt"><span class="wb-k">${esc(me.name)}</span><b>${wbPts(me.points)}</b></span>
-        <button type="button" class="wb-link" data-wb="logout">Ausloggen</button>
-      </div>`;
+    const row = wbRows().find(p => p.name === me.name), missing = wbMissing().length;
+    return `<div class="wb-card wb-acct">
+      <div class="wb-acct-top"><span class="wb-avatar" aria-hidden="true">${esc(me.name[0] || '?')}</span>
+        <span><b>${esc(me.name)}</b><small>Platz ${row.rank} von ${WB.st.players.length} · ${wbPts(me.points)}</small></span></div>
+      ${missing ? `<p class="wb-warn">${missing === 1 ? '1 Tipp fehlt' : `${missing} Tipps fehlen`} <button type="button" class="wb-link" data-wb="jump-missing">zeigen</button></p>` : '<p class="wb-ok">Alles getippt ✓</p>'}
+      <button type="button" class="wb-link" data-wb="logout">Ausloggen</button>
+    </div>`;
   }
-  return `<p class="wb-muted"><b>Mitspielen:</b> Name und PIN (4–8 Ziffern) ausdenken und registrieren, oder einloggen.</p>
-    <form class="wb-login" autocomplete="on">
+  return `<form class="wb-card wb-login" autocomplete="on">
+      <b>Mitspielen</b><small class="wb-muted">Name und PIN (4–8 Ziffern) ausdenken.</small>
       <label class="wb-sr" for="wb-name">Name</label><input id="wb-name" name="name" placeholder="Name" maxlength="20" autocomplete="username" required>
       <label class="wb-sr" for="wb-pin">PIN</label><input id="wb-pin" name="pin" placeholder="PIN" inputmode="numeric" pattern="[0-9]{4,8}" maxlength="8" type="password" autocomplete="current-password" required>
-      <button class="wb-btn gold" data-wb="login">Einloggen</button><button class="wb-btn" data-wb="register">Registrieren</button>
+      <div class="wb-btns"><button class="wb-btn gold" data-wb="login">Einloggen</button><button class="wb-btn" data-wb="register">Registrieren</button></div>
       ${WB.msg ? `<p class="wb-err">${esc(WB.msg)}</p>` : ''}
     </form>`;
 }
 
-// The next match, big, with its tip buttons.
-function wbNext() {
-  const m = WB.st.matches.find(wbOpen);
-  if (!m) return `<article class="wb-top wb-empty">Gerade keine offenen Spiele. Neue tauchen auf, sobald Polymarket sie anbietet.</article>`;
-  return `<article class="wb-top" aria-label="Nächstes Spiel">
-    <div class="wb-top-head"><span class="wb-eyebrow">Nächstes Spiel</span><span class="wb-muted">${wbDay(m.starts_at)} ${wbTime(m.starts_at)} · BO${m.best_of}</span></div>
-    <div class="wb-versus">
-      <div><span class="wb-crest big a">${esc(wbAbbr(m.team_a))}</span><b>${esc(m.team_a)}</b></div>
-      <span class="wb-vs">VS</span>
-      <div><span class="wb-crest big b">${esc(wbAbbr(m.team_b))}</span><b>${esc(m.team_b)}</b></div>
-    </div>
-    ${wbChanceBar(m, true)}
-    ${wbTipButtons(m)}
-    <p class="wb-muted wb-small">${wbTipLine(m)}</p>
-  </article>`;
-}
-
-function wbChanceBar(m, labels) {
-  if (m.price_a == null) return '';
-  const pa = Number(m.price_a);
-  return `<div class="wb-chance ${labels ? '' : 'thin'}" title="Siegchance laut Polymarket: ${wbPct(pa)} : ${wbPct(1 - pa)}"><i class="a" style="width:${pa * 100}%"></i><i class="b" style="width:${(1 - pa) * 100}%"></i></div>
-    ${labels ? `<div class="wb-chance-txt"><span class="a">${wbPct(pa)} Siegchance</span><span class="b">${wbPct(1 - pa)} Siegchance</span></div>` : ''}`;
-}
-
-function wbTipButtons(m) {
-  const mine = m.mine, scores = wbScores(m.best_of);
-  return `<div class="wb-tips bo${m.best_of}" role="group" aria-label="Dein Tipp">${scores.map(([a, b]) => {
-    const on = mine && mine.a === a && mine.b === b, fav = m.fav_a === a && m.fav_b === b;
-    return `<button type="button" class="wb-tip ${a > b ? 'a' : 'b'} ${on ? 'on' : ''}" data-tip="${esc(m.id)}" data-a="${a}" data-b="${b}" aria-pressed="${!!on}">
-      ${esc(wbScoreText(m, a, b))}${fav && !mine ? '<small>auto</small>' : ''}</button>`;
-  }).join('')}</div>`;
-}
-
-function wbTipLine(m) {
-  const total = WB.st.players.length;
-  const auto = m.fav_a != null ? `sonst Auto-Tipp ${esc(wbScoreText(m, m.fav_a, m.fav_b))}` : 'sonst Auto-Tipp Favorit';
-  const mine = m.mine ? `Dein Tipp: <b>${esc(wbScoreText(m, m.mine.a, m.mine.b))}</b>` : WB.me ? `Noch nicht getippt, ${auto}` : 'Zum Tippen oben einloggen';
-  return `${mine} · ${m.tipped}/${total} getippt`;
-}
-
-function wbMatches() {
-  const ms = WB.st.matches;
-  const head = '<h2 class="wb-h">Spiele</h2>';
-  if (!ms.length) return `${head}<div class="wb-panel wb-empty">Noch keine Spiele. Sie tauchen auf, sobald Polymarket sie anbietet.</div>`;
-  const days = [...new Set(ms.map(m => wbDayKey(m.starts_at)))];
-  if (!days.includes(WB.day)) WB.day = wbDayKey((ms.find(m => m.status === 'open') || ms.at(-1)).starts_at);
-  const list = ms.filter(m => wbDayKey(m.starts_at) === WB.day);
-  return `<div class="wb-sec-head">${head}
-      <div class="wb-seg wb-days" role="tablist" aria-label="Spieltag">${days.map(d => {
-        const dm = ms.filter(m => wbDayKey(m.starts_at) === d);
-        const done = dm.every(m => m.status !== 'open'), todo = WB.me && dm.some(m => wbOpen(m) && !m.mine);
-        return `<button type="button" role="tab" data-day="${d}" aria-selected="${d === WB.day}">${wbDayShort(dm[0].starts_at)}${done ? ' ✓' : todo ? ' •' : ''}</button>`;
-      }).join('')}</div></div>
-    <div class="wb-tiles">${list.map(wbTile).join('')}</div>`;
-}
-
-function wbTile(m) {
-  const open = wbOpen(m), done = m.status === 'done', live = wbLive(m);
-  const status = done ? `ENDE · ${m.score_a}:${m.score_b}` : m.status === 'void' ? 'ABGESAGT' : live ? 'LÄUFT · WARTET AUF ERGEBNIS' : `BO${m.best_of} · ${esc(wbStage(m.stage)).toUpperCase()}`;
-  const team = (name, i) => {
-    const won = done && (i ? m.score_b > m.score_a : m.score_a > m.score_b);
-    return `<div class="wb-team ${done && !won ? 'lost' : ''}"><span class="wb-crest ${i ? 'b' : 'a'}">${esc(wbAbbr(name))}</span><span class="wb-name">${esc(name)}</span>${done ? `<b class="wb-score">${i ? m.score_b : m.score_a}</b>` : ''}</div>`;
-  };
-  return `<article class="wb-tile ${live ? 'live' : ''} ${open && WB.me && !m.mine ? 'todo' : ''}" id="wb-m-${esc(m.id)}">
-    <div class="wb-tile-top"><b>${wbTime(m.starts_at)}</b><span>${status}</span></div>
-    ${team(m.team_a, 0)}
-    ${wbChanceBar(m, false) || '<div class="wb-chance thin"></div>'}
-    ${team(m.team_b, 1)}
-    ${open ? `${wbTipButtons(m)}<p class="wb-tile-foot">${wbTipLine(m)}</p>` : wbOthers(m)}
-  </article>`;
-}
-
-// After the start: everyone's tip, with points once the result is in.
-function wbOthers(m) {
-  const tips = m.tips || [];
-  if (!tips.length) return '<p class="wb-tile-foot">Noch keine Mitspieler.</p>';
-  const done = m.status === 'done';
-  return `<ul class="wb-who" aria-label="Tipps">${tips.map(t => `<li class="${t.name === WB.me?.name ? 'me' : ''} ${done ? (t.pts > 0 ? 'up' : 'down') : ''}">
-      ${esc(t.name)} <b>${t.a == null ? '–' : esc(wbScoreText(m, t.a, t.b))}</b>${t.auto ? ' <small>auto</small>' : ''}${done ? ` <em>+${t.pts}</em>` : ''}</li>`).join('')}</ul>`;
-}
-
 function wbBoard() {
-  const rows = wbRows();
-  if (!rows.length) return '<p class="wb-muted">Noch niemand dabei. Sei der Erste!</p>';
-  const meName = WB.me?.name;
-  const sub = p => `${p.exact}× genau · ${p.hits} Treffer${p.bonus ? ` · +${p.bonus} Bonus` : ''}`;
-  const pod = [rows[1], rows[0], rows[2]].filter(Boolean);
-  const rest = rows.slice(3), shown = WB.boardAll ? rest : rest.slice(0, 7);
-  return `<div class="wb-podium" style="grid-template-columns:repeat(${pod.length},minmax(0,1fr))">${pod.map((p, i) => `<div class="wb-pod r${[2, 1, 3][pod.length === 1 ? 1 : i]} ${p.name === meName ? 'me' : ''}">
-      <b class="wb-pod-name">${esc(p.name)}</b><span class="wb-pod-money">${wbPts(p.points)}</span><small>${sub(p)}</small>
-      <div class="wb-pod-step">${p.rank}</div></div>`).join('')}</div>
-    ${shown.length ? `<ol class="wb-list">${shown.map(p => `<li class="${p.name === meName ? 'me' : ''}"><span><b class="wb-rank">${p.rank}</b>${esc(p.name)} <small>${sub(p)}</small></span><span class="wb-money">${p.points}</span></li>`).join('')}</ol>` : ''}
-    ${rest.length > 7 ? `<button type="button" class="wb-link" data-wb="board-all">${WB.boardAll ? 'Weniger anzeigen' : `Alle ${rows.length} anzeigen`}</button>` : ''}`;
+  const rows = wbRows(), meName = WB.me?.name;
+  return `<div class="wb-card"><h2 class="wb-h">Rangliste</h2>
+    ${rows.length ? `<ol class="wb-list">${rows.map(p => `<li class="${p.name === meName ? 'me' : ''} ${p.rank === 1 && p.points > 0 ? 'top' : ''}">
+        <span class="wb-rank">${p.rank}</span><span class="wb-lname">${esc(p.name)}<small>${p.exact}× genau · ${p.hits} Treffer${p.bonus ? ` · +${p.bonus} Bonus` : ''}</small></span><b>${p.points}</b></li>`).join('')}</ol>`
+      : '<p class="wb-muted wb-small">Noch niemand dabei. Sei der Erste!</p>'}
+  </div>`;
+}
+
+function wbBonusTeaser() {
+  const types = WB.st.pick_types;
+  if (!types.length) return '';
+  const me = WB.me && wbPlayer(WB.me.name);
+  const open = types.filter(t => Date.now() < Date.parse(t.lock_at));
+  const next = open.sort((a, b) => Date.parse(a.lock_at) - Date.parse(b.lock_at))[0];
+  const answered = me ? types.filter(t => (me.picks?.[t.kind] || []).length >= t.slots).length : 0;
+  return `<div class="wb-card"><h2 class="wb-h">Bonusfragen</h2>
+    <p class="wb-muted wb-small">${me ? `${answered} von ${types.length} beantwortet.` : `${types.length} Fragen, z. B. ${esc(types[0].title)} (+${types[0].points}).`}
+      ${next ? `Nächste Sperre ${wbDayShort(next.lock_at)} ${wbTime(next.lock_at)}.` : 'Alle gesperrt.'}</p>
+    <a href="#wb-bonus" class="wb-btn wb-btn-link" data-wb="to-bonus">Zu den Bonusfragen ↓</a>
+  </div>`;
 }
 
 function wbBonus() {
@@ -242,8 +228,11 @@ function wbBonus() {
   const list = WB.teamsAll ? alive : alive.filter((t, i) => i < 8 || mine.includes(t));
   const max = Math.max(...alive.map(t => Number(odds.get(t)?.price) || 0), .01);
   const pickers = t => WB.st.players.filter(p => p.name !== WB.me?.name && p.picks?.[pt.kind]?.includes(t)).map(p => p.name);
-  return `<div class="wb-sec-head"><h2 class="wb-h">Bonusfragen</h2><span class="wb-muted">${locked ? 'gesperrt seit' : 'änderbar bis'} ${wbDayShort(pt.lock_at)} ${wbTime(pt.lock_at)}</span></div>
-    <div class="wb-seg wb-kinds" role="tablist" aria-label="Bonusfrage">${types.map(t => `<button type="button" role="tab" data-kind="${esc(t.kind)}" aria-selected="${t.kind === pt.kind}">${esc(t.title)}</button>`).join('')}</div>
+  return `<div class="wb-sec-head"><h2 class="wb-h">Bonusfragen</h2><span class="wb-muted wb-small">${locked ? 'gesperrt seit' : 'änderbar bis'} ${wbDayShort(pt.lock_at)} ${wbTime(pt.lock_at)}</span></div>
+    <div class="wb-seg wb-kinds" role="tablist" aria-label="Bonusfrage">${types.map(t => {
+      const n = (me?.picks?.[t.kind] || []).length;
+      return `<button type="button" role="tab" data-kind="${esc(t.kind)}" aria-selected="${t.kind === pt.kind}">${esc(t.title)}${me ? ` <small>${n}/${t.slots}</small>` : ''}</button>`;
+    }).join('')}</div>
     <p class="wb-muted wb-q">${pt.slots === 1 ? 'Wähle 1 Team' : `Wähle ${pt.slots} Teams`}, ${pt.slots > 1 ? `je richtiges Team ${wbPts(pt.points)}` : wbPts(pt.points)}.
       ${me ? `<b>${mine.length}/${pt.slots} gewählt.</b>` : 'Zum Tippen einloggen.'} Balken = Chance laut Polymarket.${locked ? '' : ' Was die anderen gewählt haben, siehst du ab der Sperre.'}</p>
     <div class="wb-picks">${list.map(t => {
@@ -278,10 +267,15 @@ function wbWire(el) {
   el.querySelectorAll('[data-kind]').forEach(b => b.addEventListener('click', () => { WB.kind = b.dataset.kind; renderWorlds(); }));
   el.querySelector('[data-wb="jump-missing"]')?.addEventListener('click', () => {
     const m = wbMissing()[0]; if (!m) return;
-    WB.day = wbDayKey(m.starts_at); renderWorlds();
+    WB.day = m.day; renderWorlds();
     document.getElementById('wb-m-' + m.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
-  el.querySelector('[data-wb="board-all"]')?.addEventListener('click', () => { WB.boardAll = !WB.boardAll; renderWorlds(); });
+  el.querySelectorAll('[data-wb="to-bonus"], [data-wb="rules"]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.getElementById(a.dataset.wb === 'rules' ? 'wb-rules' : 'wb-bonus');
+    if (target.tagName === 'DETAILS') target.open = true;
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
   el.querySelector('[data-wb="teams-all"]')?.addEventListener('click', () => { WB.teamsAll = !WB.teamsAll; renderWorlds(); });
   el.querySelector('[data-wb="logout"]')?.addEventListener('click', async () => {
     const t = WB.me?.token; wbSaveMe(null); WB.msg = null;

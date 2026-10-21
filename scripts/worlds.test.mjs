@@ -1,7 +1,7 @@
 // Tests for the Worlds Tippspiel sync: npm test
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseTitle, priceOf, resultOf, gameChance, favourite, seriesScore, matchOf, isWorldsMatch, teamOddsOf, teamsOf, settingsOf, pickTypesOf } from './worlds.mjs';
+import { parseTitle, gameDay, priceOf, resultOf, gameChance, favourite, seriesScore, matchOf, isWorldsMatch, teamOddsOf, teamsOf, settingsOf, pickTypesOf } from './worlds.mjs';
 
 const market = (o) => ({ id: 1, sportsMarketType: 'moneyline', outcomes: '["Gen.G", "Invictus Gaming"]', outcomePrices: '["0.775", "0.225"]',
   bestBid: 0.77, bestAsk: 0.78, closed: false, ...o });
@@ -58,13 +58,20 @@ test('series score from the game winners, else from the score line', () => {
 
 test('an event becomes a match row', () => {
   assert.deepEqual(matchOf(event({})), { id: '1214238', title: 'Gen.G vs Invictus Gaming', team_a: 'Gen.G', team_b: 'Invictus Gaming',
-    stage: 'Worlds Group Stage', best_of: 1, starts_at: '2026-10-23T17:00:00.000Z', price_a: 0.775, fav_a: 1, fav_b: 0 });
+    stage: 'Worlds Group Stage', best_of: 1, starts_at: '2026-10-23T17:00:00.000Z', day: '2026-10-23', price_a: 0.775, fav_a: 1, fav_b: 0 });
   const bo5 = matchOf(event({ title: 'LoL: KC vs MVK (BO5) - Worlds Play-In', markets: [market({ closed: true, outcomePrices: '["1", "0"]' }),
     game(1, 0), game(2, 0), game(3, 1), game(4, 0), game(5, -1)] }));
   assert.deepEqual(bo5.result, [3, 1]); assert.equal(bo5.price_a, null); assert.equal(bo5.fav_a, null);
   assert.equal(matchOf(event({ markets: [market({ closed: true, outcomePrices: '["0.5", "0.5"]' })] })).void, true);
   assert.equal(matchOf(event({ startTime: undefined, markets: [market({ gameStartTime: '2026-10-23 17:00:00+00' })] })).starts_at, '2026-10-23T17:00:00.000Z');
   assert.equal(matchOf(event({ markets: [market({ sportsMarketType: 'totals' })] })), null);
+});
+
+test('game day: the event date, else US Central time', () => {
+  // 02:00 in Germany on the 24th is still the 23rd's game day in North America
+  assert.equal(gameDay({ eventDate: '2026-10-23' }, '2026-10-24T00:00:00Z'), '2026-10-23');
+  assert.equal(gameDay({}, '2026-10-24T00:00:00Z'), '2026-10-23');
+  assert.equal(gameDay({ eventDate: 'soon' }, '2026-10-23T17:00:00Z'), '2026-10-23');
 });
 
 test('only Worlds matches count', () => {
